@@ -36,6 +36,12 @@ Run Project
 ```bash
   npm run dev
 ```
+
+## 🔗 Route Admin Dashboard
+
+/admin/login
+
+
 ## 🔗 Server Repository
 
 https://github.com/SetraNugraha/server-pharmakey
