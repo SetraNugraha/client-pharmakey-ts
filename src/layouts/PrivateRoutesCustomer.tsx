@@ -21,7 +21,7 @@ export const PrivateRoutesCustomer = () => {
     return <div className="text-center font-bold mt-5 text-xl tracking-wider text-slate-500">Loading ....</div>
   }
 
-  if (!token || !user) {
+  if (!token || !user || user.role !== "CUSTOMER") {
     CustomAlert("Authentication", "warning", "Login required. Please sign in to continue.")
     return <Navigate to={"/login"} replace />
   }

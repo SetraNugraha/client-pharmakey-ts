@@ -21,7 +21,7 @@ export const PrivateRoutesAdmin = () => {
     return <div className="text-center font-bold mt-5 text-xl tracking-wider text-slate-500">Loading ....</div>
   }
 
-  if (!token || !user) {
+  if (!token || !user || user.role !== "ADMIN") { 
     CustomAlert("Need Login First", "warning")
     return <Navigate to={"/admin/login"} replace />
   }

@@ -8,6 +8,7 @@ import ModalUpdateProduct from "./ModalUpdateProduct"
 import ModalDetailProduct from "./ModalDetailProduct"
 import { CustomAlert, CustomAlertConfirm } from "../../../utils/CustomAlert"
 import { Product } from "../../../types"
+import { getImageUrl } from "../../../utils/getImageUrl"
 
 export default function AdminProducts() {
   const {
@@ -66,13 +67,12 @@ export default function AdminProducts() {
       // index = 0 , 1 , 2 , ....
       // page 1 = 1 + 0 ... page 2 = 6 + 0 ... page 3 = 11 + 0 ...
       const rowNumber = baseNumber + index
-      const productImage = product.product_image
-        ? `${import.meta.env.VITE_IMAGE_URL}/products/${product.product_image}`
-        : "/assets/img/no-image.png"
+      const productImage = getImageUrl("products", product.product_image)
       return (
         <tr
           key={product.id}
-          className="w-full bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
+          className="w-full bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600"
+        >
           {/* Number */}
           <td className="text-[20px] text-center font-semibold text-gray-900 whitespace-nowrap dark:text-white">
             {rowNumber}
@@ -125,7 +125,8 @@ export default function AdminProducts() {
           {/* Button Add New Product */}
           <button
             onClick={() => setModalCreate(true)}
-            className="px-3 py-2 bg-blue-500 text-white font-semibold rounded-lg hover:bg-white hover:text-blue-500 hover:outline-none hover:ring-2 hover:ring-blue-500 duration-300 mb-5 flex items-center gap-x-2 shadow-lg shadow-gray-300">
+            className="px-3 py-2 bg-blue-500 text-white font-semibold rounded-lg hover:bg-white hover:text-blue-500 hover:outline-none hover:ring-2 hover:ring-blue-500 duration-300 mb-5 flex items-center gap-x-2 shadow-lg shadow-gray-300"
+          >
             <span>
               <MdLibraryAdd size={22} />
             </span>
@@ -173,7 +174,8 @@ export default function AdminProducts() {
             <button
               disabled={!pagination.hasPrevPage}
               onClick={goToPrevPage}
-              className="px-2 py-1 bg-blue-500 font-semibold text-white rounded-lg cursor-pointer hover:outline-none hover:ring-2 hover:ring-blue-500 hover:text-blue-500 hover:bg-white duration-300 disabled:bg-slate-500 disabled:cursor-not-allowed disabled:text-white disabled:ring-0">
+              className="px-2 py-1 bg-blue-500 font-semibold text-white rounded-lg cursor-pointer hover:outline-none hover:ring-2 hover:ring-blue-500 hover:text-blue-500 hover:bg-white duration-300 disabled:bg-slate-500 disabled:cursor-not-allowed disabled:text-white disabled:ring-0"
+            >
               Prev
             </button>
             <p className="px-3 py-1 ring-2 ring-slate-300 rounded-lg font-semibold text-slate-400">
@@ -182,7 +184,8 @@ export default function AdminProducts() {
             <button
               disabled={!pagination.hasNextPage}
               onClick={goToNextPage}
-              className="px-2 py-1 bg-blue-500 font-semibold text-white rounded-lg cursor-pointer hover:outline-none hover:ring-2 hover:ring-blue-500 hover:text-blue-500 hover:bg-white duration-300 disabled:bg-slate-500 disabled:cursor-not-allowed disabled:text-white disabled:ring-0">
+              className="px-2 py-1 bg-blue-500 font-semibold text-white rounded-lg cursor-pointer hover:outline-none hover:ring-2 hover:ring-blue-500 hover:text-blue-500 hover:bg-white duration-300 disabled:bg-slate-500 disabled:cursor-not-allowed disabled:text-white disabled:ring-0"
+            >
               Next
             </button>
           </div>

@@ -21,12 +21,13 @@ export default function AdminTransactions() {
       const rowNumber: number = baseNumber + index
       // Find Email
       const customerEmail = customers.find(
-        (customer) => customer.id === transaction.user_id && customer.role === "CUSTOMER",
+        (customer) => customer.id === transaction.user_id && customer.role === "CUSTOMER"
       )
       return (
         <tr
           key={index}
-          className="bg-white text-center border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
+          className="bg-white text-center border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600"
+        >
           {/* Number */}
           <td className="text-lg text-white font-bold py-4">{rowNumber}</td>
           {/* Email */}
@@ -35,7 +36,8 @@ export default function AdminTransactions() {
           {/* Total Price */}
           <td
             scope="row"
-            className="text-lg tracking-widest py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+            className="text-lg tracking-widest py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
+          >
             {transaction.total_amount.toLocaleString("id-ID", {
               style: "currency",
               currency: "IDR",
@@ -65,7 +67,8 @@ export default function AdminTransactions() {
                 : transaction.is_paid === "SUCCESS"
                 ? "bg-green-600"
                 : "bg-red-500"
-            }`}>
+            }`}
+          >
             {transaction.is_paid}
           </td>
 
@@ -73,7 +76,8 @@ export default function AdminTransactions() {
           <td className="text-lg  py-4">
             <button
               onClick={() => handleModalTransactionDetail(transaction.id || null)}
-              className="font-medium tracking-wider text-blue-500 hover:underline hover:text-white">
+              className="font-medium tracking-wider text-blue-500 hover:underline hover:text-white"
+            >
               Detail
             </button>
           </td>
@@ -136,7 +140,8 @@ export default function AdminTransactions() {
             <button
               disabled={!pagination.hasPrevPage}
               onClick={goToPrevPage}
-              className="px-2 py-1 bg-blue-500 font-semibold text-white rounded-lg cursor-pointer hover:outline-none hover:ring-2 hover:ring-blue-500 hover:text-blue-500 hover:bg-white duration-300 disabled:bg-slate-500 disabled:cursor-not-allowed disabled:text-white disabled:ring-0">
+              className="px-2 py-1 bg-blue-500 font-semibold text-white rounded-lg cursor-pointer hover:outline-none hover:ring-2 hover:ring-blue-500 hover:text-blue-500 hover:bg-white duration-300 disabled:bg-slate-500 disabled:cursor-not-allowed disabled:text-white disabled:ring-0"
+            >
               Prev
             </button>
             <p className="px-3 py-1 ring-2 ring-slate-300 rounded-lg font-semibold text-slate-400">
@@ -145,7 +150,8 @@ export default function AdminTransactions() {
             <button
               disabled={!pagination.hasNextPage}
               onClick={goToNextPage}
-              className="px-2 py-1 bg-blue-500 font-semibold text-white rounded-lg cursor-pointer hover:outline-none hover:ring-2 hover:ring-blue-500 hover:text-blue-500 hover:bg-white duration-300 disabled:bg-slate-500 disabled:cursor-not-allowed disabled:text-white disabled:ring-0">
+              className="px-2 py-1 bg-blue-500 font-semibold text-white rounded-lg cursor-pointer hover:outline-none hover:ring-2 hover:ring-blue-500 hover:text-blue-500 hover:bg-white duration-300 disabled:bg-slate-500 disabled:cursor-not-allowed disabled:text-white disabled:ring-0"
+            >
               Next
             </button>
           </div>

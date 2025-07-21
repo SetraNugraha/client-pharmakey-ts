@@ -8,8 +8,8 @@ import { useCustomer } from "../CustomHooks/useCustomer"
 import { useAuth } from "../../Auth/useAuth"
 import { Transaction } from "../../types"
 import { useTransaction } from "../CustomHooks/useTransaction"
-// import { motion, AnimatePresence } from "framer-motion"
 import { ExpandTransition } from "../../utils/ExpandTransition"
+import { getImageUrl } from "../../utils/getImageUrl"
 
 type PaymentMethod = "TRANSFER" | "COD"
 type DetailPayment = {
@@ -71,10 +71,7 @@ export default function Cart() {
 
   // Payment Detail
   useEffect(() => {
-    const subTotal = customerCarts.reduce(
-      (total, cart) => total + cart.product.price * cart.quantity,
-      0
-    )
+    const subTotal = customerCarts.reduce((total, cart) => total + cart.product.price * cart.quantity, 0)
     const tax = (10 / 100) * subTotal
     const deliveryFee = (2 / 100) * subTotal
     const grandTotal = subTotal + tax + deliveryFee
@@ -88,9 +85,7 @@ export default function Cart() {
     }))
   }, [customerCarts])
 
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target as HTMLInputElement
 
     setFormCheckout((prevState) => ({
@@ -107,9 +102,7 @@ export default function Cart() {
   }
 
   const handleCheckout = async () => {
-    const isConfirm = await CustomAlertConfirm(
-      "Are you sure want to checkout ?"
-    )
+    const isConfirm = await CustomAlertConfirm("Are you sure want to checkout ?")
 
     if (isConfirm) {
       const checkoutResult = await checkout(formCheckout)
@@ -147,11 +140,7 @@ export default function Cart() {
     }
 
     return customerCarts.map((cart, index) => {
-      const productImage = cart.product?.product_image
-        ? `${import.meta.env.VITE_IMAGE_URL}/products/${
-            cart.product.product_image
-          }`
-        : "/assets/img/no-image.png"
+      const productImage = getImageUrl("products", cart.product?.product_image)
       return (
         <div key={index} className="relative">
           {/* Products */}
@@ -160,21 +149,13 @@ export default function Cart() {
             className="flex items-center justify-between gap-x-2 px-5 py-3 bg-white rounded-[16px] shrink-0 hover:bg-[#FD915A] group"
           >
             <div className="flex items-center  gap-x-3">
-              <img
-                src={productImage}
-                alt="product-image"
-                className="size-16 object-contain"
-              />
+              <img src={productImage} alt="product-image" className="size-16 object-contain" />
               <div className="flex flex-col gap-y-1 items-start">
-                <h1 className="font-bold group-hover:text-white text-start">
-                  {cart.product.name}
-                </h1>
+                <h1 className="font-bold group-hover:text-white text-start">{cart.product.name}</h1>
                 <p className="font-semibold text-slate-400 group-hover:text-white">
                   Rp. {cart.product.price.toLocaleString("id-ID") || ""}
                 </p>
-                <p className="font-semibold text-sm text-slate-400 group-hover:text-white">
-                  Quantity: {cart.quantity}
-                </p>
+                <p className="font-semibold text-sm text-slate-400 group-hover:text-white">Quantity: {cart.quantity}</p>
               </div>
             </div>
           </Link>
@@ -197,33 +178,25 @@ export default function Cart() {
         {/* Sub Total */}
         <div className="flex items-center justify-between">
           <h1>Sub Total</h1>
-          <p className="font-bold">
-            Rp. {detailPayment.subTotal.toLocaleString("id-ID")}
-          </p>
+          <p className="font-bold">Rp. {detailPayment.subTotal.toLocaleString("id-ID")}</p>
         </div>
 
         {/* PPN */}
         <div className="flex items-center justify-between">
           <h1>PPN 10%</h1>
-          <p className="font-bold">
-            Rp. {detailPayment.tax.toLocaleString("id-ID")}
-          </p>
+          <p className="font-bold">Rp. {detailPayment.tax.toLocaleString("id-ID")}</p>
         </div>
 
         {/* Delivery */}
         <div className="flex items-center justify-between">
           <h1>Delivery {"(Promo)"}</h1>
-          <p className="font-bold">
-            Rp. {detailPayment.deliveryFee.toLocaleString("id-ID")}
-          </p>
+          <p className="font-bold">Rp. {detailPayment.deliveryFee.toLocaleString("id-ID")}</p>
         </div>
 
         {/* Grand Total */}
         <div className="flex items-center justify-between">
           <h1>Grand Total</h1>
-          <p className="font-bold text-[#FD915A]">
-            Rp. {detailPayment.grandTotal.toLocaleString("id-ID")}
-          </p>
+          <p className="font-bold text-[#FD915A]">Rp. {detailPayment.grandTotal.toLocaleString("id-ID")}</p>
         </div>
       </>
     )
@@ -265,10 +238,7 @@ export default function Cart() {
           </div>
 
           {/* RENDER ITEMS */}
-          <ExpandTransition
-            isActive={showItems}
-            className="mt-[10px] flex flex-col gap-y-3 origin-top"
-          >
+          <ExpandTransition isActive={showItems} className="mt-[10px] flex flex-col gap-y-3 origin-top">
             <RenderItems />
           </ExpandTransition>
         </div>
@@ -308,32 +278,20 @@ export default function Cart() {
               <button
                 onClick={() => handleSelectedMethod("TRANSFER")}
                 className={`w-1/2 flex items-center gap-x-3 py-3 px-7 bg-white rounded-[16px] hover:outline-none hover:ring-1 hover:ring-[#F39D84] ${
-                  formCheckout.payment_method === "TRANSFER"
-                    ? "border-[2px] border-[#F39D84]"
-                    : ""
+                  formCheckout.payment_method === "TRANSFER" ? "border-[2px] border-[#F39D84]" : ""
                 }`}
               >
-                <img
-                  src="assets/img/transfer.png"
-                  alt="transfer"
-                  className="p-2 bg-[#98B1FC] rounded-full"
-                />
+                <img src="assets/img/transfer.png" alt="transfer" className="p-2 bg-[#98B1FC] rounded-full" />
                 <p className="font-semibold">Transfer</p>
               </button>
 
               <button
                 onClick={() => handleSelectedMethod("COD")}
                 className={`w-1/2 flex items-center gap-x-3 py-3 px-7 bg-white rounded-[16px] hover:outline-none hover:ring-1 hover:ring-[#F39D84] ${
-                  formCheckout.payment_method === "COD"
-                    ? "border-[2px] border-[#F39D84]"
-                    : ""
+                  formCheckout.payment_method === "COD" ? "border-[2px] border-[#F39D84]" : ""
                 }`}
               >
-                <img
-                  src="assets/img/cod.png"
-                  alt="cod"
-                  className="p-2 bg-[#F39D84] rounded-full"
-                />
+                <img src="assets/img/cod.png" alt="cod" className="p-2 bg-[#F39D84] rounded-full" />
                 <p className="font-semibold">COD</p>
               </button>
             </div>
@@ -343,9 +301,7 @@ export default function Cart() {
               {/* Null */}
               {!formCheckout.payment_method && (
                 <div>
-                  <h1 className="font-semibold text-center">
-                    Please select a payment method
-                  </h1>
+                  <h1 className="font-semibold text-center">Please select a payment method</h1>
                 </div>
               )}
 
@@ -360,10 +316,7 @@ export default function Cart() {
                     </div>
 
                     <div className="flex items-center gap-x-3">
-                      <img
-                        src="assets/img/card-payment.png"
-                        alt="card-payment"
-                      />
+                      <img src="assets/img/card-payment.png" alt="card-payment" />
                       <h1 className="font-semibold">0812931283123</h1>
                     </div>
                   </div>
@@ -377,9 +330,7 @@ export default function Cart() {
                   <div className="flex flex-col gap-y-3 mt-5">
                     <div className="flex items-center gap-x-3">
                       <img src="assets/img/bank.png" alt="bank" />
-                      <h1 className="font-semibold">
-                        take a photo when the medicine arrives.
-                      </h1>
+                      <h1 className="font-semibold">take a photo when the medicine arrives.</h1>
                     </div>
                   </div>
                 </div>
@@ -404,9 +355,7 @@ export default function Cart() {
                   type="text"
                   placeholder="address"
                   icon="assets/img/location.png"
-                  value={
-                    formCheckout.address ?? currCustomerAddress.address ?? ""
-                  }
+                  value={formCheckout.address ?? currCustomerAddress.address ?? ""}
                   onChange={handleChange}
                 />
 
@@ -427,18 +376,12 @@ export default function Cart() {
                   placeholder="Post Code"
                   icon="assets/img/house.png"
                   isError={hasErrors?.path === "post_code"}
-                  value={
-                    formCheckout.post_code ??
-                    currCustomerAddress.post_code ??
-                    ""
-                  }
+                  value={formCheckout.post_code ?? currCustomerAddress.post_code ?? ""}
                   onChange={handleChange}
                 />
 
                 {hasErrors && hasErrors.path === "post_code" && (
-                  <p className="ml-3 -mt-3 font-semibold text-red-500 tracking-wider">
-                    {hasErrors.message}
-                  </p>
+                  <p className="ml-3 -mt-3 font-semibold text-red-500 tracking-wider">{hasErrors.message}</p>
                 )}
 
                 <InputField
@@ -447,11 +390,7 @@ export default function Cart() {
                   type="number"
                   placeholder="Phone Number"
                   icon="assets/img/call.png"
-                  value={
-                    formCheckout.phone_number ??
-                    currCustomerAddress.phone_number ??
-                    ""
-                  }
+                  value={formCheckout.phone_number ?? currCustomerAddress.phone_number ?? ""}
                   onChange={handleChange}
                 />
 
@@ -467,11 +406,7 @@ export default function Cart() {
                     value={formCheckout.notes ?? ""}
                     onChange={handleChange}
                   ></textarea>
-                  <img
-                    src="assets/img/note.png"
-                    alt="note"
-                    className="absolute top-[47px] left-[15px]"
-                  />
+                  <img src="assets/img/note.png" alt="note" className="absolute top-[47px] left-[15px]" />
                 </div>
               </form>
             </div>
@@ -483,9 +418,7 @@ export default function Cart() {
           <div className="flex items-center justify-between p-5 bg-black rounded-[23px]">
             <div>
               <p className="text-gray-300 text-xs font-semibold">Grand Total</p>
-              <h1 className="text-2xl text-white font-bold">
-                Rp. {detailPayment.grandTotal.toLocaleString("id-ID")}
-              </h1>
+              <h1 className="text-2xl text-white font-bold">Rp. {detailPayment.grandTotal.toLocaleString("id-ID")}</h1>
             </div>
 
             <button
