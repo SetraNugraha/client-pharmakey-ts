@@ -1,5 +1,5 @@
 export const getImageUrl = (
-  type: "products" | "categories" | "proofTransaction" | "customers",
+  type: "products" | "categories" | "proofTransactions" | "customers",
   imageName: string | File | null | undefined,
 ) => {
   if (imageName) {
