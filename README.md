@@ -1,10 +1,8 @@
-
 ## Tech Stack
 
 **Client:** Vite + ReactJS, Typescript, TailwindCSS
 
-**Server:** NodeJS, ExpressJS, Prisma, PostgreSQL
-
+**Server:** NodeJS, ExpressJS, Typescript, Prisma, PostgreSQL
 
 ## Run Locally
 
@@ -31,6 +29,7 @@ Environtment
 ```bash
   copy .env.example to .env, set the value as needed
 ```
+
 Run Project
 
 ```bash
@@ -41,7 +40,6 @@ Run Project
 
 /admin/login
 
-
 ## 🔗 Server Repository
 
-https://github.com/SetraNugraha/server-pharmakey
+https://github.com/SetraNugraha/server-pharmakey-ts

@@ -32,7 +32,7 @@ export default function ModalUpdateProduct({ product, onClose }: ModalUpdateProd
     }));
   };
 
-  const handleEditProduct = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleUpdateProduct = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     updateProduct.mutate(
       { productId: product!.id, payload: formUpdateProduct },
@@ -41,10 +41,19 @@ export default function ModalUpdateProduct({ product, onClose }: ModalUpdateProd
           CustomAlert("success", "success", data?.message);
           onClose();
         },
-        onError: (error) => {
+        onError: (error: any) => {
           if (error instanceof AxiosError) {
             const errors = error.response?.data.errors;
-            setHasError(errors);
+
+            // NO FIELD CHANGES ERROR
+            if (!errors && !error.response?.data.success) {
+              CustomAlert("error", "error", error.response?.data.message);
+            }
+
+            // VALIDATION FIELD ERROR
+            if (errors && errors.length !== null && error.response?.data.message === "validation error") {
+              setHasError(errors);
+            }
           } else {
             console.log("handleUpdateProduct Error: ", error.message);
             CustomAlert("error", "error", "internal server error, please try again later");
@@ -58,7 +67,7 @@ export default function ModalUpdateProduct({ product, onClose }: ModalUpdateProd
     <Modal>
       <Modal.Header title="Edit Product" onClose={onClose} />
       <Modal.Body>
-        <form onSubmit={handleEditProduct} className="w-[500px] flex flex-col gap-y-3">
+        <form onSubmit={handleUpdateProduct} className="w-[500px] flex flex-col gap-y-3">
           {/* Product Name */}
           <div className="flex flex-col gap-y-2">
             <label htmlFor="name" className="font-semibold text-slate-500 ml-1">
