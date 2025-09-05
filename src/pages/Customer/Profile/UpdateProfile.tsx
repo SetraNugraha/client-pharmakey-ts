@@ -107,9 +107,16 @@ export default function UpdateProfile() {
                     type="text"
                     placeholder="Username"
                     icon="assets/img/register-profile.png"
+                    isError={!!getErrorField(hasErrors, "username")}
                     value={formUpdateCustomer.username ?? authCustomer?.username ?? ""}
                     onChange={handleChange}
                   />
+
+                  {getErrorField(hasErrors, "username") && (
+                    <p className="ml-5 -mt-1 text-red-500 font-semibold tracking-wider">
+                      {getErrorField(hasErrors, "username")?.message}
+                    </p>
+                  )}
 
                   {/* Email */}
                   <InputField

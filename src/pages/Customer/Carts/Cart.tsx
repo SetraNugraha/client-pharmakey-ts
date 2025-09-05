@@ -37,6 +37,19 @@ export default function Cart() {
     notes: null,
   });
 
+  // Shipping Customer
+  // useEffect(() => {
+  //   if (authCustomer && !formCheckout) {
+  //     setFormCheckout((prevState) => ({
+  //       ...prevState,
+  //       address: authCustomer.address ?? "",
+  //       city: authCustomer.city ?? "",
+  //       post_code: authCustomer.post_code ?? "",
+  //       phone_number: authCustomer.phone_number ?? "",
+  //     }));
+  //   }
+  // }, [authCustomer]);
+
   // Payment Detail
   useEffect(() => {
     if (!customerCarts) return;
@@ -75,8 +88,16 @@ export default function Cart() {
   const handleCheckout = async () => {
     const isConfirm = await CustomAlertConfirm("Are you sure want to checkout ?");
 
+    const payload = {
+      ...formCheckout,
+      address: formCheckout.address ?? authCustomer?.address ?? "",
+      city: formCheckout.city ?? authCustomer?.city ?? "",
+      post_code: formCheckout.post_code ?? authCustomer?.post_code ?? "",
+      phone_number: formCheckout.phone_number ?? authCustomer?.phone_number ?? "",
+    };
+
     if (isConfirm) {
-      checkout.mutate(formCheckout as ICheckout, {
+      checkout.mutate(payload as ICheckout, {
         onSuccess: (data) => {
           setFormCheckout({});
           CustomAlert("Success", "success", data?.message);
@@ -145,7 +166,10 @@ export default function Cart() {
           </div>
 
           {/* RENDER CART ITEMS */}
-          <ExpandTransition isActive={showItems} className="mt-[10px] flex flex-col gap-y-3 origin-top">
+          <ExpandTransition
+            isActive={showItems}
+            className="mt-[10px] flex flex-col gap-y-3 origin-top overflow-auto max-h-[360px] rounded-lg pb-3"
+          >
             <CartItems carts={customerCarts?.cart} />
           </ExpandTransition>
         </div>
@@ -301,7 +325,7 @@ export default function Cart() {
                     id="notes"
                     placeholder="Add Note"
                     className="w-full h-full px-12 py-3 mt-2 border border-slate-300 rounded-2xl placeholder:text-[16px] focus:outline-none focus:ring-2 focus:ring-[#FD915A]"
-                    value={formCheckout.notes ?? ""}
+                    value={formCheckout.notes || ""}
                     onChange={handleChange}
                   ></textarea>
                   <img src="assets/img/note.png" alt="note" className="absolute top-[47px] left-[15px]" />

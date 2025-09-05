@@ -6,7 +6,7 @@ type InputFieldProps = {
   type?: string;
   placeholder?: string;
   icon?: string;
-  value?: string | number | undefined;
+  value?: any;
   inputMode?: any;
   maxLength?: number;
   pattern?: string;

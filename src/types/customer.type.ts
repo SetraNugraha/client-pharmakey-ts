@@ -14,7 +14,7 @@ export interface Customer {
   profile_image: string | null;
   address: string | null;
   city: string | null;
-  post_code: number | null;
+  post_code: string | null;
   phone_number: string | null;
 }
 
@@ -35,7 +35,7 @@ export interface IUpdateCustomer {
   email?: string;
   address?: string;
   city?: string;
-  post_code?: number;
+  post_code?: string;
   phone_number?: string;
   profile_image?: string;
 }

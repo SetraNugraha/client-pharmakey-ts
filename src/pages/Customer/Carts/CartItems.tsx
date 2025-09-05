@@ -35,7 +35,7 @@ export const CartItems = ({ carts }: { carts?: ICart[] }) => {
           to={`/detail-product/${cart.product.slug}/${cart.product_id}`}
           className="flex items-center justify-between gap-x-2 px-5 py-3 bg-white rounded-[16px] shrink-0 hover:bg-[#FD915A] group"
         >
-          <div className="flex items-center  gap-x-3">
+          <div className="flex items-center gap-x-3">
             <img src={productImage} alt="product-image" className="size-16 object-contain" />
             <div className="flex flex-col gap-y-1 items-start">
               <h1 className="font-bold group-hover:text-white text-start">{cart.product.name}</h1>

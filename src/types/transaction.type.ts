@@ -33,7 +33,7 @@ export interface Billing {
 export interface Shipping {
   address: string;
   city: string;
-  post_code: number;
+  post_code: string;
   phone_number: string;
 }
 
@@ -41,7 +41,7 @@ export interface Transaction_Detail {
   quantity: number;
   price: number;
   product: {
-    id: string
+    id: string;
     name: string;
     slug: string;
     product_image: string | File | null;
