@@ -1,73 +1,62 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { MdEditSquare, MdDelete, MdLibraryAdd } from "react-icons/md"
-import { IoListCircleSharp } from "react-icons/io5"
-import { useEffect, useState } from "react"
-import { useProducts } from "../../CustomHooks/useProduct"
-import ModalCreateProduct from "./ModalCreateProduct"
-import ModalUpdateProduct from "./ModalUpdateProduct"
-import ModalDetailProduct from "./ModalDetailProduct"
-import { CustomAlert, CustomAlertConfirm } from "../../../utils/CustomAlert"
-import { Product } from "../../../types"
-import { getImageUrl } from "../../../utils/getImageUrl"
+import { MdEditSquare, MdDelete, MdLibraryAdd } from "react-icons/md";
+import { IoListCircleSharp } from "react-icons/io5";
+import { useState } from "react";
+import { useProducts } from "../../CustomHooks/useProduct";
+import ModalCreateProduct from "./ModalCreateProduct";
+import ModalUpdateProduct from "./ModalUpdateProduct";
+import ModalDetailProduct from "./ModalDetailProduct";
+import { CustomAlert, CustomAlertConfirm } from "../../../utils/CustomAlert";
+import { Product } from "../../../types/product.type";
+import { getImageUrl } from "../../../utils/getImageUrl";
 
 export default function AdminProducts() {
-  const {
-    products,
-    isLoading,
-    pagination,
-    goToPrevPage,
-    goToNextPage,
-    getAllProducts,
-    refetchProducts,
-    deleteProduct,
-  } = useProducts()
-  const [modalCreate, setModalCreate] = useState<boolean>(false)
-  const [modalDetail, setModalDetail] = useState<boolean>(false)
-  const [modalEdit, setModalEdit] = useState<boolean>(false)
-  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null)
+  const { products, isLoading, pagination, goToPrevPage, goToNextPage, deleteProduct } = useProducts({ limit: 5 });
+  const [modalCreate, setModalCreate] = useState<boolean>(false);
+  const [modalDetail, setModalDetail] = useState<boolean>(false);
+  const [modalUpdate, setModalUpdate] = useState<boolean>(false);
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
 
-  useEffect(() => {
-    getAllProducts(1, 5)
-  }, [])
+  const handleButtonDetail = (product: Product) => {
+    setSelectedProduct(product);
+    setModalDetail(true);
+  };
 
-  const handleModalDetail = (product: Product) => {
-    setSelectedProduct(product)
-    setModalDetail(true)
-  }
-
-  const handleButtonEdit = (product: Product) => {
-    setSelectedProduct(product)
-    setModalEdit(true)
-  }
+  const handleButtonUpdate = (product: Product) => {
+    setSelectedProduct(product);
+    setModalUpdate(true);
+  };
 
   const handleDeleteProduct = async (product: Product) => {
-    const productId = product.id || null
-    const title = `Are you sure want to delete ${product.name} ?`
-    const isConfirm = await CustomAlertConfirm(title)
+    const title = `Are you sure want to delete ${product.name} ?`;
+    const isConfirm = await CustomAlertConfirm(title);
 
     if (isConfirm) {
-      const response = await deleteProduct(productId)
-
-      if (response.success) {
-        CustomAlert("Success", "success", response.message)
-        await refetchProducts()
-      } else {
-        CustomAlert("Error", "error", response.message)
-      }
+      deleteProduct.mutate(product.id, {
+        onSuccess: (data) => {
+          CustomAlert("success", "success", data.message);
+        },
+        onError: (error) => {
+          console.log("HandleDeleteProduct Error: ", error.message);
+          CustomAlert("error", "error", "Error while deleting product, please try again later");
+        },
+      });
     } else {
-      CustomAlert("Cancel", "error", "Delete Cancelled")
+      CustomAlert("cancelled", "error", "deleting cancelled");
     }
-  }
+  };
 
   const RenderProducts = () => {
+    if (!pagination) return;
+    const { page, limit } = pagination;
     // (1 - 1) * 5 + 1 => 0 * 5 + 1 => 1
     // (2 - 1) * 5 + 1 => 1 * 5 + 1 => 6
-    const baseNumber = (pagination.currPage - 1) * pagination.limit + 1
-    return products.map((product, index) => {
+    const baseNumber = (page - 1) * limit + 1;
+    return products?.map((product, index) => {
       // index = 0 , 1 , 2 , ....
       // page 1 = 1 + 0 ... page 2 = 6 + 0 ... page 3 = 11 + 0 ...
-      const rowNumber = baseNumber + index
-      const productImage = getImageUrl("products", product.product_image)
+      const rowNumber = baseNumber + index;
+      const productImage = getImageUrl("products", product.product_image);
       return (
         <tr
           key={product.id}
@@ -100,21 +89,24 @@ export default function AdminProducts() {
           {/* Action Button */}
           <td className="py-3">
             <div className="flex items-center justify-center gap-x-3">
-              <a href="#" onClick={() => handleModalDetail(product)}>
+              {/* Detail */}
+              <a href="#" onClick={() => handleButtonDetail(product)}>
                 <IoListCircleSharp size={30} className="text-yellow-500 hover:text-sky-400 duration-200" />
               </a>
-              <button onClick={() => handleButtonEdit(product)}>
+              {/* Update */}
+              <button onClick={() => handleButtonUpdate(product)}>
                 <MdEditSquare size={30} className="text-green-500 hover:text-blue-500 duration-200" />
               </button>
+              {/* Delete */}
               <button onClick={() => handleDeleteProduct(product)}>
                 <MdDelete size={30} className="text-red-500 hover:text-slate-400 duration-200" />
               </button>
             </div>
           </td>
         </tr>
-      )
-    })
-  }
+      );
+    });
+  };
 
   return (
     <>
@@ -172,17 +164,17 @@ export default function AdminProducts() {
           {/* Pagination */}
           <div className="absolute bottom-24  flex items-center gap-x-3 mt-5 ml-3">
             <button
-              disabled={!pagination.hasPrevPage}
+              disabled={!pagination?.isPrev}
               onClick={goToPrevPage}
               className="px-2 py-1 bg-blue-500 font-semibold text-white rounded-lg cursor-pointer hover:outline-none hover:ring-2 hover:ring-blue-500 hover:text-blue-500 hover:bg-white duration-300 disabled:bg-slate-500 disabled:cursor-not-allowed disabled:text-white disabled:ring-0"
             >
               Prev
             </button>
             <p className="px-3 py-1 ring-2 ring-slate-300 rounded-lg font-semibold text-slate-400">
-              {pagination.currPage}
+              {pagination?.page}
             </p>
             <button
-              disabled={!pagination.hasNextPage}
+              disabled={!pagination?.isNext}
               onClick={goToNextPage}
               className="px-2 py-1 bg-blue-500 font-semibold text-white rounded-lg cursor-pointer hover:outline-none hover:ring-2 hover:ring-blue-500 hover:text-blue-500 hover:bg-white duration-300 disabled:bg-slate-500 disabled:cursor-not-allowed disabled:text-white disabled:ring-0"
             >
@@ -192,22 +184,14 @@ export default function AdminProducts() {
         </div>
 
         {/* Create */}
-        {modalCreate && (
-          <ModalCreateProduct onClose={() => setModalCreate(false)} refreshDataProduct={refetchProducts} />
-        )}
+        {modalCreate && <ModalCreateProduct onClose={() => setModalCreate(false)} />}
 
-        {/* Edit */}
-        {modalEdit && (
-          <ModalUpdateProduct
-            product={selectedProduct}
-            refreshDataProduct={refetchProducts}
-            onClose={() => setModalEdit(false)}
-          />
-        )}
+        {/* Update */}
+        {modalUpdate && <ModalUpdateProduct product={selectedProduct} onClose={() => setModalUpdate(false)} />}
 
         {/* Detail */}
         {modalDetail && <ModalDetailProduct product={selectedProduct} onClose={() => setModalDetail(false)} />}
       </section>
     </>
-  )
+  );
 }

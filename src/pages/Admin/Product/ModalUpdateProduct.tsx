@@ -1,49 +1,58 @@
-import { useState } from "react"
-import Modal from "../../../components/Admin/Modal"
-import { useCategory } from "../../CustomHooks/useCategory"
-import { useProducts } from "../../CustomHooks/useProduct"
-import { CustomAlert } from "../../../utils/CustomAlert"
-import { Product } from "../../../types"
+import { useState } from "react";
+import Modal from "../../../components/Admin/Modal";
+import { useCategory } from "../../CustomHooks/useCategory";
+import { useProducts } from "../../CustomHooks/useProduct";
+import { CustomAlert } from "../../../utils/CustomAlert";
+import { Product } from "../../../types/product.type";
+import { Errors } from "../../../types/common.type";
+import { AxiosError } from "axios";
 
 interface ModalUpdateProductProps {
-  product: Product | null
-  onClose: () => void
-  refreshDataProduct: () => void
+  product: Product | null;
+  onClose: () => void;
 }
 
-export default function ModalUpdateProduct({ product, onClose, refreshDataProduct }: ModalUpdateProductProps) {
-  const { categories } = useCategory()
-  const { updateProduct, hasError } = useProducts()
-  const findCategory = categories.find((item) => item.id === product?.category_id)
+export default function ModalUpdateProduct({ product, onClose }: ModalUpdateProductProps) {
+  const { categories } = useCategory();
+  const { updateProduct } = useProducts({});
+  const findCategory = categories?.find((item) => item.id === product?.category_id);
 
   // FORM State
-  const [formEditProduct, setFormEditProduct] = useState<Partial<Product>>({ id: product?.id })
+  const [formUpdateProduct, setFormUpdateProduct] = useState<Partial<Product>>({ id: product?.id });
+
+  // ERROR State
+  const [hasError, setHasError] = useState<Errors[]>([]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
-    const { name, value, type, files } = e.target as HTMLInputElement
+    const { name, value, type, files } = e.target as HTMLInputElement;
 
-    setFormEditProduct((prevState) => ({
+    setFormUpdateProduct((prevState) => ({
       ...prevState,
       [name]: type === "file" ? files?.[0] : value,
-    }))
-  }
+    }));
+  };
 
   const handleEditProduct = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
-
-    const response = await updateProduct(formEditProduct)
-
-    if (response?.success) {
-      CustomAlert("Success", "success", response?.message)
-      onClose()
-      await refreshDataProduct()
-    } else {
-      if (response?.message) {
-        setFormEditProduct({ id: product?.id })
-        CustomAlert("Error", "error", response?.message)
+    e.preventDefault();
+    updateProduct.mutate(
+      { productId: product!.id, payload: formUpdateProduct },
+      {
+        onSuccess: (data) => {
+          CustomAlert("success", "success", data?.message);
+          onClose();
+        },
+        onError: (error) => {
+          if (error instanceof AxiosError) {
+            const errors = error.response?.data.errors;
+            setHasError(errors);
+          } else {
+            console.log("handleUpdateProduct Error: ", error.message);
+            CustomAlert("error", "error", "internal server error, please try again later");
+          }
+        },
       }
-    }
-  }
+    );
+  };
 
   return (
     <Modal>
@@ -61,13 +70,13 @@ export default function ModalUpdateProduct({ product, onClose, refreshDataProduc
               id="name"
               placeholder="Input product name here"
               className={`h-[40px] rounded-lg px-5 focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                hasError && hasError.path === "name" ? "ring-2 ring-red-500" : "ring-1 ring-slate-300"
+                hasError && hasError[0]?.field === "name" ? "ring-2 ring-red-500" : "ring-1 ring-slate-300"
               }`}
-              value={formEditProduct?.name ?? product?.name ?? ""}
+              value={formUpdateProduct?.name ?? product?.name ?? ""}
               onChange={handleChange}
             />
-            {hasError && hasError.path === "name" && (
-              <p className="text-red-500 font-semibold tracking-wider ml-2">{hasError.message}</p>
+            {hasError && hasError[0]?.field === "name" && (
+              <p className="text-red-500 font-semibold tracking-wider ml-2">{hasError[0]?.message}</p>
             )}
           </div>
 
@@ -80,15 +89,16 @@ export default function ModalUpdateProduct({ product, onClose, refreshDataProduc
               name="category_id"
               id="category_id"
               className="h-[40px] pl-3 border border-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500 rounded-lg"
-              onChange={handleChange}>
+              onChange={handleChange}
+            >
               {/* Render Option */}
               <option value={product?.category_id}>{findCategory?.name}</option>
-              {categories.map((category) => {
+              {categories?.map((category) => {
                 return (
                   <option key={category.id} value={category.id}>
                     {category.name}
                   </option>
-                )
+                );
               })}
             </select>
           </div>
@@ -104,14 +114,14 @@ export default function ModalUpdateProduct({ product, onClose, refreshDataProduc
               id="price"
               placeholder="Input product price here"
               className={`h-[40px] rounded-lg px-5 focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                hasError && hasError.path === "price" ? "ring-2 ring-red-500" : "ring-1 ring-slate-300"
+                hasError && hasError[0]?.field === "price" ? "ring-2 ring-red-500" : "ring-1 ring-slate-300"
               }`}
-              value={formEditProduct.price ?? product?.price ?? 0}
+              value={formUpdateProduct.price ?? product?.price ?? 0}
               onChange={handleChange}
             />
 
-            {hasError && hasError.path === "price" && (
-              <p className="text-red-500 font-semibold tracking-wider ml-2">{hasError.message}</p>
+            {hasError && hasError[0]?.field === "price" && (
+              <p className="text-red-500 font-semibold tracking-wider ml-2">{hasError[0]?.message}</p>
             )}
           </div>
 
@@ -126,8 +136,9 @@ export default function ModalUpdateProduct({ product, onClose, refreshDataProduc
               placeholder="Add description product"
               className="border border-slate-300 rounded-lg px-5 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
               rows={4}
-              value={formEditProduct?.description ?? product?.description ?? ""}
-              onChange={handleChange}></textarea>
+              value={formUpdateProduct?.description ?? product?.description ?? ""}
+              onChange={handleChange}
+            ></textarea>
           </div>
 
           {/* Add Product Image*/}
@@ -139,11 +150,14 @@ export default function ModalUpdateProduct({ product, onClose, refreshDataProduc
           </div>
 
           {/* Button Submit */}
-          <button className="py-2 rounded-lg bg-green-500 text-white font-semibold text-lg tracking-wider mt-5 shadow-xl duration-300 hover:oulinte-none hover:ring-2 hover:ring-green-500 hover:text-green-500 hover:bg-white">
-            Edit Product
+          <button
+            disabled={updateProduct.isPending}
+            className="py-2 rounded-lg bg-green-500 text-white font-semibold text-lg tracking-wider mt-5 shadow-xl duration-300 hover:oulinte-none hover:ring-2 hover:ring-green-500 hover:text-green-500 hover:bg-white disabled:bg-gray-600 disabled:cursor-not-allowed"
+          >
+            {updateProduct.isPending ? "Updating product ..." : "Update Product"}
           </button>
         </form>
       </Modal.Body>
     </Modal>
-  )
+  );
 }

@@ -1,49 +1,52 @@
-import { useRef, useState } from "react"
-import { useCategory } from "../../CustomHooks/useCategory"
-import Modal from "../../../components/Admin/Modal"
-import { CustomAlert } from "../../../utils/CustomAlert"
-import { Category } from "../../../types"
+import { useState } from "react";
+import { useCategory } from "../../CustomHooks/useCategory";
+import Modal from "../../../components/Admin/Modal";
+import { CustomAlert } from "../../../utils/CustomAlert";
+import { Errors } from "../../../types/common.type";
+import { AxiosError } from "axios";
+import { Category } from "../../../types/category.type";
 
 type ModalCreateCategoryProps = {
-  onClose: () => void
-  refreshDataCategory: () => void
-}
+  onClose: () => void;
+};
 
-export default function ModalCreateCategory({ onClose, refreshDataCategory }: ModalCreateCategoryProps) {
-  const { createCategory, hasError } = useCategory()
-  const fileInputRef = useRef<HTMLInputElement>(null)
+export default function ModalCreateCategory({ onClose }: ModalCreateCategoryProps) {
+  const { createCategory } = useCategory();
 
   //  FORM State
-  const [formCreateCategory, setFormCreateCategory] = useState<Partial<Category>>({})
+  const [formCreateCategory, setFormCreateCategory] = useState<Partial<Category>>({});
+
+  // ERROR State
+  const [hasError, setHasError] = useState<Errors[]>([]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value, type, files } = e.target
+    const { name, value, type, files } = e.target;
 
     setFormCreateCategory((prevState) => ({
       ...prevState,
       [name]: type === "file" ? files?.[0] : value,
-    }))
-  }
+    }));
+  };
 
   // CREATE Category
   const handleCreateCategory = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
-    const result = await createCategory(formCreateCategory)
-
-    if (result?.success) {
-      CustomAlert("Success", "success", result?.message)
-      onClose()
-      await refreshDataCategory()
-    } else {
-      if (fileInputRef.current) {
-        fileInputRef.current.value = ""
-      }
-
-      if (result?.message) {
-        CustomAlert("Error", "error", result?.message)
-      }
-    }
-  }
+    e.preventDefault();
+    createCategory.mutate(formCreateCategory, {
+      onSuccess: (data) => {
+        CustomAlert("success", "success", data?.message);
+        onClose();
+      },
+      onError: (error) => {
+        if (error instanceof AxiosError) {
+          const errors = error?.response?.data.errors;
+          setHasError(errors);
+        } else {
+          CustomAlert("success", "success", "Internal server error, please try again later ...");
+          console.log("error create component: ", error);
+        }
+      },
+    });
+  };
 
   return (
     <Modal>
@@ -64,14 +67,14 @@ export default function ModalCreateCategory({ onClose, refreshDataCategory }: Mo
               onChange={handleChange}
               placeholder="Input category name here"
               className={`h-[40px]  rounded-lg px-5 focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                hasError && hasError.path === "name" ? "ring-2 ring-red-500" : "ring-1 ring-slate-300"
+                hasError && hasError[0]?.field === "name" ? "ring-2 ring-red-500" : "ring-1 ring-slate-300"
               }`}
             />
           </div>
 
-          {hasError && hasError.path === "name" && (
+          {hasError && hasError[0]?.field === "name" && (
             <div className="ml-2 -mt-2 tracking-wider text-red-500 font-semibold">
-              <p>{hasError.message}</p>
+              <p>{hasError[0]?.message}</p>
             </div>
           )}
 
@@ -80,14 +83,7 @@ export default function ModalCreateCategory({ onClose, refreshDataCategory }: Mo
             <label htmlFor="category_image" className="font-semibold text-slate-500 ml-1">
               Add Icon
             </label>
-            <input
-              type="file"
-              name="category_image"
-              id="category_image"
-              accept="image/*"
-              ref={fileInputRef}
-              onChange={handleChange}
-            />
+            <input type="file" name="category_image" id="category_image" accept="image/*" onChange={handleChange} />
           </div>
 
           {/* Button Submit */}
@@ -97,5 +93,5 @@ export default function ModalCreateCategory({ onClose, refreshDataCategory }: Mo
         </form>
       </Modal.Body>
     </Modal>
-  )
+  );
 }

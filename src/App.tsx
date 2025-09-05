@@ -1,50 +1,50 @@
-import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom"
+import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom";
 
 // Customer
-import Login from "./pages/Customer/Login"
-import Register from "./pages/Customer/Register"
-import Profile from "./pages/Customer/Profile"
-import UpdateProfile from "./pages/Customer/UpdateProfile"
-import Homepage from "./pages/Customer/Homepage"
-import Product from "./pages/Customer/Product"
-import StoreLocations from "./pages/Customer/StoreLocations"
-import Doctors from "./pages/Customer/Doctors"
-import DetailProduct from "./pages/Customer/DetailProduct"
-import SearchProduct from "./pages/Customer/SearchProduct"
-import Transactions from "./pages/Customer/Transaction"
-import DetailTransaction from "./pages/Customer/DetailTransaction"
-import Cart from "./pages/Customer/Cart"
-import FinishCheckout from "./pages/Customer/FinishCheckout"
-import { CustomerLayout } from "./layouts/CustomerLayout"
+import Login from "./pages/Customer/Login";
+import Register from "./pages/Customer/Register";
+import Profile from "./pages/Customer/Profile/Profile";
+import UpdateProfile from "./pages/Customer/Profile/UpdateProfile";
+import Homepage from "./pages/Customer/Homepage";
+import Product from "./pages/Customer/Product";
+import StoreLocations from "./pages/Customer/StoreLocations";
+import Doctors from "./pages/Customer/Doctors";
+import DetailProduct from "./pages/Customer/DetailProduct";
+import SearchProduct from "./pages/Customer/SearchProduct";
+import Transactions from "./pages/Customer/Transactions/Transaction";
+import DetailTransaction from "./pages/Customer/Transactions/DetailTransaction";
+import Cart from "./pages/Customer/Carts/Cart";
+import FinishCheckout from "./pages/Customer/FinishCheckout";
+import { CustomerLayout } from "./layouts/CustomerLayout";
 
 // Admin
-import AdminLogin from "./pages/Admin/AdminLogin"
-import AdminDashboard from "./pages/Admin/AdminDashboard"
-import AdminCategory from "./pages/Admin/Category/AdminCategory"
-import AdminProducts from "./pages/Admin/Product/AdminProducts"
-import AdminTransactions from "./pages/Admin//Transaction/AdminTransactions"
-import AdminCustomer from "./pages/Admin/Customer/AdminCustomer"
-import { AdminLayout } from "./layouts/AdminLayout"
+import AdminLogin from "./pages/Admin/AdminLogin";
+import AdminDashboard from "./pages/Admin/AdminDashboard";
+import AdminCategory from "./pages/Admin/Category/AdminCategory";
+import AdminProducts from "./pages/Admin/Product/AdminProducts";
+import AdminTransactions from "./pages/Admin//Transaction/AdminTransactions";
+import AdminCustomer from "./pages/Admin/Customer/AdminCustomer";
+import { AdminLayout } from "./layouts/AdminLayout";
 
 // Auth Context
-import { AuthContextProvider } from "./Auth/AuthContext"
-import { PrivateRoutesAdmin } from "./layouts/PrivateRoutesAdmin"
-import { PrivateRoutesCustomer } from "./layouts/PrivateRoutesCustomer"
-import { useEffect } from "react"
+import { AuthContextProvider } from "./Auth/AuthContext";
+import { PrivateRoutesAdmin } from "./layouts/PrivateRoutesAdmin";
+import { PrivateRoutesCustomer } from "./layouts/PrivateRoutesCustomer";
+import { useEffect } from "react";
 
 export default function App() {
   const DynamicTitle = () => {
-    const location = useLocation()
+    const location = useLocation();
     useEffect(() => {
       if (location.pathname.startsWith("/admin")) {
-        document.title = "Pharmakey Admin"
+        document.title = "Pharmakey Admin";
       } else {
-        document.title = "Pharmakey"
+        document.title = "Pharmakey";
       }
-    }, [location])
+    }, [location]);
 
-    return null
-  }
+    return null;
+  };
   return (
     <Router>
       <DynamicTitle />
@@ -99,5 +99,5 @@ export default function App() {
         </Routes>
       </AuthContextProvider>
     </Router>
-  )
+  );
 }

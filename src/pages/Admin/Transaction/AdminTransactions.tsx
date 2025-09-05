@@ -1,28 +1,35 @@
-import moment from "moment"
-import ModalTransactionDetail from "./ModalTransactionDetail"
-import { useState } from "react"
-import { useTransaction } from "../../CustomHooks/useTransaction"
-import { useCustomer } from "../../CustomHooks/useCustomer"
+import moment from "moment";
+import ModalTransactionDetail from "./ModalTransactionDetail";
+import { useState } from "react";
+import { useTransaction } from "../../CustomHooks/useTransaction";
+import { IsPaid, Transaction } from "../../../types/transaction.type";
+import { toRupiah } from "../../../utils/convertToRp";
 
 export default function AdminTransactions() {
-  const { transactions, getAllTransactions, pagination, goToPrevPage, goToNextPage } = useTransaction()
-  const { customers } = useCustomer()
-  const [modalTransactionDetail, setModalTransactionDetail] = useState<boolean>(false)
-  const [transactionId, setTransactionId] = useState<number | null>(null)
+  const { transactions, isLoading, pagination, goToPrevPage, goToNextPage } = useTransaction({ limit: 7 });
 
-  const handleModalTransactionDetail = (transactionId: number | null) => {
-    setTransactionId(transactionId)
-    setModalTransactionDetail(true)
-  }
+  const [modalTransactionDetail, setModalTransactionDetail] = useState<boolean>(false);
+
+  const [transaction, setTransaction] = useState<Transaction | null>(null);
+
+  const handleModalTransactionDetail = (transaction: Transaction | null) => {
+    setTransaction(transaction);
+    setModalTransactionDetail(true);
+  };
 
   const RenderTransactions = () => {
-    const baseNumber: number = (pagination.currPage - 1) * pagination.limit + 1
-    return transactions.map((transaction, index) => {
-      const rowNumber: number = baseNumber + index
-      // Find Email
-      const customerEmail = customers.find(
-        (customer) => customer.id === transaction.user_id && customer.role === "CUSTOMER"
-      )
+    if (!pagination) return;
+    const { page, limit } = pagination;
+
+    const baseNumber = (page - 1) * limit + 1;
+    return transactions?.map((transaction, index) => {
+      const rowNumber: number = baseNumber + index;
+      const paidStatusColor: Record<IsPaid, string> = {
+        [IsPaid.PENDING]: "bg-yellow-600",
+        [IsPaid.SUCCESS]: "bg-green-600",
+        [IsPaid.CANCELLED]: "bg-red-600",
+      };
+
       return (
         <tr
           key={index}
@@ -31,22 +38,23 @@ export default function AdminTransactions() {
           {/* Number */}
           <td className="text-lg text-white font-bold py-4">{rowNumber}</td>
           {/* Email */}
-          <td className="text-lg  py-4">{customerEmail?.email}</td>
+          <td className="text-lg  py-4">{transaction.customer.email}</td>
 
           {/* Total Price */}
           <td
             scope="row"
             className="text-lg tracking-widest py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
           >
-            {transaction.total_amount.toLocaleString("id-ID", {
-              style: "currency",
-              currency: "IDR",
-              minimumFractionDigits: 0,
-            })}
+            {toRupiah(transaction.billing.total_amount)}
           </td>
 
-          {/* Date */}
-          <td className="text-lg  py-4">{moment(transaction.created_at).format("DD-MM-YYYY")}</td>
+          {/* Checkout Date */}
+          <td className="text-lg  py-4">{moment(transaction.created_at).format("HH:mm - DD/MM/YYYY")}</td>
+
+          {/* Payment Method */}
+          <td className={`my-3 p-2 tracking-wider text-white font-semibold inline-block rounded-lg uppercase `}>
+            {transaction.billing.payment_method}
+          </td>
 
           {/* Proof status */}
           <td>
@@ -62,11 +70,7 @@ export default function AdminTransactions() {
           {/* Status */}
           <td
             className={`my-3 p-2 tracking-wider text-white font-semibold inline-block rounded-lg uppercase ${
-              transaction.is_paid === "PENDING"
-                ? "bg-yellow-600"
-                : transaction.is_paid === "SUCCESS"
-                ? "bg-green-600"
-                : "bg-red-500"
+              paidStatusColor[transaction.is_paid as IsPaid]
             }`}
           >
             {transaction.is_paid}
@@ -75,16 +79,16 @@ export default function AdminTransactions() {
           {/* Button Detail */}
           <td className="text-lg  py-4">
             <button
-              onClick={() => handleModalTransactionDetail(transaction.id || null)}
+              onClick={() => handleModalTransactionDetail(transaction)}
               className="font-medium tracking-wider text-blue-500 hover:underline hover:text-white"
             >
               Detail
             </button>
           </td>
         </tr>
-      )
-    })
-  }
+      );
+    });
+  };
 
   return (
     <>
@@ -109,6 +113,9 @@ export default function AdminTransactions() {
                     Checkout Date
                   </th>
                   <th scope="col" className="py-3">
+                    Payment
+                  </th>
+                  <th scope="col" className="py-3">
                     Proof Status
                   </th>
                   <th scope="col" className="py-3">
@@ -121,7 +128,7 @@ export default function AdminTransactions() {
               </thead>
               <tbody>
                 {/* If No Transctions */}
-                {transactions.length === 0 && (
+                {transactions?.length === 0 && (
                   <tr>
                     <td colSpan={7} className="text-center font-semibold text-slate-600 text-xl py-5">
                       No Transactions found
@@ -130,7 +137,15 @@ export default function AdminTransactions() {
                 )}
 
                 {/* Render Transactions */}
-                <RenderTransactions />
+                {isLoading ? (
+                  <tr>
+                    <td colSpan={6} className="text-center py-4">
+                      loading data transactions ...
+                    </td>
+                  </tr>
+                ) : (
+                  <RenderTransactions />
+                )}
               </tbody>
             </table>
           </div>
@@ -138,17 +153,17 @@ export default function AdminTransactions() {
           {/* Pagination */}
           <div className="absolute bottom-24  flex items-center gap-x-3 mt-5 ml-3">
             <button
-              disabled={!pagination.hasPrevPage}
+              disabled={!pagination?.isPrev}
               onClick={goToPrevPage}
               className="px-2 py-1 bg-blue-500 font-semibold text-white rounded-lg cursor-pointer hover:outline-none hover:ring-2 hover:ring-blue-500 hover:text-blue-500 hover:bg-white duration-300 disabled:bg-slate-500 disabled:cursor-not-allowed disabled:text-white disabled:ring-0"
             >
               Prev
             </button>
             <p className="px-3 py-1 ring-2 ring-slate-300 rounded-lg font-semibold text-slate-400">
-              {pagination.currPage}
+              {pagination?.page}
             </p>
             <button
-              disabled={!pagination.hasNextPage}
+              disabled={!pagination?.isNext}
               onClick={goToNextPage}
               className="px-2 py-1 bg-blue-500 font-semibold text-white rounded-lg cursor-pointer hover:outline-none hover:ring-2 hover:ring-blue-500 hover:text-blue-500 hover:bg-white duration-300 disabled:bg-slate-500 disabled:cursor-not-allowed disabled:text-white disabled:ring-0"
             >
@@ -156,14 +171,10 @@ export default function AdminTransactions() {
             </button>
           </div>
         </div>
-        {modalTransactionDetail && transactionId !== null && (
-          <ModalTransactionDetail
-            transactionId={transactionId}
-            onClose={() => setModalTransactionDetail(false)}
-            refreshDataTransactions={getAllTransactions}
-          />
+        {modalTransactionDetail && transaction !== null && (
+          <ModalTransactionDetail transaction={transaction} onClose={() => setModalTransactionDetail(false)} />
         )}
       </section>
     </>
-  )
+  );
 }

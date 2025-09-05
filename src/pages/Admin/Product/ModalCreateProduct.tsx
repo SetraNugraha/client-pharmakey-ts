@@ -1,68 +1,73 @@
-import { useEffect, useRef, useState } from "react"
-import Modal from "../../../components/Admin/Modal"
-import { useCategory } from "../../CustomHooks/useCategory"
-import { useProducts } from "../../CustomHooks/useProduct"
-import { CustomAlert } from "../../../utils/CustomAlert"
-import { Product } from "../../../types"
+import { useEffect, useRef, useState } from "react";
+import Modal from "../../../components/Admin/Modal";
+import { useCategory } from "../../CustomHooks/useCategory";
+import { useProducts } from "../../CustomHooks/useProduct";
+import { CustomAlert } from "../../../utils/CustomAlert";
+import { ICreateProduct } from "../../../types/product.type";
+import { Errors } from "../../../types/common.type";
+import { AxiosError } from "axios";
 
 interface ModalCreateProductProps {
-  onClose: () => void
-  refreshDataProduct: () => void
+  onClose: () => void;
 }
 
-export default function ModalCreateProduct({ onClose, refreshDataProduct }: ModalCreateProductProps) {
-  const { categories } = useCategory()
-  const { createProduct, hasError } = useProducts()
-  const produtImageRef = useRef<HTMLInputElement>(null)
-  const nameInputRef = useRef<HTMLInputElement>(null)
-  const priceInputRef = useRef<HTMLInputElement>(null)
-  const nameError = hasError?.path === "name"
-  const priceError = hasError?.path === "price"
+export default function ModalCreateProduct({ onClose }: ModalCreateProductProps) {
+  const { createProduct } = useProducts({});
+  const { categories } = useCategory();
+  const produtImageRef = useRef<HTMLInputElement>(null);
+  const nameInputRef = useRef<HTMLInputElement>(null);
+  const priceInputRef = useRef<HTMLInputElement>(null);
+
+  // ERROR State
+  const [hasError, setHasError] = useState<Errors[]>([]);
+  const nameError = hasError[0]?.field === "name";
+  const priceError = hasError[0]?.field === "price";
 
   // Form
-  const [formCreateProduct, setFormCreateProduct] = useState<Partial<Product>>({})
+  const [formCreateProduct, setFormCreateProduct] = useState<Partial<ICreateProduct>>({});
 
   // Handle Input Error
   useEffect(() => {
     const isInputError = (ref: React.RefObject<HTMLInputElement>, hasError: boolean) => {
       if (ref.current) {
-        ref.current.classList.toggle("ring-2", hasError)
-        ref.current.classList.toggle("ring-red-500", hasError)
-        ref.current.classList.toggle("ring-slate-300", !hasError)
+        ref.current.classList.toggle("ring-2", hasError);
+        ref.current.classList.toggle("ring-red-500", hasError);
+        ref.current.classList.toggle("ring-slate-300", !hasError);
       }
-    }
+    };
 
-    isInputError(nameInputRef, hasError?.path === "name")
-    isInputError(priceInputRef, hasError?.path === "price")
-  }, [hasError])
+    isInputError(nameInputRef, hasError[0]?.field === "name");
+    isInputError(priceInputRef, hasError[0]?.field === "price");
+  }, [hasError]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
-    const { name, value, type, files } = e.target as HTMLInputElement
+    const { name, value, type, files } = e.target as HTMLInputElement;
 
     setFormCreateProduct((prevState) => ({
       ...prevState,
       [name]: type === "file" ? files?.[0] : value,
-    }))
-  }
+    }));
+  };
 
   const handleCreateProduct = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
-    const response = await createProduct(formCreateProduct)
+    e.preventDefault();
 
-    if (response?.success) {
-      CustomAlert("Succes", "success", response?.message)
-      onClose()
-      await refreshDataProduct()
-    } else {
-      if (produtImageRef.current) {
-        produtImageRef.current.value = ""
-      }
-
-      if (response?.message) {
-        CustomAlert("Error", "error", response?.message)
-      }
-    }
-  }
+    createProduct.mutate(formCreateProduct as ICreateProduct, {
+      onSuccess: (data) => {
+        CustomAlert("success", "success", data?.message);
+        onClose();
+      },
+      onError: (error) => {
+        if (error instanceof AxiosError) {
+          const errors = error?.response?.data.errors;
+          setHasError(errors);
+        } else {
+          console.log("HandleCreateProduct Error: ", error.message);
+          CustomAlert("error", "error", "Internal server error, please try again later");
+        }
+      },
+    });
+  };
 
   return (
     <Modal>
@@ -85,7 +90,9 @@ export default function ModalCreateProduct({ onClose, refreshDataProduct }: Moda
               value={formCreateProduct.name || ""}
               onChange={handleChange}
             />
-            {nameError && <span className="text-red-500 tracking-wider font=semibold ml-2">{hasError.message}</span>}
+            {nameError && (
+              <span className="text-red-500 tracking-wider font=semibold ml-2">{hasError[0]?.message}</span>
+            )}
           </div>
 
           {/* Select Category */}
@@ -99,9 +106,10 @@ export default function ModalCreateProduct({ onClose, refreshDataProduct }: Moda
               id="category"
               className="h-[40px] pl-3 border border-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500 rounded-lg"
               value={formCreateProduct.category_id || ""}
-              onChange={handleChange}>
+              onChange={handleChange}
+            >
               <option value={""}>--- Select Category ----</option>
-              {categories.map((category) => (
+              {categories?.map((category) => (
                 <option key={category.id} value={category.id}>
                   {category.name}
                 </option>
@@ -127,7 +135,9 @@ export default function ModalCreateProduct({ onClose, refreshDataProduct }: Moda
             />
 
             {/* Validation Error */}
-            {priceError && <span className="text-red-500 tracking-wider font=semibold ml-2">{hasError.message}</span>}
+            {priceError && (
+              <span className="text-red-500 tracking-wider font=semibold ml-2">{hasError[0]?.message}</span>
+            )}
           </div>
 
           {/* Product Description */}
@@ -142,7 +152,8 @@ export default function ModalCreateProduct({ onClose, refreshDataProduct }: Moda
               rows={4}
               className="border border-slate-300 rounded-lg px-5 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
               value={formCreateProduct.description || ""}
-              onChange={handleChange}></textarea>
+              onChange={handleChange}
+            ></textarea>
           </div>
 
           {/* Add Product Image*/}
@@ -167,5 +178,5 @@ export default function ModalCreateProduct({ onClose, refreshDataProduct }: Moda
         </form>
       </Modal.Body>
     </Modal>
-  )
+  );
 }

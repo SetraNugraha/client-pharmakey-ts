@@ -1,40 +1,40 @@
-import { useState } from "react"
-import { useNavigate } from "react-router-dom"
-import { useAuth } from "../../Auth/useAuth"
-import { CustomAlert } from "../../utils/CustomAlert"
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../Auth/useAuth";
+import { CustomAlert } from "../../utils/CustomAlert";
 
 interface loginFormData {
-  email: string
-  password: string
+  email: string;
+  password: string;
 }
 
 export default function AdminLogin() {
-  const { loginAdmin, hasError, isLoading } = useAuth()
-  const navigate = useNavigate()
+  const { loginAdmin, hasError, isLoading } = useAuth();
+  const navigate = useNavigate();
   const [loginForm, setLoginForm] = useState<loginFormData>({
     email: "",
     password: "",
-  })
+  });
 
   const handleLoginAdmin = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
+    e.preventDefault();
 
     try {
-      const loginAdminResult = await loginAdmin(loginForm)
+      const loginAdminResult = await loginAdmin(loginForm);
 
       if (loginAdminResult && loginAdminResult.userId) {
         setLoginForm({
           email: "",
           password: "",
-        })
+        });
 
-        navigate("/admin/dashboard")
-        CustomAlert("Login Success", "success", `Welcome Admin ${loginAdminResult.username}`)
+        navigate("/admin/dashboard");
+        CustomAlert("Login Success", "success", `Welcome Admin ${loginAdminResult.username}`);
       }
     } catch (error) {
-      console.error("auth login context: ", error)
+      console.error("auth login context: ", error);
     }
-  }
+  };
 
   return (
     <>
@@ -54,8 +54,16 @@ export default function AdminLogin() {
                 onChange={(e) => setLoginForm({ ...loginForm, email: e.target.value })}
                 value={loginForm.email || ""}
                 required
-                className="h-[35px] border border-slate-300 rounded-lg px-5 focus:outline-none focus:border-[2px] focus:border-blue-500"
+                className={`h-[35px] border border-slate-300 rounded-lg px-5 focus:outline-none focus:border-[2px] focus:border-blue-500 ${
+                  hasError[0]?.field === "email" && "border-1 border-red-500"
+                }`}
               />
+
+              {hasError && hasError[0]?.field === "email" && (
+                <div>
+                  <p className="text-red-500 tracking-wider">{hasError[0]?.message}</p>
+                </div>
+              )}
             </div>
 
             {/* Password */}
@@ -70,11 +78,15 @@ export default function AdminLogin() {
                 onChange={(e) => setLoginForm({ ...loginForm, password: e.target.value })}
                 value={loginForm.password || ""}
                 required
-                className="h-[35px] border border-slate-300 rounded-lg px-5 focus:outline-none focus:border-[2px] focus:border-blue-500"
+                className={`h-[35px] border border-slate-300 rounded-lg px-5 focus:outline-none focus:border-[2px] focus:border-blue-500 ${
+                  hasError[0]?.field === "password" && "border-1 border-red-500"
+                }`}
               />
-              {hasError && (
+
+              {/* ERROR MESSAGE */}
+              {hasError && hasError[0]?.field === "password" && (
                 <div>
-                  <p className="text-red-500 tracking-wider">{hasError.message}</p>
+                  <p className="text-red-500 tracking-wider">{hasError[0]?.message}</p>
                 </div>
               )}
             </div>
@@ -82,12 +94,13 @@ export default function AdminLogin() {
             {/* Button Login */}
             <button
               disabled={isLoading}
-              className="py-2 bg-blue-500 text-white tracking-wider font-semibold rounded-lg shadow-xl mt-5 text-lg hover:oulinte-none hover:ring-2 hover:ring-blue-500 hover:text-blue-500 hover:bg-white duration-200">
+              className="py-2 bg-blue-500 text-white tracking-wider font-semibold rounded-lg shadow-xl mt-5 text-lg hover:oulinte-none hover:ring-2 hover:ring-blue-500 hover:text-blue-500 hover:bg-white duration-200 disabled:bg-gray-500 disabled:cursor-not-allowed disabled:text-white disabled:ring-none"
+            >
               {isLoading ? "Process Authentication" : "Login"}
             </button>
           </form>
         </div>
       </section>
     </>
-  )
+  );
 }

@@ -1,19 +1,15 @@
-import Swal from "sweetalert2"
+import Swal from "sweetalert2";
 
-type IconType = "success" | "question" | "warning" | "error"
+type type = "success" | "question" | "warning" | "error";
 
-export const CustomAlert = (
-  title: string,
-  icon: IconType,
-  message?: string,
-) => {
+export const CustomAlert = (title: string, icon: type, message?: string) => {
   Swal.fire({
     icon: icon,
     title: title,
     text: message,
     confirmButtonText: "Yes",
-  })
-}
+  });
+};
 
 export const CustomAlertConfirm = async (title: string): Promise<boolean> => {
   return Swal.fire({
@@ -23,5 +19,5 @@ export const CustomAlertConfirm = async (title: string): Promise<boolean> => {
     confirmButtonColor: "#3085d6",
     cancelButtonColor: "#d33",
     confirmButtonText: "Yes",
-  }).then((result) => result.isConfirmed)
-}
+  }).then((result) => result.isConfirmed);
+};

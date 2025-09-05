@@ -1,69 +1,60 @@
-import { useState } from "react"
-import Modal from "../../../components/Admin/Modal"
-import { CustomAlert } from "../../../utils/CustomAlert"
-import { useCustomer } from "../../CustomHooks/useCustomer"
-
-type FormCreateCustomer = {
-  username: string
-  email: string
-  password: string
-  confirmPassword: string
-  role: string
-}
+import { useState } from "react";
+import Modal from "../../../components/Admin/Modal";
+import { CustomAlert } from "../../../utils/CustomAlert";
+import { useCustomer } from "../../CustomHooks/useCustomer";
+import { IRegisterCustomer, Role } from "../../../types/auth.type";
+import { Errors } from "../../../types/common.type";
+import { AxiosError } from "axios";
 
 type ModalCreateCustomerProps = {
-  onClose: () => void
-  refreshDataCustomer: () => void
-}
+  onClose: () => void;
+};
 
-export default function ModalCreateCustomer({ onClose, refreshDataCustomer }: ModalCreateCustomerProps) {
-  const { createCustomer, hasError } = useCustomer()
+export default function ModalCreateCustomer({ onClose }: ModalCreateCustomerProps) {
+  const { registerCustomer } = useCustomer();
+  const [hasError, setHasError] = useState<Errors[]>([]);
 
   // Form Create Customer
-  const [formCreateCustomer, setFormCreateCustomer] = useState<FormCreateCustomer>({
+  const [formCreateCustomer, setFormCreateCustomer] = useState<IRegisterCustomer>({
     username: "",
     email: "",
     password: "newcustomer",
     confirmPassword: "newcustomer",
-    role: "CUSTOMER",
-  })
+    role: Role.CUSTOMER,
+  });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target
+    const { name, value } = e.target;
 
     setFormCreateCustomer((prevState) => ({
       ...prevState,
       [name]: value,
-    }))
-  }
+    }));
+  };
 
-  const handleCreateCustomer = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
-    const result = await createCustomer(formCreateCustomer)
-
-    if (result.success) {
-      setFormCreateCustomer({
-        username: "",
-        email: "",
-        password: "newcustomer",
-        confirmPassword: "newcustomer",
-        role: "CUSTOMER",
-      })
-      CustomAlert("Succes", "success", result.message)
-      onClose()
-      await refreshDataCustomer()
-    } else {
-      if (result.message) {
-        CustomAlert("Error", "error", result.message)
-      }
-    }
-  }
+  const handleRegisterCustomer = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    registerCustomer.mutate(formCreateCustomer, {
+      onSuccess: (data) => {
+        CustomAlert("success", "success", data?.message);
+        onClose();
+      },
+      onError: (error) => {
+        if (error instanceof AxiosError) {
+          const errors = error.response?.data.errors;
+          setHasError(errors);
+        } else {
+          CustomAlert("error", "error", "Internal server error, please try again later.");
+        }
+      },
+    });
+  };
 
   return (
     <Modal>
       <Modal.Header title="Create New Customer Account" onClose={onClose} />
       <Modal.Body>
-        <form onSubmit={handleCreateCustomer} className="w-[500px] flex flex-col gap-y-3">
+        <form onSubmit={handleRegisterCustomer} className="w-[500px] flex flex-col gap-y-3">
           {/* Username */}
           <div className="flex flex-col gap-y-2">
             <label htmlFor="username" className="font-semibold text-slate-500 ml-1">
@@ -91,16 +82,16 @@ export default function ModalCreateCustomer({ onClose, refreshDataCustomer }: Mo
               type="text"
               name="email"
               id="email"
-              placeholder="Input your Email here"
+              placeholder="Input Email here"
               className={`h-[40px]  rounded-lg px-5 focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                hasError && hasError.path === "email" ? "ring-2 ring-red-500" : "ring-1 ring-slate-300"
+                hasError && hasError[0]?.field === "email" ? "ring-2 ring-red-500" : "ring-1 ring-slate-300"
               }`}
               value={formCreateCustomer.email || ""}
               onChange={handleChange}
             />
 
-            {hasError && hasError.path === "email" && (
-              <p className="text-red-500 text-semibold tracking-wider ml-2">{hasError.message}</p>
+            {hasError && hasError[0]?.field === "email" && (
+              <p className="text-red-500 text-semibold tracking-wider ml-2">{hasError[0].message}</p>
             )}
           </div>
 
@@ -143,5 +134,5 @@ export default function ModalCreateCustomer({ onClose, refreshDataCustomer }: Mo
         </form>
       </Modal.Body>
     </Modal>
-  )
+  );
 }

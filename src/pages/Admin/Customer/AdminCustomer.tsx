@@ -1,50 +1,54 @@
-import { MdDelete, MdLibraryAdd } from "react-icons/md"
-import { IoListCircleSharp } from "react-icons/io5"
-import { useCustomer } from "../../CustomHooks/useCustomer"
-import ModalCreateCustomer from "./ModalCreateCustomer"
-import ModalDetailCustomer from "./ModalDetailCustomer"
-import { CustomAlert, CustomAlertConfirm } from "../../../utils/CustomAlert"
-import { useState } from "react"
-import { Customer } from "../../../types"
-import { getImageUrl } from "../../../utils/getImageUrl"
+import { MdDelete, MdLibraryAdd } from "react-icons/md";
+import { IoListCircleSharp } from "react-icons/io5";
+import { useCustomer } from "../../CustomHooks/useCustomer";
+import ModalCreateCustomer from "./ModalCreateCustomer";
+import ModalDetailCustomer from "./ModalDetailCustomer";
+import { CustomAlert, CustomAlertConfirm } from "../../../utils/CustomAlert";
+import { useState } from "react";
+import { Customer } from "../../../types/customer.type";
+import { getImageUrl } from "../../../utils/getImageUrl";
 
 export default function AdminCustomer() {
-  const { getAllCustomer, deleteCustomer, customers, isLoading, pagination, goToNextPage, goToPrevPage } = useCustomer()
-  const [modalCreate, setModalCreate] = useState<boolean>(false)
-  const [modalDetail, setModalDetail] = useState<boolean>(false)
-  const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(null)
+  const { customers, isLoading, pagination, goToNextPage, goToPrevPage, deleteCustomer } = useCustomer();
+  const [modalCreate, setModalCreate] = useState<boolean>(false);
+  const [modalDetail, setModalDetail] = useState<boolean>(false);
+  const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(null);
 
   const handleButtonlDetail = (customer: Customer) => {
-    setSelectedCustomer(customer)
-    setModalDetail(true)
-  }
+    setSelectedCustomer(customer);
+    setModalDetail(true);
+  };
 
   const handleDeleteCustomer = async (customer: Customer) => {
-    const customerId = customer.id ? customer.id : null
-    const title = `Are you sure want to delete account ${customer.username} ?`
-    const isConfirm = await CustomAlertConfirm(title)
+    const title = `Are you sure want to delete account ${customer.username} ?`;
+    const isConfirm = await CustomAlertConfirm(title);
 
     if (isConfirm) {
-      const response = await deleteCustomer(customerId)
-
-      if (response.success) {
-        CustomAlert("Success", "success", response.message)
-        await getAllCustomer()
-      } else {
-        CustomAlert("Error", "error", response)
-      }
+      deleteCustomer.mutate(customer.id, {
+        onSuccess: (data) => {
+          CustomAlert("Success", "success", data.message);
+        },
+        onError: (error: any) => {
+          CustomAlert(
+            "Error",
+            "error",
+            error.response?.data.message || "Internal server error, please try again later."
+          );
+        },
+      });
     } else {
-      CustomAlert("Cancel", "error", "Delete Cancelled")
+      CustomAlert("Cancel", "error", "Delete Cancelled");
     }
-  }
+  };
 
   const RenderCustomer = () => {
-    return customers.map((customer) => {
-      const customerImage = getImageUrl("customers", customer.profile_image)
+    return customers?.map((customer) => {
+      const customerImage = getImageUrl("customers", customer.profile_image);
       return (
         <tr
           key={customer.id}
-          className="w-full bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
+          className="w-full bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600"
+        >
           {/* Profile Image */}
           <td className="py-3 flex justify-center items-cente">
             <img src={customerImage} alt="image-product" className="size-16 rounded-full" />
@@ -80,9 +84,9 @@ export default function AdminCustomer() {
             </div>
           </td>
         </tr>
-      )
-    })
-  }
+      );
+    });
+  };
 
   return (
     <>
@@ -94,7 +98,8 @@ export default function AdminCustomer() {
           {/* Button Create Customer */}
           <button
             onClick={() => setModalCreate(true)}
-            className="px-3 py-2 bg-blue-500 text-white font-semibold rounded-lg hover:bg-white hover:text-blue-500 hover:outline-none hover:ring-2 hover:ring-blue-500 duration-300 mb-5 flex items-center gap-x-2 shadow-lg shadow-gray-300">
+            className="px-3 py-2 bg-blue-500 text-white font-semibold rounded-lg hover:bg-white hover:text-blue-500 hover:outline-none hover:ring-2 hover:ring-blue-500 duration-300 mb-5 flex items-center gap-x-2 shadow-lg shadow-gray-300"
+          >
             <span>
               <MdLibraryAdd size={22} />
             </span>
@@ -139,31 +144,31 @@ export default function AdminCustomer() {
           {/* Pagination */}
           <div className="absolute bottom-24  flex items-center gap-x-3 mt-5 ml-3">
             <button
-              disabled={!pagination.hasPrevPage}
+              disabled={!pagination?.isPrev}
               onClick={goToPrevPage}
-              className="px-2 py-1 bg-blue-500 font-semibold text-white rounded-lg cursor-pointer hover:outline-none hover:ring-2 hover:ring-blue-500 hover:text-blue-500 hover:bg-white duration-300 disabled:bg-slate-500 disabled:cursor-not-allowed disabled:text-white disabled:ring-0">
+              className="px-2 py-1 bg-blue-500 font-semibold text-white rounded-lg cursor-pointer hover:outline-none hover:ring-2 hover:ring-blue-500 hover:text-blue-500 hover:bg-white duration-300 disabled:bg-slate-500 disabled:cursor-not-allowed disabled:text-white disabled:ring-0"
+            >
               Prev
             </button>
             <p className="px-3 py-1 ring-2 ring-slate-300 rounded-lg font-semibold text-slate-400">
-              {pagination.currPage}
+              {pagination?.page}
             </p>
             <button
-              disabled={!pagination.hasNextPage}
+              disabled={!pagination?.isNext}
               onClick={goToNextPage}
-              className="px-2 py-1 bg-blue-500 font-semibold text-white rounded-lg cursor-pointer hover:outline-none hover:ring-2 hover:ring-blue-500 hover:text-blue-500 hover:bg-white duration-300 disabled:bg-slate-500 disabled:cursor-not-allowed disabled:text-white disabled:ring-0">
+              className="px-2 py-1 bg-blue-500 font-semibold text-white rounded-lg cursor-pointer hover:outline-none hover:ring-2 hover:ring-blue-500 hover:text-blue-500 hover:bg-white duration-300 disabled:bg-slate-500 disabled:cursor-not-allowed disabled:text-white disabled:ring-0"
+            >
               Next
             </button>
           </div>
         </div>
 
         {/* Create */}
-        {modalCreate && (
-          <ModalCreateCustomer onClose={() => setModalCreate(false)} refreshDataCustomer={getAllCustomer} />
-        )}
+        {modalCreate && <ModalCreateCustomer onClose={() => setModalCreate(false)} />}
 
         {/* Detail */}
         {modalDetail && <ModalDetailCustomer customer={selectedCustomer} onClose={() => setModalDetail(false)} />}
       </section>
     </>
-  )
+  );
 }

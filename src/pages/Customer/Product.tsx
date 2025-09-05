@@ -1,26 +1,22 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { Link } from "react-router-dom"
-import { SearchInput } from "../../components/Customer/SearchInput"
-import { Navbar } from "../../components/Customer/Navbar"
-import { useProducts } from "../CustomHooks/useProduct"
-import { getImageUrl } from "../../utils/getImageUrl"
-import { useEffect } from "react"
+import { Link } from "react-router-dom";
+import { SearchInput } from "../../components/Customer/SearchInput";
+import { Navbar } from "../../components/Customer/Navbar";
+import { useProducts } from "../CustomHooks/useProduct";
+import { getImageUrl } from "../../utils/getImageUrl";
 
 export default function Product() {
-  const { products, isLoading, getAllProducts } = useProducts()
-
-  useEffect(() => {
-    getAllProducts(1, 10)
-  }, [])
+  const { products, isLoading } = useProducts({});
 
   const RenderProducts = () => {
-    return products.map((product) => {
-      const productImage = getImageUrl("products", product.product_image)
+    return products?.map((product) => {
+      const productImage = getImageUrl("products", product.product_image);
       return (
         <Link
           to={`/detail-product/${product.slug}/${product.id}`}
           key={product.id}
-          className="py-5 px-4 bg-white border border-slate-200 rounded-[16px] shrink-0 shadow-lg shadow-gray-300 hover:bg-[#FD915A] transition-all duration-300 ease-in-out group">
+          className="py-5 px-4 bg-white border border-slate-200 rounded-[16px] shrink-0 shadow-lg shadow-gray-300 hover:bg-[#FD915A] transition-all duration-300 ease-in-out group"
+        >
           {/* Card Products */}
           <div className="grid grid-cols-1 place-items-center place-content-center h-full gap-y-2">
             {/* Image */}
@@ -37,9 +33,9 @@ export default function Product() {
             </div>
           </div>
         </Link>
-      )
-    })
-  }
+      );
+    });
+  };
 
   return (
     <>
@@ -49,7 +45,8 @@ export default function Product() {
           {/* Back Button */}
           <Link
             to="/"
-            className="p-2 bg-white flex justify-center items-center rounded-full ring-1 ring-black hover:ring-0 hover:bg-red-500 transition-all duration-200 ease-in-out group">
+            className="p-2 bg-white flex justify-center items-center rounded-full ring-1 ring-black hover:ring-0 hover:bg-red-500 transition-all duration-200 ease-in-out group"
+          >
             <img
               src="assets/img/arrow-left.png"
               alt="back-button"
@@ -73,13 +70,15 @@ export default function Product() {
           <div className="text-white font-semibold flex items-center justify-between gap-x-3 mt-3 ">
             <Link
               to={"/doctors"}
-              className="py-2 px-3 rounded-xl flex-grow bg-green-500 flex items-center justify-center gap-x-2 shadow-lg shadow-gray-300 hover:bg-[#FD915A] duration-300">
+              className="py-2 px-3 rounded-xl flex-grow bg-green-500 flex items-center justify-center gap-x-2 shadow-lg shadow-gray-300 hover:bg-[#FD915A] duration-300"
+            >
               <img src="assets/img/doctor-white.svg" alt="doctor" className="text-white h-[30px]" />
               Consult with doctor
             </Link>
             <Link
               to={"/store"}
-              className="py-2 px-3 rounded-xl flex-grow bg-yellow-500 flex items-center justify-center gap-x-2 shadow-lg shadow-gray-300 hover:bg-[#FD915A] duration-300">
+              className="py-2 px-3 rounded-xl flex-grow bg-yellow-500 flex items-center justify-center gap-x-2 shadow-lg shadow-gray-300 hover:bg-[#FD915A] duration-300"
+            >
               <img src="assets/img/maps-white.svg" alt="maps" className="text-white h-[30px]" />
               Store location
             </Link>
@@ -104,5 +103,5 @@ export default function Product() {
         <Navbar />
       </section>
     </>
-  )
+  );
 }

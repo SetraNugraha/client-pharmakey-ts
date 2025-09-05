@@ -1,24 +1,20 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { Link } from "react-router-dom"
-import { useProducts } from "../../pages/CustomHooks/useProduct"
-import { getImageUrl } from "../../utils/getImageUrl"
-import { useEffect } from "react"
+import { Link } from "react-router-dom";
+import { useProducts } from "../../pages/CustomHooks/useProduct";
+import { getImageUrl } from "../../utils/getImageUrl";
 
 export const MostPurchased = () => {
-  const { products, isLoading, getAllProducts } = useProducts()
-
-  useEffect(() => {
-    getAllProducts(1, 3)
-  }, [])
+  const { products, isLoading } = useProducts({ limit: 4 });
 
   const RenderMostPurchasedProduct = () => {
-    return products.map((product) => {
-      const productImage = getImageUrl("products", product.product_image)
+    return products?.map((product) => {
+      const productImage = getImageUrl("products", product.product_image);
       return (
         <Link
           to={`/detail-product/${product.slug}/${product.id}`}
           key={product.id}
-          className="flex items-center justify-between gap-x-2 px-5 py-3 bg-white rounded-[16px] shrink-0 hover:bg-[#FD915A] transition-all duration-300 ease-in-out group">
+          className="flex items-center justify-between gap-x-2 px-5 py-3 bg-white rounded-[16px] shrink-0 hover:bg-[#FD915A] transition-all duration-300 ease-in-out group"
+        >
           {/* Products */}
           <div className="flex items-center  gap-x-3">
             <img src={productImage} alt="product-image" className="w-[70px] h-[70px] object-contain" />
@@ -39,9 +35,9 @@ export const MostPurchased = () => {
             />
           </div>
         </Link>
-      )
-    })
-  }
+      );
+    });
+  };
 
   return (
     <>
@@ -57,5 +53,5 @@ export const MostPurchased = () => {
         </div>
       </div>
     </>
-  )
-}
+  );
+};

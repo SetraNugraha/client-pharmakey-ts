@@ -1,24 +1,25 @@
-import { useNavigate } from "react-router-dom"
-import { useCategory } from "../../pages/CustomHooks/useCategory"
-import { getImageUrl } from "../../utils/getImageUrl"
+import { useNavigate } from "react-router-dom";
+import { useCategory } from "../../pages/CustomHooks/useCategory";
+import { getImageUrl } from "../../utils/getImageUrl";
 
 export const Categories = () => {
-  const { categories, isLoading } = useCategory()
-  const navigate = useNavigate()
+  const { categories, isLoading } = useCategory();
+  const navigate = useNavigate();
 
   const RenderCategories = () => {
-    return categories.map((category) => {
-      const categoryImage = getImageUrl("categories", category.category_image)
+    return categories?.map((category) => {
+      const categoryImage = getImageUrl("categories", category.category_image);
 
       const handleSearchByCategory = () => {
-        navigate(`/search-product?category=${encodeURIComponent(category.name)}`)
-      }
+        navigate(`/search-product?category=${encodeURIComponent(category.name)}`);
+      };
 
       return (
         <button
           onClick={handleSearchByCategory}
           key={category.id}
-          className="flex items-center gap-x-2 px-5 py-3 bg-white rounded-[16px] shrink-0 hover:text-white hover:bg-[#FD915A] transition-all duration-300 ease-in-out group">
+          className="flex items-center gap-x-2 px-5 py-3 bg-white rounded-[16px] shrink-0 hover:text-white hover:bg-[#FD915A] transition-all duration-300 ease-in-out group"
+        >
           <img
             src={categoryImage}
             alt="categories-icon"
@@ -26,9 +27,9 @@ export const Categories = () => {
           />
           <h1 className="font-bold">{category.name}</h1>
         </button>
-      )
-    })
-  }
+      );
+    });
+  };
 
   return (
     <>
@@ -51,5 +52,5 @@ export const Categories = () => {
         </div>
       </div>
     </>
-  )
-}
+  );
+};

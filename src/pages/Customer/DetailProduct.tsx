@@ -1,19 +1,19 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { useNavigate, useParams } from "react-router-dom"
-import { useProducts } from "../CustomHooks/useProduct"
-import { useEffect, useState } from "react"
-import { useCategory } from "../CustomHooks/useCategory"
-import { Product } from "../../types"
-import { useCart } from "../CustomHooks/useCart"
-import { CustomAlert } from "../../utils/CustomAlert"
-import { useAuth } from "../../Auth/useAuth"
+import { useNavigate, useParams } from "react-router-dom";
+import { useProducts } from "../CustomHooks/useProduct";
+// import { Product } from "../../types";
+// import { useCart } from "../CustomHooks/useCart";
+import { CustomAlert } from "../../utils/CustomAlert";
+// import { useAuth } from "../../Auth/useAuth";
 
-import { getImageUrl } from "../../utils/getImageUrl"
+import { getImageUrl } from "../../utils/getImageUrl";
+import { useCart } from "../CustomHooks/useCart";
+import { CartActionMethod } from "../../types/cart.type";
 
 type Grading = {
-  icon: string
-  name: string
-}
+  icon: string;
+  name: string;
+};
 
 const gradingList: Grading[] = [
   {
@@ -36,71 +36,36 @@ const gradingList: Grading[] = [
     icon: "grade",
     name: "Grade A",
   },
-]
+];
 
 export default function DetailProduct() {
-  const { token } = useAuth()
-  const { cartAction } = useCart()
-  const { categories } = useCategory()
-  const { getProductById } = useProducts()
-  const navigate = useNavigate()
-  const { productId } = useParams()
-  const [product, setProduct] = useState<Product | null>(null)
-
-  // Loading Product By ID
-  const [isLoading, setIsLoading] = useState<boolean>(false)
+  // const { token } = useAuth();
+  // const { cartAction } = useCart();
+  // const { categories } = useCategory();
+  const { productId, slug } = useParams();
+  const { productBySlug, isLoadingProductBySlug } = useProducts({ slug: slug });
+  const navigate = useNavigate();
+  const { cartAction } = useCart();
 
   // PRODUCT IMAGE
-  const productImage = getImageUrl("products", product?.product_image)
-  // CATEGORY NAME & IMAGE
-  const category = categories.find((item) => item.id === product?.category_id)
-  const categoryImage = getImageUrl("categories", category?.category_image)
+  const productImage = getImageUrl("products", productBySlug?.product_image);
+  const categoryImage = getImageUrl("categories", productBySlug?.category?.category_image);
 
-  // GET data product by id
-  useEffect(() => {
-    const getData = async () => {
-      setIsLoading(true)
-      try {
-        if (productId) {
-          const result = await getProductById(parseInt(productId))
-          if (result.success) {
-            setProduct(result.data)
-          }
-        }
-      } catch (error) {
-        if (error instanceof Error) {
-          CustomAlert("Error", "error", error.message)
-        }
-        CustomAlert("Error", "error", "An unexpected error occured")
-      } finally {
-        setIsLoading(false)
+  const handleAddProduct = async (productId?: string) => {
+    if (!productId) return;
+
+    cartAction.mutate(
+      { action: CartActionMethod.ADD, productId },
+      {
+        onSuccess: (data) => {
+          CustomAlert("Success", "success", data?.message);
+        },
+        onError: (error: any) => {
+          CustomAlert("Error", "error", error?.response?.data.message || "Error while removing item");
+        },
       }
-    }
-
-    getData()
-  }, [productId])
-
-  const handleAddProductToCart = async () => {
-    // Check Token
-    if (!token) {
-      CustomAlert("Authentication", "warning", "Login required. Please sign in to continue.")
-      return navigate("/login")
-    }
-
-    if (!productId) {
-      console.error("error add product to cart: Invalid product id")
-      return
-    }
-
-    const result = await cartAction(parseInt(productId), "add")
-
-    if (result?.success) {
-      CustomAlert("Success", "success", result?.message)
-      navigate("/carts")
-    } else {
-      CustomAlert("Error", "error", result?.message)
-    }
-  }
+    );
+  };
 
   const RenderDetailProduct = () => {
     return (
@@ -111,7 +76,7 @@ export default function DetailProduct() {
             {/* Product Name */}
             <div className="flex flex-col gap-y-3">
               <div>
-                <h1 className="font-bold text-2xl">{product?.name}</h1>
+                <h1 className="font-bold text-2xl">{productBySlug?.name}</h1>
               </div>
 
               {/* Category & Rating */}
@@ -119,7 +84,7 @@ export default function DetailProduct() {
                 {/* Category */}
                 <div className="flex items-center gap-x-2">
                   <img src={categoryImage} alt="category" className="size-8 rounded-full object-contain" />
-                  <h1 className="font-semibold">{category?.name}</h1>
+                  <h1 className="font-semibold">{productBySlug?.category?.name}</h1>
                 </div>
 
                 {/* Rating */}
@@ -132,7 +97,7 @@ export default function DetailProduct() {
 
             {/* Description */}
             <div className="mt-[15px]">
-              <p className=" text-slate-600 leading-loose">{product?.description || "No description"}</p>
+              <p className=" text-slate-600 leading-loose">{productBySlug?.description || "No description"}</p>
             </div>
 
             {/* Grading */}
@@ -140,7 +105,8 @@ export default function DetailProduct() {
               {gradingList.map((item, index) => (
                 <div
                   key={index}
-                  className="w-[100px] h-[100px] flex flex-col items-center justify-center gap-y-2 border border-slate-300 rounded-[16px] shrink-0">
+                  className="w-[100px] h-[100px] flex flex-col items-center justify-center gap-y-2 border border-slate-300 rounded-[16px] shrink-0"
+                >
                   <img src={`/assets/img/${item.icon}.png`} alt="grade" />
                   <h1 className="font-semibold">{item.name}</h1>
                 </div>
@@ -168,23 +134,24 @@ export default function DetailProduct() {
           {/* Footer */}
           <div className="flex items-center justify-between mb-5">
             <div className="flex flex-col items-start gap-y-1">
-              <h1 className="text-2xl font-bold">Rp. {product?.price.toLocaleString("id-ID")}</h1>
+              <h1 className="text-2xl font-bold">Rp. {productBySlug?.price.toLocaleString("id-ID")}</h1>
               <p className="text-slate-400">/quantity</p>
             </div>
 
             {/* Button Add To Cart */}
             <div>
               <button
-                onClick={handleAddProductToCart}
-                className="px-6 py-3 bg-[#FD915A] text-white font-bold rounded-[50px] hover:bg-white hover:text-[#FD915A] transition-all duration-200 ease-in-out hover:border-[2px] hover:border-[#FD915A] shadow-xl">
+                onClick={() => handleAddProduct(productBySlug?.id)}
+                className="px-6 py-3 bg-[#FD915A] text-white font-bold rounded-[50px] hover:bg-white hover:text-[#FD915A] transition-all duration-200 ease-in-out hover:border-[2px] hover:border-[#FD915A] shadow-xl"
+              >
                 Add to Cart
               </button>
             </div>
           </div>
         </div>
       </div>
-    )
-  }
+    );
+  };
 
   return (
     <>
@@ -194,7 +161,8 @@ export default function DetailProduct() {
           {/* Button Back */}
           <button
             onClick={() => navigate(-1)}
-            className="p-2 bg-white flex justify-center items-center rounded-full ring-1 ring-black hover:ring-0 hover:bg-red-500 transition-all duration-200 ease-in-out group">
+            className="p-2 bg-white flex justify-center items-center rounded-full ring-1 ring-black hover:ring-0 hover:bg-red-500 transition-all duration-200 ease-in-out group"
+          >
             <img
               src="/assets/img/arrow-left.png"
               alt="back-button"
@@ -208,7 +176,7 @@ export default function DetailProduct() {
 
         {/* Product Image */}
         <div>
-          {isLoading ? (
+          {isLoadingProductBySlug ? (
             <p className="font-semibold text-center mt-5 tracking-wider text-slate-500">Loading Image ...</p>
           ) : (
             <img
@@ -221,7 +189,7 @@ export default function DetailProduct() {
 
         {/* Render Detail */}
         <div className="bg-white border-t-2 border-slate-300 rounded-t-[60px] mt-[65%] xl:max-h-screen xl:pb-12">
-          {isLoading ? (
+          {isLoadingProductBySlug ? (
             <p className="font-semibold text-center ml-1 tracking-wider text-slate-500 bg-[#F7F1F0] -mt-5">
               Loading Products Detail...
             </p>
@@ -231,5 +199,5 @@ export default function DetailProduct() {
         </div>
       </section>
     </>
-  )
+  );
 }

@@ -1,38 +1,38 @@
-import { Link, useNavigate } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom";
 
-import { Logo } from "../../components/Customer/Logo"
-import { InputField } from "../../components/Customer/InputField"
-import { useAuth } from "../../Auth/useAuth"
-import { useState } from "react"
-import { CustomAlert } from "../../utils/CustomAlert"
+import { Logo } from "../../components/Customer/Logo";
+import { InputField } from "../../components/Customer/InputField";
+import { useAuth } from "../../Auth/useAuth";
+import { useState } from "react";
+import { CustomAlert } from "../../utils/CustomAlert";
 
 type Credentials = {
-  email: string
-  password: string
-}
+  email: string;
+  password: string;
+};
 
 export default function Login() {
-  const { loginCustomer, loginCustomerLoading, hasError } = useAuth()
-  const navigate = useNavigate()
+  const { loginCustomer, loginCustomerLoading, hasError } = useAuth();
+  const navigate = useNavigate();
 
   const [credentials, setCredentials] = useState<Credentials>({
     email: "",
     password: "",
-  })
+  });
 
   const handleLoginCustomer = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
-    const loginCustomerResult = await loginCustomer(credentials)
+    e.preventDefault();
+    const loginCustomerResult = await loginCustomer(credentials);
 
     if (loginCustomerResult && loginCustomerResult.userId) {
       setCredentials({
         email: "",
         password: "",
-      })
-      navigate("/")
-      CustomAlert("Login Success", "success", `Welcome ${loginCustomerResult.username}`)
+      });
+      navigate("/");
+      CustomAlert("Login Success", "success", `Welcome ${loginCustomerResult.username}`);
     }
-  }
+  };
 
   return (
     <>
@@ -57,7 +57,7 @@ export default function Login() {
                   placeholder="Your email address"
                   icon="assets/img/email.png"
                   value={credentials.email || ""}
-                  isError={hasError.path === "email"}
+                  isError={hasError[0]?.field === "email"}
                   onChange={(e) =>
                     setCredentials({
                       ...credentials,
@@ -66,8 +66,8 @@ export default function Login() {
                   }
                 />
 
-                {hasError && hasError.path === "email" && (
-                  <p className="ml-5 -mt-3 text-red-500 font-semibold tracking-wider">{hasError.message}</p>
+                {hasError && hasError[0]?.field === "email" && (
+                  <p className="ml-5 -mt-3 text-red-500 font-semibold tracking-wider">{hasError[0]?.message}</p>
                 )}
 
                 {/* Password */}
@@ -78,7 +78,7 @@ export default function Login() {
                   placeholder="Protect your password"
                   icon="assets/img/lock.png"
                   value={credentials.password || ""}
-                  isError={hasError.path === "password"}
+                  isError={hasError[0]?.field === "password"}
                   onChange={(e) =>
                     setCredentials({
                       ...credentials,
@@ -88,13 +88,14 @@ export default function Login() {
                 />
               </div>
 
-              {hasError && hasError.path === "password" && (
-                <p className="ml-5 mt-2 text-red-500 font-semibold tracking-wider">{hasError.message}</p>
+              {hasError && hasError[0]?.field === "password" && (
+                <p className="ml-5 mt-2 text-red-500 font-semibold tracking-wider">{hasError[0]?.message}</p>
               )}
 
               <button
                 disabled={loginCustomerLoading}
-                className="bg-[#FD915A] text-white font-bold text-xl text-center h-[48px] w-full rounded-3xl mt-[20px] hover:bg-white hover:text-[#FD915A] transition-all duration-300 ease-in-out hover:border-[2px] hover:border-[#FD915A] shadow-xl disabled:cursor-not-allowed disabled:bg-slate-500 disabled:hover:text-white disabled:outline-none disabled:hover:border-opacity-0">
+                className="bg-[#FD915A] text-white font-bold text-xl text-center h-[48px] w-full rounded-3xl mt-[20px] hover:bg-white hover:text-[#FD915A] transition-all duration-300 ease-in-out hover:border-[2px] hover:border-[#FD915A] shadow-xl disabled:cursor-not-allowed disabled:bg-slate-500 disabled:hover:text-white disabled:outline-none disabled:hover:border-opacity-0"
+              >
                 {loginCustomerLoading ? "Process Login ..." : "Login"}
               </button>
             </div>
@@ -108,5 +109,5 @@ export default function Login() {
         </div>
       </section>
     </>
-  )
+  );
 }

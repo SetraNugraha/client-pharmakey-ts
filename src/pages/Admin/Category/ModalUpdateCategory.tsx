@@ -1,50 +1,61 @@
-import React, { useState } from "react"
-import { useCategory } from "../../CustomHooks/useCategory"
-import Modal from "../../../components/Admin/Modal"
-import { CustomAlert } from "../../../utils/CustomAlert"
-import { Category } from "../../../types"
+import React, { useState } from "react";
+import { useCategory } from "../../CustomHooks/useCategory";
+import Modal from "../../../components/Admin/Modal";
+import { CustomAlert } from "../../../utils/CustomAlert";
+import { Errors } from "../../../types/common.type";
+import { IUpdateCategory } from "../../../types/category.type";
+import { Category } from "../../../types/category.type";
+import { AxiosError } from "axios";
 
 type ModalUpdateCategoryProps = {
-  category: Category | null
-  onClose: () => void
-  refreshDataCategory: () => void
-}
+  category: Category | null;
+  onClose: () => void;
+};
 
-export default function ModalUpdateCategory({ category, onClose, refreshDataCategory }: ModalUpdateCategoryProps) {
-  const { updateCategory, hasError } = useCategory()
+export default function ModalUpdateCategory({ category, onClose }: ModalUpdateCategoryProps) {
+  const { updateCategory } = useCategory();
 
   // FORM State
-  const [formEditCategory, setFormEditCategory] = useState<Partial<Category>>({ id: category?.id })
+  const [formUpdateCategory, setFormUpdateCategory] = useState<Partial<IUpdateCategory>>({});
+
+  // ERROR State
+  const [hasError, setHasError] = useState<Errors[]>([]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value, type, files } = e.target
-    setFormEditCategory((prevState) => ({
+    const { name, value, type, files } = e.target;
+    setFormUpdateCategory((prevState) => ({
       ...prevState,
       [name]: type === "file" ? files?.[0] : value,
-    }))
-  }
+    }));
+  };
 
   // EDIT Data
   const handleUpdateCategory = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
-    const result = await updateCategory(formEditCategory)
-
-    if (result?.success) {
-      CustomAlert("Success", "success", result?.message)
-      onClose()
-      await refreshDataCategory()
-    } else {
-      if (result?.message) {
-        CustomAlert("Error", "error", result?.message)
+    e.preventDefault();
+    updateCategory.mutate(
+      { categoryId: category?.id, payload: formUpdateCategory },
+      {
+        onSuccess: (data) => {
+          CustomAlert("success", "success", data?.message);
+          onClose();
+        },
+        onError: (error) => {
+          if (error instanceof AxiosError) {
+            const errors = error?.response?.data.errors;
+            setHasError(errors);
+          } else {
+            CustomAlert("error", "error", "Internal server error, please try again later.");
+          }
+        },
       }
-    }
-  }
+    );
+  };
 
   return (
     <Modal>
       <Modal.Header title="Edit Category" onClose={onClose} />
       <Modal.Body>
-        {formEditCategory && (
+        {formUpdateCategory && (
           <form onSubmit={handleUpdateCategory} className="w-[500px] flex flex-col gap-y-3">
             {/* Category Name */}
             <div className="flex flex-col gap-y-2">
@@ -57,15 +68,15 @@ export default function ModalUpdateCategory({ category, onClose, refreshDataCate
                 id="name"
                 placeholder="Input category name here"
                 className={`h-[40px] rounded-lg px-5 focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                  hasError && hasError.path === "name" ? "ring-2 ring-red-500" : "ring-1 ring-slate-300"
+                  hasError && hasError[0]?.field === "name" ? "ring-2 ring-red-500" : "ring-1 ring-slate-300"
                 }`}
-                value={formEditCategory.name ?? category?.name ?? ""}
+                value={formUpdateCategory.name ?? category?.name ?? ""}
                 onChange={handleChange}
               />
             </div>
 
-            {hasError && hasError.path === "name" && (
-              <p className="text-red-500 font-semibold tracking-wider ml-2 -mt-2">{hasError.message}</p>
+            {hasError && hasError[0]?.field === "name" && (
+              <p className="text-red-500 font-semibold tracking-wider ml-2 -mt-2">{hasError[0]?.message}</p>
             )}
 
             {/* Add icon*/}
@@ -84,5 +95,5 @@ export default function ModalUpdateCategory({ category, onClose, refreshDataCate
         )}
       </Modal.Body>
     </Modal>
-  )
+  );
 }

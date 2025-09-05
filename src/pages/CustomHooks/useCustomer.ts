@@ -1,251 +1,127 @@
-import { useEffect, useState } from "react"
-import { axiosInstance } from "../../axios/axios"
-import { useAuth } from "../../Auth/useAuth"
-import { AxiosError } from "axios"
-import { Customer, Errors } from "../../types"
+import { useState } from "react";
+import { axiosInstance } from "../../axios/axios";
+import { useAuth } from "../../Auth/useAuth";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { IRegisterCustomer } from "../../types/auth.type";
+import { Customer, IGetCustomerDto, IUpdateCustomer } from "../../types/customer.type";
+import { objectToFormData } from "../../utils/objectToFormData";
 
-type formDataNewCustomer = {
-  username: string
-  email: string
-  password: string
-  confirmPassword: string
-}
+export const useCustomer = (customerId?: string) => {
+  const { token } = useAuth();
+  const queryClient = useQueryClient();
+  const [page, setPage] = useState<number>(1);
+  const limit = 5;
 
-type Pagination = {
-  currPage: number
-  limit: number
-  totalPages: number
-  totalCustomers: number
-  hasPrevPage: boolean
-  hasNextPage: boolean
-}
+  // ADMIN
+  const { data, isLoading } = useQuery({
+    queryKey: ["customer", page, limit],
+    queryFn: async ({ queryKey }) => {
+      const [, page, limit] = queryKey;
 
-type CustomerState = {
-  data: Customer[]
-  isLoading: boolean
-  hasError: Errors | null
-  pagination: Pagination
-}
+      const res = await axiosInstance.get("/customers", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        params: { page, limit },
+      });
 
-export const useCustomer = () => {
-  const { token } = useAuth()
-  const [state, setState] = useState<CustomerState>({
-    data: [],
-    isLoading: false,
-    hasError: null,
-    pagination: {
-      currPage: 1,
-      limit: 0,
-      totalPages: 0,
-      totalCustomers: 0,
-      hasPrevPage: false,
-      hasNextPage: false,
+      return res.data.data as IGetCustomerDto;
     },
-  })
+  });
 
-  const getAllCustomer = async (page: number = 1, limit: number = 7) => {
-    setState((prevState) => ({ ...prevState, isLoading: true }))
-    try {
-      const response = await axiosInstance.get("/api/users", {
-        params: {
-          page: page,
-          limit: limit,
+  // CUSTOMER
+  const { data: authCustomer, isLoading: isLoadingAuthCustomer } = useQuery({
+    queryKey: ["customer", customerId],
+    queryFn: async ({ queryKey }) => {
+      const [, customerId] = queryKey;
+      const res = await axiosInstance.get(`/customer/${customerId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
         },
-      })
+      });
 
-      setState((prevState) => ({
-        ...prevState,
-        data: response.data.data,
-        hasError: null,
-        pagination: {
-          currPage: response.data.meta.currPage,
-          limit: response.data.meta.limit,
-          totalPages: response.data.meta.totalPages,
-          totalCustomers: response.data.meta.totalCustomers,
-          hasPrevPage: response.data.meta.hasPrevPage,
-          hasNextPage: response.data.meta.hasNextPage,
-        },
-      }))
-    } catch (error) {
-      if (error instanceof AxiosError) {
-        return {
-          success: error.response?.data.success,
-          message: error.response?.data.mesage,
-        }
-      } else {
-        return {
-          success: false,
-          message: "An unexpected error occured",
-        }
-      }
-    } finally {
-      setState((prevState) => ({ ...prevState, isLoading: false }))
-    }
-  }
+      return res.data.data as Customer;
+    },
+    enabled: !!customerId,
+  });
 
-  useEffect(() => {
-    getAllCustomer(1, 7)
-  }, [])
-
+  // // ADMIN
   const goToPrevPage = () => {
-    if (state.pagination.hasPrevPage) {
-      getAllCustomer(state.pagination.currPage - 1, state.pagination.limit)
+    if (data?.meta.isPrev) {
+      setPage((prevState) => prevState - 1);
     }
-  }
+  };
 
+  // // ADMIN
   const goToNextPage = () => {
-    if (state.pagination.hasNextPage) {
-      getAllCustomer(state.pagination.currPage + 1, state.pagination.limit)
+    if (data?.meta.isNext) {
+      setPage((prevState) => prevState + 1);
     }
-  }
+  };
 
-  const getCustomerById = async (userId: number | null) => {
-    try {
-      if (!userId) return
-      const response = await axiosInstance.get(`/api/users/${userId}`)
-      const { success, message, data } = response.data
-      return {
-        success: success,
-        message: message,
-        data: data,
-      }
-    } catch (error) {
-      if (error instanceof AxiosError) {
-        return {
-          success: error.response?.data.success,
-          message: error.response?.data.mesage,
-        }
-      } else {
-        return {
-          success: false,
-          message: "An unexpected error occured",
-        }
-      }
-    }
-  }
+  const registerCustomer = useMutation({
+    mutationKey: ["customer", "create"],
+    mutationFn: async (payload: IRegisterCustomer) => {
+      const res = await axiosInstance.post("/auth/register", payload);
+      const { success, message } = res.data;
+      return { success, message };
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["customer"] });
+    },
+  });
 
-  // FOR NEW Customer
-  const register = async (formRegister: formDataNewCustomer) => {
-    try {
-      const { username, email, password, confirmPassword } = formRegister
-
-      const response = await axiosInstance.post("/api/register", {
-        username: username,
-        email: email,
-        password: password,
-        confirmPassword: confirmPassword,
-      })
-
-      return {
-        success: response.data.success,
-        message: response.data.message,
-      }
-    } catch (error) {
-      if (error instanceof AxiosError) {
-        const errorsMessage = error.response?.data.errors
-        if (errorsMessage && Array.isArray(errorsMessage) && errorsMessage.length > 0) {
-          setState((prevState) => ({
-            ...prevState,
-            hasError: errorsMessage[0],
-          }))
-        } else {
-          return {
-            success: false,
-            message: error.response?.data.message || "Error while process register",
-          }
-        }
-      }
-    }
-  }
-
-  // In ADMIN DASHBOARD
-  const createCustomer = async (formDataNewCustomer: formDataNewCustomer) => {
-    try {
-      const { username, email, password, confirmPassword } = formDataNewCustomer
-
-      const response = await axiosInstance.post("/api/register", {
-        username: username,
-        email: email,
-        password: password,
-        confirmPassword: confirmPassword,
-      })
-
-      return response.data
-    } catch (error) {
-      if (error instanceof AxiosError) {
-        const errorsMessage = error.response?.data.errors
-        if (errorsMessage && Array.isArray(errorsMessage) && errorsMessage.length > 0) {
-          setState((prevState) => ({
-            ...prevState,
-            hasError: errorsMessage[0],
-          }))
-        } else {
-          return {
-            success: false,
-            message: error.response?.data.message || "Error while process register",
-          }
-        }
-      }
-    }
-  }
-
-  const editCustomer = async (formEditCustomer: Partial<Customer>) => {
-    try {
-      const { id, ...customerFields } = formEditCustomer
-      const formData = new FormData()
-
-      Object.entries(customerFields).forEach(([key, value]) => {
-        if (value !== undefined) {
-          if (typeof value === "string" || typeof value === "number") {
-            formData.append(key, value?.toString())
-          } else if (value instanceof File) {
-            formData.append(key, value)
-          }
-        }
-      })
-
-      const response = await axiosInstance.patch(`/api/users/update/${id}`, formData, {
+  // ADMIN
+  const deleteCustomer = useMutation({
+    mutationKey: ["customer", "delete"],
+    mutationFn: async (customerId: string) => {
+      const res = await axiosInstance.delete(`/customer/delete/${customerId}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
-      })
+      });
 
-      return response.data
-    } catch (error) {
-      if (error instanceof AxiosError && error.response) {
-        return error.response?.data
-      }
-    }
-  }
+      const { success, message } = res.data;
+      return { success, message };
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["customer"] });
+    },
+  });
 
-  const deleteCustomer = async (customerId: number | null) => {
-    try {
-      const response = await axiosInstance.delete(`/api/users/delete/${customerId}`, {
+  // CUSTOMER
+  const updateCustomer = useMutation({
+    mutationKey: ["customer"],
+    mutationFn: async (payload: IUpdateCustomer) => {
+      const { ...fieldCustomer } = payload;
+      const formDataCustomer = objectToFormData(fieldCustomer);
+
+      const res = await axiosInstance.patch("/customer/update", formDataCustomer, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
-      })
+      });
 
-      return response.data
-    } catch (error) {
-      if (error instanceof AxiosError) {
-        return error.response?.data.message
-      }
-    }
-  }
+      const { success, message } = res.data;
+      return { success, message };
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["customer"] });
+    },
+  });
 
   return {
-    customers: state.data,
-    isLoading: state.isLoading,
-    hasError: state.hasError,
-    pagination: state.pagination,
-    goToPrevPage,
+    customers: data?.customers,
+    pagination: data?.meta,
+    isLoading,
+    authCustomer,
+    isLoadingAuthCustomer,
     goToNextPage,
-    getAllCustomer,
-    getCustomerById,
-    register,
-    createCustomer,
-    editCustomer,
+    goToPrevPage,
+    registerCustomer,
+    updateCustomer,
     deleteCustomer,
-  }
-}
+    // getAllCustomer,
+    // getCustomerById,
+  };
+};

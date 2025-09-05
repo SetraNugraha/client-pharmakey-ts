@@ -1,52 +1,47 @@
-import { Link, useNavigate } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom";
 
-import { Logo } from "../../components/Customer/Logo"
-import { InputField } from "../../components/Customer/InputField"
-import { useCustomer } from "../CustomHooks/useCustomer"
-import { useState } from "react"
-import { CustomAlert } from "../../utils/CustomAlert"
-
-type FormRegister = {
-  username: string
-  email: string
-  password: string
-  confirmPassword: string
-}
+import { Logo } from "../../components/Customer/Logo";
+import { InputField } from "../../components/Customer/InputField";
+import { useCustomer } from "../CustomHooks/useCustomer";
+import { useState } from "react";
+import { CustomAlert } from "../../utils/CustomAlert";
+import { IRegisterCustomer, Role } from "../../types/auth.type";
 
 export default function Register() {
-  const { register, hasError } = useCustomer()
-  const navigate = useNavigate()
+  const { registerCustomer, hasError } = useCustomer();
+  const navigate = useNavigate();
 
-  const [formRegister, setFormRegister] = useState<FormRegister>({
+  const [formRegister, setFormRegister] = useState<IRegisterCustomer>({
     username: "",
     email: "",
     password: "",
     confirmPassword: "",
-  })
+    role: Role.CUSTOMER,
+  });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target
+    const { name, value } = e.target;
 
     setFormRegister((prevState) => ({
       ...prevState,
       [name]: value,
-    }))
-  }
+    }));
+  };
 
   const handleRegister = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
-    const result = await register(formRegister)
-
-    // SUCCESS
-    if (result?.success) {
-      navigate("/login")
-      CustomAlert("Success", "success", result?.message)
-    } else {
-      if (result?.message) {
-        CustomAlert("Error", "error", result?.message)
-      }
-    }
-  }
+    e.preventDefault();
+    registerCustomer.mutate(formRegister, {
+      onSuccess: (data) => {
+        navigate("/login");
+        CustomAlert("Success", "success", data?.message);
+      },
+      onError: (error: any) => {
+        if (error.code === 500) {
+          CustomAlert("Error", "error", error.message);
+        }
+      },
+    });
+  };
 
   return (
     <>
@@ -72,12 +67,12 @@ export default function Register() {
                   placeholder="Write your full name"
                   icon="assets/img/register-profile.png"
                   value={formRegister.username}
-                  isError={hasError?.path === "username"}
+                  isError={hasError[0]?.field === "username"}
                   onChange={handleChange}
                 />
 
-                {hasError && hasError.path === "username" && (
-                  <p className="text-red-500 font-semibold -mt-3 ml-2">{hasError.message}</p>
+                {hasError && hasError[0]?.field === "username" && (
+                  <p className="text-red-500 font-semibold -mt-3 ml-2">{hasError[0]?.message}</p>
                 )}
 
                 {/* Email */}
@@ -88,12 +83,12 @@ export default function Register() {
                   placeholder="Your email address"
                   icon="assets/img/email.png"
                   value={formRegister.email}
-                  isError={hasError?.path === "email"}
+                  isError={hasError[0]?.field === "email"}
                   onChange={handleChange}
                 />
 
-                {hasError && hasError.path === "email" && (
-                  <p className="text-red-500 font-semibold -mt-3 ml-2">{hasError.message}</p>
+                {hasError && hasError[0]?.field === "email" && (
+                  <p className="text-red-500 font-semibold -mt-3 ml-2">{hasError[0]?.message}</p>
                 )}
 
                 {/* Password */}
@@ -104,9 +99,13 @@ export default function Register() {
                   placeholder="Protect your password"
                   icon="assets/img/lock.png"
                   value={formRegister.password}
-                  isError={hasError?.path === "password"}
+                  isError={hasError[0]?.field === "password"}
                   onChange={handleChange}
                 />
+
+                {hasError && hasError[0]?.field === "password" && (
+                  <p className="text-red-500 font-semibold ml-2">{hasError[0]?.message}</p>
+                )}
 
                 {/* Confirm Password */}
                 <InputField
@@ -116,17 +115,20 @@ export default function Register() {
                   placeholder="Protect your password"
                   icon="assets/img/lock.png"
                   value={formRegister.confirmPassword}
-                  isError={hasError?.path === "password"}
+                  isError={hasError[0]?.field === "confirmPassword"}
                   onChange={handleChange}
                 />
               </div>
 
-              {hasError && hasError.path === "password" && (
-                <p className="text-red-500 font-semibold m-2">{hasError.message}</p>
+              {hasError && hasError[0]?.field === "confirmPassword" && (
+                <p className="text-red-500 font-semibold m-2">{hasError[0]?.message}</p>
               )}
 
-              <button className="bg-[#FD915A] text-white font-bold text-xl text-center h-[48px] w-full rounded-3xl mt-[20px] hover:bg-white hover:text-[#FD915A] transition-all duration-300 ease-in-out hover:border-[2px] hover:border-[#FD915A] shadow-xl">
-                Create My Account
+              <button
+                disabled={registerCustomer.isPending}
+                className="bg-[#FD915A] text-white font-bold text-xl text-center h-[48px] w-full rounded-3xl mt-[20px] hover:bg-white hover:text-[#FD915A] transition-all duration-300 ease-in-out hover:border-[2px] hover:border-[#FD915A] shadow-xl disabled:bg-gray-600 disabled:border-none"
+              >
+                {registerCustomer.isPending ? "Register Process ..." : "Create my account"}
               </button>
             </div>
           </form>
@@ -139,5 +141,5 @@ export default function Register() {
         </div>
       </section>
     </>
-  )
+  );
 }

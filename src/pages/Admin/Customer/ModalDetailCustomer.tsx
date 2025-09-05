@@ -1,15 +1,13 @@
-import Modal from "../../../components/Admin/Modal"
-import { Customer } from "../../../types"
-
+import Modal from "../../../components/Admin/Modal";
+import { Customer } from "../../../types/customer.type";
+import { getImageUrl } from "../../../utils/getImageUrl";
 type ModalDetailCustomerProps = {
-  customer: Customer | null
-  onClose: () => void
-}
+  customer: Customer | null;
+  onClose: () => void;
+};
 
 export default function ModalDetailCustomer({ customer, onClose }: ModalDetailCustomerProps) {
-  const customerImage = customer?.profile_image
-    ? `${import.meta.env.VITE_CUSTOMER_IMAGE_URL}/${customer.profile_image}`
-    : "/assets/img/profile-default.png"
+  const customerImage = getImageUrl("customers", customer?.profile_image);
   return (
     <Modal>
       <Modal.Header title="Detail Customer" onClose={onClose} />
@@ -73,5 +71,5 @@ export default function ModalDetailCustomer({ customer, onClose }: ModalDetailCu
         </section>
       </Modal.Body>
     </Modal>
-  )
+  );
 }

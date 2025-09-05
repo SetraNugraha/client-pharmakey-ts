@@ -1,267 +1,131 @@
-import { useState } from "react"
-import { axiosInstance } from "../../axios/axios"
-import { AxiosError } from "axios"
-import { useAuth } from "../../Auth/useAuth"
-import { Product, Errors } from "../../types"
+import { useState } from "react";
+import { axiosInstance } from "../../axios/axios";
+import { useAuth } from "../../Auth/useAuth";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { ICreateProduct, IGetProduct, ProductBySlug } from "../../types/product.type";
+import { Product } from "../../types/product.type";
+import { objectToFormData } from "../../utils/objectToFormData";
 
-type Pagination = {
-  currPage: number
-  limit: number
-  totalPages: number
-  totalProducts: number
-  hasPrevPage: boolean
-  hasNextPage: boolean
-}
+export const useProducts = ({ limit, slug }: { limit?: number; slug?: string }) => {
+  const { token } = useAuth();
+  const queryClient = useQueryClient();
+  const [page, setPage] = useState<number>(1);
 
-type ProductState = {
-  data: Product[]
-  isLoading: boolean
-  hasError: Errors | null
-  pagination: Pagination
-}
-
-export const useProducts = () => {
-  const { token } = useAuth()
-  const [state, setState] = useState<ProductState>({
-    data: [],
-    isLoading: false,
-    hasError: null,
-    pagination: {
-      currPage: 1,
-      limit: 0,
-      totalPages: 0,
-      totalProducts: 0,
-      hasPrevPage: false,
-      hasNextPage: false,
-    },
-  })
-
-  // GET
-  const getAllProducts = async (page: number = 1, limit: number = 5) => {
-    setState((prevState) => ({ ...prevState, isLoading: true }))
-    try {
-      const response = await axiosInstance.get("/api/products", {
+  const { data, isLoading } = useQuery({
+    queryKey: ["product", page, limit],
+    queryFn: async ({ queryKey }) => {
+      const [, page, limit] = queryKey;
+      const res = await axiosInstance.get("/products", {
         params: {
           page: page,
           limit: limit,
         },
-      })
-
-      setState((prevState) => ({
-        ...prevState,
-        data: response.data.data,
-        hasError: null,
-        pagination: {
-          currPage: response.data.meta.currPage,
-          limit: response.data.meta.limit,
-          totalPages: response.data.meta.totalPages,
-          totalProducts: response.data.meta.totalProducts,
-          hasPrevPage: response.data.meta.hasPrevPage,
-          hasNextPage: response.data.meta.hasNextPage,
+        headers: {
+          Authorization: `Bearer ${token}`,
         },
-      }))
-    } catch (error) {
-      if (error instanceof AxiosError) {
-        return error.response?.data.message || "An unexpected error occured"
-      }
-    } finally {
-      setState((prevState) => ({ ...prevState, isLoading: false }))
-    }
-  }
+      });
+
+      const { products, meta } = res.data.data;
+
+      return { products, meta } as IGetProduct;
+    },
+  });
+
+  const { data: productBySlug, isLoading: isLoadingProductBySlug } = useQuery({
+    queryKey: ["product", slug],
+    queryFn: async ({ queryKey }) => {
+      const [, slug] = queryKey;
+      const res = await axiosInstance.get(`/product/${slug}`);
+
+      return res.data.data as ProductBySlug;
+    },
+    enabled: !!slug,
+  });
 
   const goToPrevPage = () => {
-    if (state.pagination.hasPrevPage) {
-      getAllProducts(state.pagination.currPage - 1, 5)
+    if (data?.meta.isPrev) {
+      setPage((prevState) => prevState - 1);
     }
-  }
+  };
 
   const goToNextPage = () => {
-    if (state.pagination.hasNextPage) {
-      getAllProducts(state.pagination.currPage + 1, 5)
+    if (data?.meta.isNext) {
+      setPage((prevState) => prevState + 1);
     }
-  }
+  };
 
-  // GET PRODUCT By Id
-  const getProductById = async (productId: number) => {
-    setState((prevState) => ({ ...prevState, isLoading: true }))
+  // CREATE Product
+  const createProduct = useMutation({
+    mutationKey: ["product", "create"],
+    mutationFn: async (payload: ICreateProduct) => {
+      const { ...productFields } = payload;
+      const productFormData = objectToFormData(productFields);
 
-    try {
-      const response = await axiosInstance.get(`/api/products/${productId}`)
-
-      return {
-        success: response.data.success,
-        message: response.data.message,
-        data: response.data.data,
-      }
-    } catch (error) {
-      if (error instanceof AxiosError) {
-        throw new Error(error.response?.data.message)
-      }
-
-      throw new Error("An unexpected error occured")
-    } finally {
-      setState((prevState) => ({ ...prevState, isLoading: false }))
-    }
-  }
-
-  const searchProducts = async (query: string) => {
-    try {
-      const response = await axiosInstance.get("/api/products/search/product", {
-        params: {
-          query: query,
-        },
-      })
-
-      return {
-        success: response.data.success,
-        message: response.data.message,
-        data: response.data.data,
-      }
-    } catch (error) {
-      if (error instanceof AxiosError) {
-        return {
-          success: error.response?.data.success,
-          message: error.response?.data.message,
-        }
-      } else {
-        return {
-          success: false,
-          message: "An unexpected error occured",
-        }
-      }
-    }
-  }
-
-  // CREATE
-  const createProduct = async (formCreateProduct: Partial<Product>) => {
-    try {
-      const { ...productFields } = formCreateProduct
-      const formData = new FormData()
-
-      Object.entries(productFields).forEach(([key, value]) => {
-        if (value !== undefined) {
-          if (typeof value === "string" || typeof value === "number") {
-            formData.append(key, value?.toString())
-          } else if (value instanceof File) {
-            formData.append(key, value)
-          }
-        }
-      })
-
-      const response = await axiosInstance.post("/api/products", formData, {
+      const res = await axiosInstance.post("/product/create", productFormData, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
-      })
+      });
 
-      return {
-        success: response.data.success,
-        message: response.data.message,
-      }
-    } catch (error) {
-      if (error instanceof AxiosError) {
-        const errors = error.response?.data.errors
-        if (errors && Array.isArray(errors) && errors.length > 0) {
-          setState((prevState) => ({
-            ...prevState,
-            hasError: errors[0],
-          }))
+      const { success, message } = res.data;
+      return { success, message };
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["product"] });
+    },
+  });
 
-          return
-        } else {
-          return {
-            success: error.response?.data.success,
-            message: error.response?.data.message || "An unexpected error occured",
-          }
-        }
-      }
-    }
-  }
+  // UPDATE Product
+  const updateProduct = useMutation({
+    mutationKey: ["product", "update"],
+    mutationFn: async ({ productId, payload }: { productId: string; payload: Partial<Product> }) => {
+      const { ...productFields } = payload;
+      const productFormData = objectToFormData(productFields);
 
-  // UPDATE
-  const updateProduct = async (formEditProduct: Partial<Product>) => {
-    try {
-      const { id, ...productFields } = formEditProduct
-      const formData = new FormData()
-
-      Object.entries(productFields).forEach(([key, value]) => {
-        if (value !== undefined) {
-          if (typeof value === "string" || typeof value === "number") {
-            formData.append(key, value?.toString())
-          } else if (value instanceof File) {
-            formData.append(key, value)
-          }
-        }
-      })
-
-      const response = await axiosInstance.patch(`/api/products/${id}`, formData, {
+      const res = await axiosInstance.patch(`/product/update/${productId}`, productFormData, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
-      })
+      });
 
-      return {
-        success: response.data.success,
-        message: response.data.message,
-      }
-    } catch (error) {
-      if (error instanceof AxiosError) {
-        const errors = error.response?.data.errors
-        if (errors && Array.isArray(errors) && errors.length > 0) {
-          setState((prevState) => ({
-            ...prevState,
-            hasError: errors[0],
-          }))
+      const { success, message } = res.data;
+      return { success, message };
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["product"] });
+    },
+  });
 
-          return
-        } else {
-          return {
-            success: error.response?.data.success,
-            message: error.response?.data.message || "An unexpected error occured",
-          }
-        }
-      }
-    }
-  }
-
-  // DELETE
-  const deleteProduct = async (productId: number | null) => {
-    try {
-      const response = await axiosInstance.delete(`/api/products/${productId}`, {
+  // DELETE Product
+  const deleteProduct = useMutation({
+    mutationKey: ["product", "delete"],
+    mutationFn: async (productId: string) => {
+      const res = await axiosInstance.delete(`/product/delete/${productId}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
-      })
+      });
 
-      return {
-        success: response.data.success,
-        message: response.data.message,
-      }
-    } catch (error) {
-      if (error instanceof AxiosError) {
-        return error.response?.data.message
-      }
-
-      return {
-        success: false,
-        message: "An unexpected error occured",
-      }
-    }
-  }
+      const { success, message } = res.data;
+      return { success, message };
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["product"] });
+    },
+  });
 
   return {
-    products: state.data,
-    isLoading: state.isLoading,
-    hasError: state.hasError,
-    pagination: state.pagination,
-    refetchProducts: () => getAllProducts(state.pagination.currPage),
-    getAllProducts,
+    products: data?.products,
+    isLoading,
+    pagination: data?.meta,
     goToPrevPage,
     goToNextPage,
-    getProductById,
-    searchProducts,
+    productBySlug,
+    isLoadingProductBySlug,
+    // getProductById,
+    // searchProducts,
     createProduct,
     updateProduct,
     deleteProduct,
-  }
-}
+  };
+};

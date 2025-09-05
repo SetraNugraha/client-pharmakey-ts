@@ -1,54 +1,53 @@
-import { useState } from "react"
-import { MdEditSquare, MdDelete, MdLibraryAdd } from "react-icons/md"
-import { useCategory } from "../../CustomHooks/useCategory"
-import ModalCreateCategory from "./ModalCreateCategory"
-import ModalUpdateCategory from "./ModalUpdateCategory"
-import { CustomAlertConfirm, CustomAlert } from "../../../utils/CustomAlert"
-import { Category } from "../../../types"
+import { useState } from "react";
+import { MdEditSquare, MdDelete, MdLibraryAdd } from "react-icons/md";
+import { useCategory } from "../../CustomHooks/useCategory";
+import ModalCreateCategory from "./ModalCreateCategory";
+import ModalUpdateCategory from "./ModalUpdateCategory";
+import { CustomAlertConfirm, CustomAlert } from "../../../utils/CustomAlert";
+import type { Category } from "../../../types/category.type";
+import { getImageUrl } from "../../../utils/getImageUrl";
 
 export default function AdminCategory() {
-  const { categories, isLoading, pagination, refetchCategories, deleteCategory, goToPrevPage, goToNextPage } =
-    useCategory()
-  const [modalCreate, setModalCreate] = useState<boolean>(false)
-  const [modalEdit, setModalEdit] = useState<boolean>(false)
-  const [selectedCategory, setSelectedCategory] = useState<Category | null>(null)
+  const { categories, pagination, isLoading, goToNextPage, goToPrevPage, deleteCategory } = useCategory();
+  const [modalCreate, setModalCreate] = useState<boolean>(false);
+  const [modalUpdate, setModalUpdate] = useState<boolean>(false);
+  const [selectedCategory, setSelectedCategory] = useState<Category | null>(null);
 
   // Open Modal Edit
-  const handleButtonEdit = (category: Category) => {
-    setSelectedCategory(category)
-    setModalEdit(true)
-  }
+  const handleButtonUpdate = (category: Category) => {
+    setSelectedCategory(category);
+    setModalUpdate(true);
+  };
 
   // DELETE Data
   const handleDeleteCategory = async (category: Category) => {
-    const categoryId = category.id ? category.id : null
-    const title = `Are you sure want to delete ${category.name} ?`
-    const isConfirm = await CustomAlertConfirm(title)
+    const title = `Are you sure want to delete ${category.name} ?`;
+    const isConfirm = await CustomAlertConfirm(title);
 
     if (isConfirm) {
-      const response = await deleteCategory(categoryId)
-      if (response.success) {
-        CustomAlert("Succes", "success", response.message)
-        await refetchCategories()
-      } else {
-        CustomAlert("Error", "error", response)
-        return false
-      }
+      deleteCategory.mutate(category.id, {
+        onSuccess: (data) => {
+          CustomAlert("success", "success", data?.message);
+        },
+        onError: (error) => {
+          CustomAlert("error", "error", "Error while deleting category.");
+          console.log("handleDeleteCategory error: ", error.message);
+        },
+      });
     } else {
-      CustomAlert("Cancel", "error", "Delete Category Cancelled")
+      CustomAlert("cancelled", "error", "Delete Category Cancelled");
     }
-  }
+  };
 
   const RenderCategories = () => {
-    return categories.map((category) => {
-      const categoryImage = category.category_image
-        ? `${import.meta.env.VITE_IMAGE_URL}/categories/${category.category_image}`
-        : "/assets/img/no-image.png"
+    return categories?.map((category) => {
+      const categoryImage = getImageUrl("categories", category.category_image);
 
       return (
         <tr
           key={category.id}
-          className="w-full bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
+          className="w-full bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600"
+        >
           {/* Icon */}
           <td className="py-3">
             <div className="flex justify-center items-center">
@@ -65,7 +64,7 @@ export default function AdminCategory() {
           <td className="py-3">
             <div className="flex items-center justify-center gap-x-3">
               {/* Edit */}
-              <button onClick={() => handleButtonEdit(category)}>
+              <button onClick={() => handleButtonUpdate(category)}>
                 <MdEditSquare size={30} className="text-green-500 hover:text-blue-500 duration-200" />
               </button>
 
@@ -76,9 +75,9 @@ export default function AdminCategory() {
             </div>
           </td>
         </tr>
-      )
-    })
-  }
+      );
+    });
+  };
 
   return (
     <>
@@ -89,7 +88,8 @@ export default function AdminCategory() {
           {/* Button Add New Category */}
           <button
             onClick={() => setModalCreate(true)}
-            className="px-3 py-2 bg-blue-500 text-white font-semibold rounded-lg hover:bg-white hover:text-blue-500 hover:outline-none hover:ring-2 hover:ring-blue-500 duration-300 mb-5 flex items-center gap-x-2 shadow-lg shadow-gray-300">
+            className="px-3 py-2 bg-blue-500 text-white font-semibold rounded-lg hover:bg-white hover:text-blue-500 hover:outline-none hover:ring-2 hover:ring-blue-500 duration-300 mb-5 flex items-center gap-x-2 shadow-lg shadow-gray-300"
+          >
             <span>
               <MdLibraryAdd size={22} />
             </span>
@@ -128,37 +128,31 @@ export default function AdminCategory() {
           {/* Pagination */}
           <div className="absolute bottom-24  flex items-center gap-x-3 mt-5 ml-3">
             <button
-              disabled={!pagination.hasPrevPage}
               onClick={goToPrevPage}
-              className="px-2 py-1 bg-blue-500 font-semibold text-white rounded-lg cursor-pointer hover:outline-none hover:ring-2 hover:ring-blue-500 hover:text-blue-500 hover:bg-white duration-300 disabled:bg-slate-500 disabled:cursor-not-allowed disabled:text-white disabled:ring-0">
+              disabled={!pagination?.isPrev}
+              className="px-2 py-1 bg-blue-500 font-semibold text-white rounded-lg cursor-pointer hover:outline-none hover:ring-2 hover:ring-blue-500 hover:text-blue-500 hover:bg-white duration-300 disabled:bg-slate-500 disabled:cursor-not-allowed disabled:text-white disabled:ring-0"
+            >
               Prev
             </button>
             <p className="px-3 py-1 ring-2 ring-slate-300 rounded-lg font-semibold text-slate-400">
-              {pagination.currPage}
+              {pagination?.page}
             </p>
             <button
-              disabled={!pagination.hasNextPage}
               onClick={goToNextPage}
-              className="px-2 py-1 bg-blue-500 font-semibold text-white rounded-lg cursor-pointer hover:outline-none hover:ring-2 hover:ring-blue-500 hover:text-blue-500 hover:bg-white duration-300 disabled:bg-slate-500 disabled:cursor-not-allowed disabled:text-white disabled:ring-0">
+              disabled={!pagination?.isNext}
+              className="px-2 py-1 bg-blue-500 font-semibold text-white rounded-lg cursor-pointer hover:outline-none hover:ring-2 hover:ring-blue-500 hover:text-blue-500 hover:bg-white duration-300 disabled:bg-slate-500 disabled:cursor-not-allowed disabled:text-white disabled:ring-0"
+            >
               Next
             </button>
           </div>
         </div>
 
         {/* Modal Create Category */}
-        {modalCreate && (
-          <ModalCreateCategory onClose={() => setModalCreate(false)} refreshDataCategory={refetchCategories} />
-        )}
+        {modalCreate && <ModalCreateCategory onClose={() => setModalCreate(false)} />}
 
         {/* Modal Edit Category */}
-        {modalEdit && (
-          <ModalUpdateCategory
-            onClose={() => setModalEdit(false)}
-            refreshDataCategory={refetchCategories}
-            category={selectedCategory}
-          />
-        )}
+        {modalUpdate && <ModalUpdateCategory onClose={() => setModalUpdate(false)} category={selectedCategory} />}
       </section>
     </>
-  )
+  );
 }

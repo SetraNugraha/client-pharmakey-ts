@@ -1,28 +1,13 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { Link } from "react-router-dom"
-import { useAuth } from "../../Auth/useAuth"
-import { useEffect, useState } from "react"
-import { useCustomer } from "../../pages/CustomHooks/useCustomer"
-import { getImageUrl } from "../../utils/getImageUrl"
+import { Link } from "react-router-dom";
+import { useAuth } from "../../Auth/useAuth";
+import { useCustomer } from "../../pages/CustomHooks/useCustomer";
+import { getImageUrl } from "../../utils/getImageUrl";
 
 export const Header = () => {
-  const { user } = useAuth()
-  const { getCustomerById } = useCustomer()
-  const [profileImageCustomer, setProfileImageCustomer] = useState<string | null>(null)
-
-  const profileImage = profileImageCustomer
-    ? getImageUrl("customers", profileImageCustomer)
-    : "assets/img/profile-default.png"
-
-  useEffect(() => {
-    const getCustomer = async () => {
-      const customerId = user?.userId ? user.userId : null
-      const result = await getCustomerById(Number(customerId))
-      setProfileImageCustomer(result?.data.profile_image)
-    }
-
-    getCustomer()
-  }, [user?.userId])
+  const { user } = useAuth();
+  const { authCustomer } = useCustomer(user?.userId);
+  const profileImage = getImageUrl("customers", authCustomer?.profile_image);
 
   return (
     <>
@@ -48,7 +33,8 @@ export const Header = () => {
           {/* Button Cart */}
           <Link
             to="/carts"
-            className="px-3 py-1 flex gap-x-1 items-center rounded-full cursor-pointer bg-[#FD915A] hover:bg-white hover:outline-none hover:ring-2 hover:ring-[#FD915A] duration-300 group shadow-lg shadow-slate-300">
+            className="px-3 py-1 flex gap-x-1 items-center rounded-full cursor-pointer bg-[#FD915A] hover:bg-white hover:outline-none hover:ring-2 hover:ring-[#FD915A] duration-300 group shadow-lg shadow-slate-300"
+          >
             <div className="p-1 group-hover:bg-[#FD915A] group-hover:rounded-full duration-300">
               <img src="assets/img/cart.png" alt="cart" id="cart" className="filter invert brightness-0 " />
             </div>
@@ -57,5 +43,5 @@ export const Header = () => {
         </div>
       </header>
     </>
-  )
-}
+  );
+};

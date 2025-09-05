@@ -1,18 +1,17 @@
-import Modal from "../../../components/Admin/Modal"
-import { useCategory } from "../../CustomHooks/useCategory"
-import { Product } from "../../../types"
+import Modal from "../../../components/Admin/Modal";
+import { useCategory } from "../../CustomHooks/useCategory";
+import { Product } from "../../../types/product.type";
+import { getImageUrl } from "../../../utils/getImageUrl";
 
 type ModalDetailProductProps = {
-  product: Product | null
-  onClose: () => void
-}
+  product: Product | null;
+  onClose: () => void;
+};
 
 export default function ModalDetailProduct({ product, onClose }: ModalDetailProductProps) {
-  const { categories } = useCategory()
-  const findCategory = categories.find((item) => item.id === product?.category_id)
-  const productImage = product?.product_image
-    ? `${import.meta.env.VITE_IMAGE_URL}/products/${product.product_image}`
-    : "/assets/img/no-image.png"
+  const { categories } = useCategory();
+  const findCategory = categories?.find((item) => item.id === product?.category_id);
+  const productImage = getImageUrl("products", product?.product_image);
 
   return (
     <Modal>
@@ -71,5 +70,5 @@ export default function ModalDetailProduct({ product, onClose }: ModalDetailProd
         </section>
       </Modal.Body>
     </Modal>
-  )
+  );
 }
