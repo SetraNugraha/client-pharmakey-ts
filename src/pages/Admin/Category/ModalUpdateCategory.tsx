@@ -42,7 +42,16 @@ export default function ModalUpdateCategory({ category, onClose }: ModalUpdateCa
         onError: (error) => {
           if (error instanceof AxiosError) {
             const errors = error?.response?.data.errors;
-            setHasError(errors);
+
+            // NO FIELD CHANGES ERROR
+            if (!errors && !error.response?.data.success) {
+              CustomAlert("error", "error", error.response?.data.message);
+            }
+
+            // INPUT VALIDATION ERROR
+            if (errors && errors.length !== 0 && error.response?.data.message === "validation error") {
+              setHasError(errors);
+            }
           } else {
             CustomAlert("error", "error", "Internal server error, please try again later.");
           }
