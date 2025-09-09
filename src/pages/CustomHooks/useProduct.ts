@@ -6,11 +6,19 @@ import { ICreateProduct, IGetProduct, ProductBySlug } from "../../types/product.
 import { Product } from "../../types/product.type";
 import { objectToFormData } from "../../utils/objectToFormData";
 
-export const useProducts = ({ limit, slug }: { limit?: number; slug?: string }) => {
+interface Props {
+  limit?: number;
+  slug?: string;
+  name?: string;
+  category?: string;
+}
+
+export const useProducts = ({ limit, slug, name, category }: Props) => {
   const { token } = useAuth();
   const queryClient = useQueryClient();
   const [page, setPage] = useState<number>(1);
 
+  // GET
   const { data, isLoading } = useQuery({
     queryKey: ["product", page, limit],
     queryFn: async ({ queryKey }) => {
@@ -20,9 +28,6 @@ export const useProducts = ({ limit, slug }: { limit?: number; slug?: string }) 
           page: page,
           limit: limit,
         },
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
       });
 
       const { products, meta } = res.data.data;
@@ -31,6 +36,7 @@ export const useProducts = ({ limit, slug }: { limit?: number; slug?: string }) 
     },
   });
 
+  // GET BY SLUG
   const { data: productBySlug, isLoading: isLoadingProductBySlug } = useQuery({
     queryKey: ["product", slug],
     queryFn: async ({ queryKey }) => {
@@ -53,6 +59,21 @@ export const useProducts = ({ limit, slug }: { limit?: number; slug?: string }) 
       setPage((prevState) => prevState + 1);
     }
   };
+
+  // GET BY FILTER
+  const { data: productsByFilter, isLoading: productsByFilterLoading } = useQuery({
+    queryKey: ["product", name, category],
+    queryFn: async ({ queryKey }) => {
+      const [, name, category] = queryKey;
+
+      const res = await axiosInstance.get("/products/filter", {
+        params: { name, category },
+      });
+
+      return res.data.data as Product[];
+    },
+    enabled: !!name || !!category,
+  });
 
   // CREATE Product
   const createProduct = useMutation({
@@ -122,6 +143,8 @@ export const useProducts = ({ limit, slug }: { limit?: number; slug?: string }) 
     goToNextPage,
     productBySlug,
     isLoadingProductBySlug,
+    productsByFilter,
+    productsByFilterLoading,
     // getProductById,
     // searchProducts,
     createProduct,

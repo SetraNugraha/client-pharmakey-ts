@@ -1,25 +1,25 @@
-import { useEffect, useState } from "react"
-import { useNavigate, useSearchParams } from "react-router-dom"
+import { useEffect, useState } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
 
 export const SearchInput = () => {
-  const navigate = useNavigate()
-  const [searchParams] = useSearchParams()
-  const [text, setText] = useState<string>("")
-  const initialValue = searchParams.get("name") || searchParams.get("category") || ""
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const [text, setText] = useState<string>("");
+  const initialValue = searchParams.get("name") || searchParams.get("category") || "";
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setText(e.target.value)
-  }
+    setText(e.target.value);
+  };
 
   useEffect(() => {
     if (initialValue) {
-      setText(initialValue)
+      setText(initialValue);
     }
-  }, [initialValue])
+  }, [initialValue]);
 
   const handleSearch = async () => {
-    navigate(`/search-product?name=${encodeURIComponent(text)}`)
-  }
+    navigate(`/search-product?name=${encodeURIComponent(text)}`);
+  };
 
   return (
     <div className="relative w-full">
@@ -31,8 +31,12 @@ export const SearchInput = () => {
         onChange={handleChange}
       />
       <button onClick={handleSearch}>
-        <img src="assets/img/search.png" alt="search-icon" className="absolute top-[16px] right-[24px]" />
+        <img
+          src="assets/img/search.png"
+          alt="search-icon"
+          className="absolute top-1/2 -translate-y-1/2 right-[24px] hover:bg-slate-200 p-2 rounded-full transition-all duration-200"
+        />
       </button>
     </div>
-  )
-}
+  );
+};

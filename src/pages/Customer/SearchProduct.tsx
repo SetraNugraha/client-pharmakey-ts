@@ -1,45 +1,36 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { Link, useSearchParams } from "react-router-dom"
-import { SearchInput } from "../../components/Customer/SearchInput"
-import { Product } from "../../types"
-import {  useEffect, useState } from "react"
-import { useProducts } from "../CustomHooks/useProduct"
-import { getImageUrl } from "../../utils/getImageUrl"
-import { CustomAlert } from "../../utils/CustomAlert"
+import { Link, useSearchParams } from "react-router-dom";
+import { SearchInput } from "../../components/Customer/SearchInput";
+import { useProducts } from "../CustomHooks/useProduct";
+import { getImageUrl } from "../../utils/getImageUrl";
 
 export default function SearchProduct() {
-  const { searchProducts } = useProducts()
-  const [products, setProducts] = useState<Product[]>([])
-  const [searchParams] = useSearchParams()
-  const query = searchParams.get("name") || searchParams.get("category") || ""
+  const [searchParams] = useSearchParams();
 
-  useEffect(() => {
-    const getData = async () => {
-      const result = await searchProducts(query)
+  const name = searchParams.get("name") || undefined;
+  const category = searchParams.get("category") || undefined;
 
-      if (result?.success) {
-        setProducts(result.data)
-      } else {
-        CustomAlert("Error", "error", result.message || "An unexpected error occured")
-      }
-    }
-
-    if (query) {
-      getData()
-    }
-  }, [query])
+  const { productsByFilter: products, productsByFilterLoading } = useProducts({ name, category });
 
   const RenderSearchProducts = () => {
-    if (products.length === 0 || query.trim() === "") {
-      return <p className="font-semibold text-slate-500 tracking-wider">Product not found</p>
+    if (productsByFilterLoading) {
+      return <p className="font-semibold text-slate-500 tracking-wider">Loading ....</p>;
     }
-    return products.map((product, index) => {
-      const productImage = getImageUrl("products", product.product_image)
+
+    // RESULT NOT FOUND
+    if (products?.length === 0) {
+      return <p className="font-semibold text-slate-500 tracking-wider">Product not found</p>;
+    }
+
+    // RESULT FOUND
+    return products?.map((product, index) => {
+      const productImage = getImageUrl("products", product.product_image);
       return (
         <Link
           key={index}
           to={`/detail-product/${product.slug}/${product.id}`}
-          className="flex items-center justify-between gap-x-2 px-5 py-3 bg-white rounded-[16px] shrink-0 hover:bg-[#FD915A] transition-all duration-300 ease-in-out group">
+          className="flex items-center justify-between gap-x-2 px-5 py-3 bg-white rounded-[16px] shrink-0 hover:bg-[#FD915A] transition-all duration-300 ease-in-out group"
+        >
           {/* Products */}
           <div className="flex items-center  gap-x-3">
             <img src={productImage} alt="product-image" className="w-[70px] h-[70px] object-contain" />
@@ -60,9 +51,9 @@ export default function SearchProduct() {
             />
           </div>
         </Link>
-      )
-    })
-  }
+      );
+    });
+  };
 
   return (
     <>
@@ -71,7 +62,8 @@ export default function SearchProduct() {
         <div className="pt-[30px] flex items-center justify-between">
           <Link
             to="/"
-            className="p-2 bg-white flex justify-center items-center rounded-full ring-1 ring-black hover:ring-0 hover:bg-red-500 transition-all duration-200 ease-in-out group">
+            className="p-2 bg-white flex justify-center items-center rounded-full ring-1 ring-black hover:ring-0 hover:bg-red-500 transition-all duration-200 ease-in-out group"
+          >
             <img
               src="assets/img/arrow-left.png"
               alt="back-button"
@@ -97,5 +89,5 @@ export default function SearchProduct() {
         </div>
       </section>
     </>
-  )
+  );
 }
