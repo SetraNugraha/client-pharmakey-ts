@@ -6,11 +6,9 @@ import { getImageUrl } from "../../utils/getImageUrl";
 
 export default function SearchProduct() {
   const [searchParams] = useSearchParams();
+  const search = searchParams.get("search") || undefined;
 
-  const name = searchParams.get("name") || undefined;
-  const category = searchParams.get("category") || undefined;
-
-  const { productsByFilter: products, productsByFilterLoading } = useProducts({ name, category });
+  const { productsByFilter: products, productsByFilterLoading } = useProducts({ limit: 20, search });
 
   const RenderSearchProducts = () => {
     if (productsByFilterLoading) {

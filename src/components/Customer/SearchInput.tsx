@@ -4,21 +4,20 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 export const SearchInput = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const [text, setText] = useState<string>("");
-  const initialValue = searchParams.get("name") || searchParams.get("category") || "";
+  const [userInput, setUserInput] = useState<string>("");
+
+  const initialValue = searchParams.get("search") || "";
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setText(e.target.value);
+    setUserInput(e.target.value);
   };
 
   useEffect(() => {
-    if (initialValue) {
-      setText(initialValue);
-    }
+    setUserInput(initialValue);
   }, [initialValue]);
 
   const handleSearch = async () => {
-    navigate(`/search-product?name=${encodeURIComponent(text)}`);
+    navigate(`/search-product?search=${encodeURIComponent(userInput)}`);
   };
 
   return (
@@ -27,7 +26,7 @@ export const SearchInput = () => {
         type="text"
         placeholder="Search by name or category"
         className="w-full h-[52px] rounded-[50px] px-[24px] font-semibold text-slate-700 placeholder:text-[16px] border border-slate-200 focus:outline-none focus:ring-2 focus:ring-[#FD915A]"
-        value={text}
+        value={userInput}
         onChange={handleChange}
       />
       <button onClick={handleSearch}>

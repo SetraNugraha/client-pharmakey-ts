@@ -1,10 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useNavigate, useParams } from "react-router-dom";
 import { useProducts } from "../CustomHooks/useProduct";
-// import { Product } from "../../types";
-// import { useCart } from "../CustomHooks/useCart";
 import { CustomAlert } from "../../utils/CustomAlert";
-// import { useAuth } from "../../Auth/useAuth";
 
 import { getImageUrl } from "../../utils/getImageUrl";
 import { useCart } from "../CustomHooks/useCart";
@@ -39,10 +36,7 @@ const gradingList: Grading[] = [
 ];
 
 export default function DetailProduct() {
-  // const { token } = useAuth();
-  // const { cartAction } = useCart();
-  // const { categories } = useCategory();
-  const { productId, slug } = useParams();
+  const { slug } = useParams();
   const { productBySlug, isLoadingProductBySlug } = useProducts({ slug: slug });
   const navigate = useNavigate();
   const { cartAction } = useCart();
@@ -134,7 +128,7 @@ export default function DetailProduct() {
           {/* Footer */}
           <div className="flex items-center justify-between mb-5">
             <div className="flex flex-col items-start gap-y-1">
-              <h1 className="text-2xl font-bold">Rp. {productBySlug?.price.toLocaleString("id-ID")}</h1>
+              <h1 className="text-2xl font-bold">Rp. {productBySlug?.price?.toLocaleString("id-ID")}</h1>
               <p className="text-slate-400">/quantity</p>
             </div>
 

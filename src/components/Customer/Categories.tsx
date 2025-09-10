@@ -11,14 +11,14 @@ export const Categories = () => {
       const categoryImage = getImageUrl("categories", category.category_image);
 
       const handleSearchByCategory = () => {
-        navigate(`/search-product?category=${encodeURIComponent(category.name)}`);
+        navigate(`/search-product?search=${encodeURIComponent(category.name)}`);
       };
 
       return (
         <button
           onClick={handleSearchByCategory}
           key={category.id}
-          className="flex items-center gap-x-2 px-5 py-3 bg-white rounded-[16px] shrink-0 hover:text-white hover:bg-[#FD915A] transition-all duration-300 ease-in-out group"
+          className="flex items-center gap-x-2 px-5 py-3 bg-white rounded-[16px] shrink-0 hover:text-white hover:bPg-[#FD915A] transition-all duration-300 ease-in-out group"
         >
           <img
             src={categoryImage}

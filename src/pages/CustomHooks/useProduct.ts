@@ -5,15 +5,15 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { ICreateProduct, IGetProduct, ProductBySlug } from "../../types/product.type";
 import { Product } from "../../types/product.type";
 import { objectToFormData } from "../../utils/objectToFormData";
+import { Pagination } from "../../types/common.type";
 
 interface Props {
   limit?: number;
   slug?: string;
-  name?: string;
-  category?: string;
+  search?: string;
 }
 
-export const useProducts = ({ limit, slug, name, category }: Props) => {
+export const useProducts = ({ limit, slug, search }: Props) => {
   const { token } = useAuth();
   const queryClient = useQueryClient();
   const [page, setPage] = useState<number>(1);
@@ -62,17 +62,22 @@ export const useProducts = ({ limit, slug, name, category }: Props) => {
 
   // GET BY FILTER
   const { data: productsByFilter, isLoading: productsByFilterLoading } = useQuery({
-    queryKey: ["product", name, category],
+    queryKey: ["product", search],
     queryFn: async ({ queryKey }) => {
-      const [, name, category] = queryKey;
+      const [, search] = queryKey;
 
       const res = await axiosInstance.get("/products/filter", {
-        params: { name, category },
+        params: { search },
       });
 
-      return res.data.data as Product[];
+      const { products, meta } = res.data.data as { products: Product[]; meta: Pagination };
+
+      return {
+        products,
+        meta,
+      };
     },
-    enabled: !!name || !!category,
+    enabled: !!search,
   });
 
   // CREATE Product
@@ -143,7 +148,8 @@ export const useProducts = ({ limit, slug, name, category }: Props) => {
     goToNextPage,
     productBySlug,
     isLoadingProductBySlug,
-    productsByFilter,
+    productsByFilter: productsByFilter?.products,
+    productsByFilterPagination: productsByFilter?.meta,
     productsByFilterLoading,
     // getProductById,
     // searchProducts,
