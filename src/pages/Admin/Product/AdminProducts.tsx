@@ -1,6 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { MdEditSquare, MdDelete, MdLibraryAdd } from "react-icons/md";
-import { IoListCircleSharp } from "react-icons/io5";
+import { MdLibraryAdd } from "react-icons/md";
 import { useState } from "react";
 import { useProducts } from "../../CustomHooks/useProduct";
 import ModalCreateProduct from "./ModalCreateProduct";
@@ -8,21 +7,39 @@ import ModalUpdateProduct from "./ModalUpdateProduct";
 import ModalDetailProduct from "./ModalDetailProduct";
 import { CustomAlert, CustomAlertConfirm } from "../../../utils/CustomAlert";
 import { Product } from "../../../types/product.type";
-import { getImageUrl } from "../../../utils/getImageUrl";
+import { TableProducts } from "./TableProducts";
+import { useDebounce } from "use-debounce";
 
 export default function AdminProducts() {
-  const { products, isLoading, pagination, goToPrevPage, goToNextPage, deleteProduct } = useProducts({ limit: 5 });
+  const [userSearch, setUserSearch] = useState<string>("");
+  const [searchDebounce] = useDebounce(userSearch, 700);
+
+  // CUSTOM HOOKS
+  const {
+    products,
+    isLoading,
+    pagination,
+    goToPrevPage,
+    goToNextPage,
+    deleteProduct,
+    productsByFilter,
+    productsByFilterPagination,
+    productsByFilterLoading,
+  } = useProducts({ limit: 5, search: searchDebounce });
+
   const [modalCreate, setModalCreate] = useState<boolean>(false);
   const [modalDetail, setModalDetail] = useState<boolean>(false);
   const [modalUpdate, setModalUpdate] = useState<boolean>(false);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
 
-  const handleButtonDetail = (product: Product) => {
+  // const handleUserSearch = () => {}
+
+  const handleDetailProduct = (product: Product) => {
     setSelectedProduct(product);
     setModalDetail(true);
   };
 
-  const handleButtonUpdate = (product: Product) => {
+  const handleUpdateProduct = (product: Product) => {
     setSelectedProduct(product);
     setModalUpdate(true);
   };
@@ -46,84 +63,33 @@ export default function AdminProducts() {
     }
   };
 
-  const RenderProducts = () => {
-    if (!pagination) return;
-    const { page, limit } = pagination;
-    // (1 - 1) * 5 + 1 => 0 * 5 + 1 => 1
-    // (2 - 1) * 5 + 1 => 1 * 5 + 1 => 6
-    const baseNumber = (page - 1) * limit + 1;
-    return products?.map((product, index) => {
-      // index = 0 , 1 , 2 , ....
-      // page 1 = 1 + 0 ... page 2 = 6 + 0 ... page 3 = 11 + 0 ...
-      const rowNumber = baseNumber + index;
-      const productImage = getImageUrl("products", product.product_image);
-      return (
-        <tr
-          key={product.id}
-          className="w-full bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600"
-        >
-          {/* Number */}
-          <td className="text-[20px] text-center font-semibold text-gray-900 whitespace-nowrap dark:text-white">
-            {rowNumber}
-          </td>
-
-          {/* Product Image */}
-          <td className="py-3 flex justify-center items-center">
-            <img src={productImage} alt="image-product" className="size-20 object-contain" />
-          </td>
-
-          {/* name */}
-          <td className="py-3 tracking-widest text-[20px] text-center font-medium text-gray-900 whitespace-nowrap dark:text-white">
-            {product.name}
-          </td>
-
-          {/* Price */}
-          <td className="py-3 text-center font-medium text-gray-900 whitespace-nowrap dark:text-white">
-            {product.price.toLocaleString("id-ID", {
-              style: "currency",
-              currency: "IDR",
-              minimumFractionDigits: 0,
-            })}
-          </td>
-
-          {/* Action Button */}
-          <td className="py-3">
-            <div className="flex items-center justify-center gap-x-3">
-              {/* Detail */}
-              <a href="#" onClick={() => handleButtonDetail(product)}>
-                <IoListCircleSharp size={30} className="text-yellow-500 hover:text-sky-400 duration-200" />
-              </a>
-              {/* Update */}
-              <button onClick={() => handleButtonUpdate(product)}>
-                <MdEditSquare size={30} className="text-green-500 hover:text-blue-500 duration-200" />
-              </button>
-              {/* Delete */}
-              <button onClick={() => handleDeleteProduct(product)}>
-                <MdDelete size={30} className="text-red-500 hover:text-slate-400 duration-200" />
-              </button>
-            </div>
-          </td>
-        </tr>
-      );
-    });
-  };
-
   return (
     <>
       <section className="px-10 py-5">
         <div>
           {/* Title */}
           <h1 className="font-bold text-2xl mb-5">Products</h1>
-          {/* Button Add New Product */}
-          <button
-            onClick={() => setModalCreate(true)}
-            className="px-3 py-2 bg-blue-500 text-white font-semibold rounded-lg hover:bg-white hover:text-blue-500 hover:outline-none hover:ring-2 hover:ring-blue-500 duration-300 mb-5 flex items-center gap-x-2 shadow-lg shadow-gray-300"
-          >
-            <span>
-              <MdLibraryAdd size={22} />
-            </span>
-            Create Product
-          </button>
+          <div className="flex items-center justify-between mb-5 ">
+            {/* Button Add New Product */}
+            <button
+              onClick={() => setModalCreate(true)}
+              className="px-3 py-2 bg-blue-500 text-white font-semibold rounded-lg hover:bg-white hover:text-blue-500 hover:outline-none hover:ring-2 hover:ring-blue-500 duration-300  flex items-center gap-x-2 shadow-lg shadow-gray-300"
+            >
+              <span>
+                <MdLibraryAdd size={22} />
+              </span>
+              Create Product
+            </button>
+
+            {/* Input Search */}
+            <input
+              type="text"
+              placeholder="Search by name or category ..."
+              className="ring-1 ring-slate-400 py-1.5 px-3 mr-2 rounded-lg w-[350px] focus:outline-none focus:ring-2 focus:ring-blue-500"
+              value={userSearch}
+              onChange={(e) => setUserSearch(e.target.value)}
+            />
+          </div>
 
           {/* Product Data */}
           <div className="relative overflow-x-auto shadow-md sm:rounded-lg">
@@ -148,14 +114,24 @@ export default function AdminProducts() {
                 </tr>
               </thead>
               <tbody>
-                {isLoading ? (
-                  <tr className="font-semibold text-slate-400 tracking-wider">
-                    <td colSpan={5} className="py-5 text-center text-xl">
-                      Loading ...
-                    </td>
-                  </tr>
+                {productsByFilter ? (
+                  <TableProducts
+                    isLoading={productsByFilterLoading}
+                    products={productsByFilter}
+                    pagination={productsByFilterPagination}
+                    buttonDetail={handleDetailProduct}
+                    buttonUpdate={handleUpdateProduct}
+                    buttonDelete={handleDeleteProduct}
+                  />
                 ) : (
-                  <RenderProducts />
+                  <TableProducts
+                    isLoading={isLoading}
+                    products={products}
+                    pagination={pagination}
+                    buttonDetail={handleDetailProduct}
+                    buttonUpdate={handleUpdateProduct}
+                    buttonDelete={handleDeleteProduct}
+                  />
                 )}
               </tbody>
             </table>
