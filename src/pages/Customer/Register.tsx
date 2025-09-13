@@ -6,10 +6,14 @@ import { useCustomer } from "../CustomHooks/useCustomer";
 import { useState } from "react";
 import { CustomAlert } from "../../utils/CustomAlert";
 import { IRegisterCustomer, Role } from "../../types/auth.type";
+import { Errors } from "../../types/common.type";
+import { AxiosError } from "axios";
+import { getErrorField } from "../../utils/getErrorField";
 
 export default function Register() {
-  const { registerCustomer, hasError } = useCustomer();
+  const { registerCustomer } = useCustomer();
   const navigate = useNavigate();
+  const [hasError, setHasError] = useState<Errors[]>([]);
 
   const [formRegister, setFormRegister] = useState<IRegisterCustomer>({
     username: "",
@@ -32,10 +36,18 @@ export default function Register() {
     e.preventDefault();
     registerCustomer.mutate(formRegister, {
       onSuccess: (data) => {
+        setHasError([]);
         navigate("/login");
         CustomAlert("Success", "success", data?.message);
       },
       onError: (error: any) => {
+        if (error instanceof AxiosError) {
+          const errors = error.response?.data.errors;
+          // Validation Error
+          if (errors) {
+            setHasError(errors);
+          }
+        }
         if (error.code === 500) {
           CustomAlert("Error", "error", error.message);
         }
@@ -67,12 +79,12 @@ export default function Register() {
                   placeholder="Write your full name"
                   icon="assets/img/register-profile.png"
                   value={formRegister.username}
-                  isError={hasError[0]?.field === "username"}
+                  isError={!!getErrorField(hasError, "username")}
                   onChange={handleChange}
                 />
 
-                {hasError && hasError[0]?.field === "username" && (
-                  <p className="text-red-500 font-semibold -mt-3 ml-2">{hasError[0]?.message}</p>
+                {getErrorField(hasError, "username") && (
+                  <p className="text-red-500 font-semibold -mt-3 ml-2">{getErrorField(hasError, "username")?.message}</p>
                 )}
 
                 {/* Email */}
@@ -83,12 +95,12 @@ export default function Register() {
                   placeholder="Your email address"
                   icon="assets/img/email.png"
                   value={formRegister.email}
-                  isError={hasError[0]?.field === "email"}
+                  isError={!!getErrorField(hasError, "email")}
                   onChange={handleChange}
                 />
 
-                {hasError && hasError[0]?.field === "email" && (
-                  <p className="text-red-500 font-semibold -mt-3 ml-2">{hasError[0]?.message}</p>
+                {getErrorField(hasError, "email") && (
+                  <p className="text-red-500 font-semibold -mt-3 ml-2">{getErrorField(hasError, "email")?.message}</p>
                 )}
 
                 {/* Password */}
@@ -99,12 +111,12 @@ export default function Register() {
                   placeholder="Protect your password"
                   icon="assets/img/lock.png"
                   value={formRegister.password}
-                  isError={hasError[0]?.field === "password"}
+                  isError={!!getErrorField(hasError, "password")}
                   onChange={handleChange}
                 />
 
-                {hasError && hasError[0]?.field === "password" && (
-                  <p className="text-red-500 font-semibold ml-2">{hasError[0]?.message}</p>
+                {getErrorField(hasError, "password") && (
+                  <p className="text-red-500 font-semibold -mt-3 ml-2">{getErrorField(hasError, "password")?.message}</p>
                 )}
 
                 {/* Confirm Password */}
@@ -115,13 +127,13 @@ export default function Register() {
                   placeholder="Protect your password"
                   icon="assets/img/lock.png"
                   value={formRegister.confirmPassword}
-                  isError={hasError[0]?.field === "confirmPassword"}
+                  isError={!!getErrorField(hasError, "confirmPassword")}
                   onChange={handleChange}
                 />
               </div>
 
-              {hasError && hasError[0]?.field === "confirmPassword" && (
-                <p className="text-red-500 font-semibold m-2">{hasError[0]?.message}</p>
+              {getErrorField(hasError, "confirmPassword") && (
+                <p className="text-red-500 font-semibold mt-1 ml-2">{getErrorField(hasError, "confirmPassword")?.message}</p>
               )}
 
               <button

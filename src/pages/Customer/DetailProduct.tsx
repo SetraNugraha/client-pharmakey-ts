@@ -2,7 +2,6 @@
 import { useNavigate, useParams } from "react-router-dom";
 import { useProducts } from "../CustomHooks/useProduct";
 import { CustomAlert } from "../../utils/CustomAlert";
-
 import { getImageUrl } from "../../utils/getImageUrl";
 import { useCart } from "../CustomHooks/useCart";
 import { CartActionMethod } from "../../types/cart.type";
@@ -110,9 +109,7 @@ export default function DetailProduct() {
             {/* Testimonials */}
             <div className="mt-[20px]">
               {/* text testimonial */}
-              <p className="tracking-wider">
-                My kid was happier whenever he is playing without artificial toys, full energy yeah!
-              </p>
+              <p className="tracking-wider">My kid was happier whenever he is playing without artificial toys, full energy yeah!</p>
               <div className="mt-[10px] flex items-center justify-between">
                 {/* user profile */}
                 <div className="flex items-center gap-x-2">
@@ -157,11 +154,7 @@ export default function DetailProduct() {
             onClick={() => navigate(-1)}
             className="p-2 bg-white flex justify-center items-center rounded-full ring-1 ring-black hover:ring-0 hover:bg-red-500 transition-all duration-200 ease-in-out group"
           >
-            <img
-              src="/assets/img/arrow-left.png"
-              alt="back-button"
-              className="group-hover:filter group-hover:invert group-hover:brightness-0"
-            />
+            <img src="/assets/img/arrow-left.png" alt="back-button" className="group-hover:filter group-hover:invert group-hover:brightness-0" />
           </button>
 
           {/* Title */}
@@ -173,20 +166,14 @@ export default function DetailProduct() {
           {isLoadingProductBySlug ? (
             <p className="font-semibold text-center mt-5 tracking-wider text-slate-500">Loading Image ...</p>
           ) : (
-            <img
-              src={productImage}
-              alt="product-image"
-              className="absolute top-[15%] left-1/2 -translate-x-1/2 size-64 xl:size-64 object-contain"
-            />
+            <img src={productImage} alt="product-image" className="absolute top-[15%] left-1/2 -translate-x-1/2 size-64 xl:size-64 object-contain" />
           )}
         </div>
 
         {/* Render Detail */}
         <div className="bg-white border-t-2 border-slate-300 rounded-t-[60px] mt-[65%] xl:max-h-screen xl:pb-12">
           {isLoadingProductBySlug ? (
-            <p className="font-semibold text-center ml-1 tracking-wider text-slate-500 bg-[#F7F1F0] -mt-5">
-              Loading Products Detail...
-            </p>
+            <p className="font-semibold text-center ml-1 tracking-wider text-slate-500 bg-[#F7F1F0] -mt-5">Loading Products Detail...</p>
           ) : (
             <RenderDetailProduct />
           )}

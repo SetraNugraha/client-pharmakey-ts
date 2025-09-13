@@ -8,6 +8,10 @@ export const CustomAlert = (title: string, icon: type, message?: string) => {
     title: title,
     text: message,
     confirmButtonText: "Yes",
+    width: "100%",
+    customClass: {
+      popup: "!max-w-sm",
+    },
   });
 };
 
@@ -19,5 +23,9 @@ export const CustomAlertConfirm = async (title: string): Promise<boolean> => {
     confirmButtonColor: "#3085d6",
     cancelButtonColor: "#d33",
     confirmButtonText: "Yes",
+    width: "100%",
+    customClass: {
+      popup: "!max-w-sm",
+    },
   }).then((result) => result.isConfirmed);
 };
