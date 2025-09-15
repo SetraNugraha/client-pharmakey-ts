@@ -6,6 +6,7 @@ import { useAuth } from "../../../Auth/useAuth";
 import { useState } from "react";
 import moment from "moment";
 import { CustomAlert } from "../../../utils/CustomAlert";
+import { convertToRp } from "../../../utils/convertToRp";
 
 interface Proof {
   transactionId: string;
@@ -51,36 +52,27 @@ export default function Transactions() {
       };
 
       return (
-        <div
-          key={index}
-          className="relative flex flex-col items-start bg-white p-5 rounded-xl shadow-lg shadow-gray-300 border border-slate-200"
-        >
+        <div key={index} className="relative flex flex-col items-start bg-white p-5 rounded-xl shadow-lg shadow-gray-300 border border-slate-200">
           {/* Detail Text */}
           <div className="flex items-center justify-between w-full">
             {/* Total Price */}
             <div>
               <h1 className="font-semibold tracking-wide text-sm text-slate-500">Total Price</h1>
-              <p className="font-bold">Rp. {transaction.billing.total_amount.toLocaleString("id-ID")}</p>
+              <p className="font-bold text-slate-600">{convertToRp(transaction?.billing?.total_amount)}</p>
             </div>
 
             {/* Date */}
             <div>
               <h1 className="font-semibold tracking-wide text-sm text-slate-500">Date</h1>
-              <p className="font-bold">{moment(transaction.created_at).format("DD-MM-YYYY")}</p>
+              <p className="font-bold text-slate-600">{moment(transaction.created_at).format("HH:mm - DD/MM/YYYY")}</p>
             </div>
 
             {/* Status */}
             <div>
-              <h1 className="font-semibold tracking-wide text-sm text-slate-500 flex flex-col justify-center items-center">
-                Status
-              </h1>
+              <h1 className="font-semibold tracking-wide text-sm text-slate-500 flex flex-col justify-center items-center">Status</h1>
               <p
                 className={`px-2 py-1 text-white font-semibold rounded-lg text-center uppercase text-[13px] tracking-wide ${
-                  transaction.is_paid === "PENDING"
-                    ? "bg-yellow-500"
-                    : transaction.is_paid === "SUCCESS"
-                    ? "bg-green-500"
-                    : "bg-red-500"
+                  transaction.is_paid === "PENDING" ? "bg-yellow-500" : transaction.is_paid === "SUCCESS" ? "bg-green-500" : "bg-red-500"
                 }`}
               >
                 {transaction.is_paid}
@@ -119,28 +111,17 @@ export default function Transactions() {
                     >
                       Upload Proof
                     </label>
-                    <input
-                      type="file"
-                      name="proof"
-                      id={transaction.id}
-                      className="hidden"
-                      accept="image/*"
-                      onChange={handleUploadProof}
-                    />
+                    <input type="file" name="proof" id={transaction.id} className="hidden" accept="image/*" onChange={handleUploadProof} />
                   </div>
                 )}
               </div>
             )}
 
             {/* Awaiting Approval */}
-            {transaction.proof !== null && transaction.is_paid === "PENDING" && (
-              <p className="text-gray-600 font-semibold">Awaiting Approval ...</p>
-            )}
+            {transaction.proof !== null && transaction.is_paid === "PENDING" && <p className="text-gray-600 font-semibold">Awaiting Approval ...</p>}
 
             {/* SUCCESS */}
-            {transaction.proof !== null && transaction.is_paid === "SUCCESS" && (
-              <p className="text-green-600 font-semibold">Proof Accepted</p>
-            )}
+            {transaction.proof !== null && transaction.is_paid === "SUCCESS" && <p className="text-green-600 font-semibold">Proof Accepted</p>}
 
             {/* CANCELLED */}
             {transaction.is_paid === "CANCELLED" && <p className="text-red-500 font-semibold">Cancelled</p>}
@@ -166,11 +147,7 @@ export default function Transactions() {
             onClick={() => navigate("/")}
             className="p-2 bg-white flex justify-center items-center rounded-full ring-1 ring-black hover:ring-0 hover:bg-red-500 transition-all duration-200 ease-in-out group"
           >
-            <img
-              src="assets/img/arrow-left.png"
-              alt="back-button"
-              className="group-hover:filter group-hover:invert group-hover:brightness-0"
-            />
+            <img src="assets/img/arrow-left.png" alt="back-button" className="group-hover:filter group-hover:invert group-hover:brightness-0" />
           </button>
           {/* Tiitle */}
           <h1 className="font-semibold text-xl absolute left-1/2 -translate-x-[50%]">Transactions</h1>

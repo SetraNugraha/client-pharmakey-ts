@@ -3,6 +3,7 @@ import { Product } from "../../../types/product.type";
 import { getImageUrl } from "../../../utils/getImageUrl";
 import { MdEditSquare, MdDelete } from "react-icons/md";
 import { IoListCircleSharp } from "react-icons/io5";
+import { convertToRp } from "../../../utils/convertToRp";
 
 interface Props {
   isLoading: boolean;
@@ -49,14 +50,9 @@ export const TableProducts = ({ isLoading, products, pagination, buttonDetail, b
     const rowNumber = baseNumber + index;
     const productImage = getImageUrl("products", product.product_image);
     return (
-      <tr
-        key={product.id}
-        className="w-full bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600"
-      >
+      <tr key={product.id} className="w-full bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
         {/* Number */}
-        <td className="text-[20px] text-center font-semibold text-gray-900 whitespace-nowrap dark:text-white">
-          {rowNumber}
-        </td>
+        <td className="text-[20px] text-center font-semibold text-gray-900 whitespace-nowrap dark:text-white">{rowNumber}</td>
 
         {/* Product Image */}
         <td className="py-3 flex justify-center items-center">
@@ -64,18 +60,10 @@ export const TableProducts = ({ isLoading, products, pagination, buttonDetail, b
         </td>
 
         {/* name */}
-        <td className="py-3 tracking-widest text-[20px] text-center font-medium text-gray-900 whitespace-nowrap dark:text-white">
-          {product.name}
-        </td>
+        <td className="py-3 tracking-widest text-[20px] text-center font-medium text-gray-900 whitespace-nowrap dark:text-white">{product.name}</td>
 
         {/* Price */}
-        <td className="py-3 text-center font-medium text-gray-900 whitespace-nowrap dark:text-white">
-          {product.price.toLocaleString("id-ID", {
-            style: "currency",
-            currency: "IDR",
-            minimumFractionDigits: 0,
-          })}
-        </td>
+        <td className="py-3 text-center font-medium text-gray-900 whitespace-nowrap dark:text-white">{convertToRp(product?.price)}</td>
 
         {/* Action Button */}
         <td className="py-3">

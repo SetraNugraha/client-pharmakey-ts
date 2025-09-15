@@ -6,6 +6,9 @@ import { CustomAlert } from "../../../utils/CustomAlert";
 import { useAuth } from "../../../Auth/useAuth";
 import { Transaction } from "../../../types/transaction.type";
 import { getImageUrl } from "../../../utils/getImageUrl";
+import { convertToRp } from "../../../utils/convertToRp";
+import { DetailPayment } from "../Carts/DetailPayment";
+import moment from "moment";
 
 interface Proof {
   transactionId: string;
@@ -63,58 +66,26 @@ export default function DetailTransaction() {
 
   const RenderItems = () => {
     return transaction?.transaction_detail?.map((trx, index) => {
-      const productImage = getImageUrl("products", trx.product.product_image);
+      const productImage = getImageUrl("products", trx?.product.product_image);
       return (
         <div key={index} className="relative">
           {/* Products */}
           <Link
-            to={`/detail-product/${trx.product.slug}/${trx.product.id}`}
+            to={`/detail-product/${trx?.product?.slug}/${trx?.product.id}`}
             className="flex items-center justify-between gap-x-2 px-5 py-3 bg-white rounded-[16px] shrink-0 hover:bg-[#FD915A] transition-all duration-300 ease-in-out group"
           >
             <div className="flex items-center  gap-x-3">
               <img src={productImage} alt="product-image" className="size-16 object-contain" />
               <div className="flex flex-col gap-y-1 items-start">
-                <h1 className="font-bold group-hover:text-white text-start">{trx.product.name}</h1>
-                <p className="font-semibold text-slate-400 group-hover:text-white">
-                  Rp. {trx.price.toLocaleString("id-ID") || ""}
-                </p>
-                <p className="font-semibold text-sm text-slate-400 group-hover:text-white">Quantity: {trx.quantity}</p>
+                <h1 className="font-bold group-hover:text-white text-start">{trx?.product?.name}</h1>
+                <p className="font-semibold text-slate-400 group-hover:text-white">{convertToRp(trx?.price)}</p>
+                <p className="font-semibold text-sm text-slate-400 group-hover:text-white">Quantity: {trx?.quantity}</p>
               </div>
             </div>
           </Link>
         </div>
       );
     });
-  };
-
-  const RenderDetailPayment = () => {
-    return (
-      <>
-        {/* Sub Total */}
-        <div className="flex items-center justify-between">
-          <h1>Sub Total</h1>
-          <p className="font-bold">Rp. {transaction?.billing?.sub_total.toLocaleString("id-ID")}</p>
-        </div>
-
-        {/* PPN */}
-        <div className="flex items-center justify-between">
-          <h1>PPN 10%</h1>
-          <p className="font-bold">Rp. {transaction?.billing?.tax.toLocaleString("id-ID")}</p>
-        </div>
-
-        {/* Delivery */}
-        <div className="flex items-center justify-between">
-          <h1>Delivery {"(Promo)"}</h1>
-          <p className="font-bold">Rp. {transaction?.billing?.delivery_fee.toLocaleString("id-ID")}</p>
-        </div>
-
-        {/* Grand Total */}
-        <div className="flex items-center justify-between">
-          <h1>Grand Total</h1>
-          <p className="font-bold text-[#FD915A]">Rp. {transaction?.billing?.total_amount.toLocaleString("id-ID")}</p>
-        </div>
-      </>
-    );
   };
 
   return (
@@ -127,11 +98,7 @@ export default function DetailTransaction() {
             onClick={() => navigate(-1)}
             className="p-2 bg-white flex justify-center items-center rounded-full ring-1 ring-black hover:ring-0 hover:bg-red-500 transition-all duration-200 ease-in-out group disabled:bg-gray-500 disabled:cursor-not-allowed"
           >
-            <img
-              src="/assets/img/arrow-left.png"
-              alt="back-button"
-              className="group-hover:filster group-hover:invert group-hover:brightness-0"
-            />
+            <img src="/assets/img/arrow-left.png" alt="back-button" className="group-hover:filster group-hover:invert group-hover:brightness-0" />
           </button>
           <h1 className="font-semibold text-xl">Detail Transaction</h1>
           <div></div>
@@ -187,7 +154,7 @@ export default function DetailTransaction() {
           ) : (
             showPayment && (
               <div className="mt-[10px] px-5 py-7 bg-white rounded-[24px] flex flex-col gap-y-5">
-                <RenderDetailPayment />
+                <DetailPayment billing={transaction?.billing} />
               </div>
             )
           )}
@@ -213,9 +180,7 @@ export default function DetailTransaction() {
                       <div className="flex items-center gap-x-3">
                         <img src="/assets/img/bank.png" alt="bank" />
                         <h1 className="font-semibold">
-                          {transaction?.billing?.payment_method === "TRANSFER"
-                            ? "Bank Pharmakey Healty"
-                            : "take a photo when the medicine arrives."}
+                          {transaction?.billing?.payment_method === "TRANSFER" ? "Bank Pharmakey Healty" : "take a photo when the medicine arrives."}
                         </h1>
                       </div>
 
@@ -288,9 +253,7 @@ export default function DetailTransaction() {
                   <h1 className="font-bold tracking-wide text-lg">Note</h1>
                   <div className="flex gap-x-2 items-center">
                     <img src="/assets/img/note.png" alt="note" className="size-5" />
-                    <p className="font-semibold text-slate-500 tracking-wide">
-                      {transaction?.notes || "Customer didn't add note"}
-                    </p>
+                    <p className="font-semibold text-slate-500 tracking-wide">{transaction?.notes || "Customer didn't add note"}</p>
                   </div>
                 </div>
               </div>
@@ -301,11 +264,12 @@ export default function DetailTransaction() {
         {/* Price Total & SEND PROOF */}
         <div className="pb-[50px] px-[16px]">
           <div className="flex items-center justify-between p-5 bg-black rounded-[23px]">
-            <div>
-              <p className="text-gray-300 text-xs font-semibold">Grand Total</p>
-              <h1 className="text-2xl text-white font-bold">
-                Rp. {transaction?.billing?.total_amount.toLocaleString("id-ID")}
-              </h1>
+            <div className="flex flex-col items-start gap-y-4">
+              <div>
+                <p className="text-gray-300 text-sm font-semibold">Grand Total</p>
+                <h1 className="text-2xl text-white font-bold">{convertToRp(transaction?.billing?.total_amount)}</h1>
+              </div>
+              <p className="text-white text-sm font-semibold tracking-wider">{moment(transaction?.created_at).format("HH:mm - DD/MM/YYYY")}</p>
             </div>
 
             {/* Upload PROOF */}
@@ -329,14 +293,7 @@ export default function DetailTransaction() {
                     >
                       Upload Proof
                     </label>
-                    <input
-                      hidden
-                      type="file"
-                      accept="image/*"
-                      name="proof"
-                      id={transaction.id}
-                      onChange={handleUploadProof}
-                    />
+                    <input hidden type="file" accept="image/*" name="proof" id={transaction.id} onChange={handleUploadProof} />
                   </div>
                 )}
               </div>
@@ -344,9 +301,7 @@ export default function DetailTransaction() {
 
             {/* Awaiting Approval */}
             {transaction?.proof !== null && transaction?.is_paid === "PENDING" && (
-              <p className=" tracking-wider px-6 py-3 bg-gray-500 text-white font-bold rounded-[50px]">
-                Awaiting Approval ...
-              </p>
+              <p className=" tracking-wider px-6 py-3 bg-gray-500 text-white font-bold rounded-[50px]">Awaiting Approval ...</p>
             )}
 
             {/* SUCCESS */}

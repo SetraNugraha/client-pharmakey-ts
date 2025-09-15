@@ -146,9 +146,7 @@ export default function AdminProducts() {
             >
               Prev
             </button>
-            <p className="px-3 py-1 ring-2 ring-slate-300 rounded-lg font-semibold text-slate-400">
-              {pagination?.page}
-            </p>
+            <p className="px-3 py-1 ring-2 ring-slate-300 rounded-lg font-semibold text-slate-400">{pagination?.page}</p>
             <button
               disabled={!pagination?.isNext}
               onClick={goToNextPage}

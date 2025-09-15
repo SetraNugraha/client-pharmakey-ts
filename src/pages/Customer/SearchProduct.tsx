@@ -3,6 +3,7 @@ import { Link, useSearchParams } from "react-router-dom";
 import { SearchInput } from "../../components/Customer/SearchInput";
 import { useProducts } from "../CustomHooks/useProduct";
 import { getImageUrl } from "../../utils/getImageUrl";
+import { convertToRp } from "../../utils/convertToRp";
 
 export default function SearchProduct() {
   const [searchParams] = useSearchParams();
@@ -34,19 +35,13 @@ export default function SearchProduct() {
             <img src={productImage} alt="product-image" className="w-[70px] h-[70px] object-contain" />
             <div className="flex flex-col gap-y-1 items-start">
               <h1 className="font-bold group-hover:text-white text-start">{product.name}</h1>
-              <p className="font-semibold text-slate-400 group-hover:text-white">
-                Rp. {product.price.toLocaleString("id-ID")}
-              </p>
+              <p className="font-semibold text-slate-400 group-hover:text-white">{convertToRp(product?.price)}</p>
             </div>
           </div>
 
           {/* 5 Star */}
           <div>
-            <img
-              src="assets/img/star.png"
-              alt="star"
-              className="group-hover:filter group-hover:brightness-0 group-hover:invert"
-            />
+            <img src="assets/img/star.png" alt="star" className="group-hover:filter group-hover:brightness-0 group-hover:invert" />
           </div>
         </Link>
       );
@@ -62,11 +57,7 @@ export default function SearchProduct() {
             to="/"
             className="p-2 bg-white flex justify-center items-center rounded-full ring-1 ring-black hover:ring-0 hover:bg-red-500 transition-all duration-200 ease-in-out group"
           >
-            <img
-              src="assets/img/arrow-left.png"
-              alt="back-button"
-              className="group-hover:filter group-hover:invert group-hover:brightness-0"
-            />
+            <img src="assets/img/arrow-left.png" alt="back-button" className="group-hover:filter group-hover:invert group-hover:brightness-0" />
           </Link>
           <h1 className="font-semibold text-xl  absolute left-1/2 -translate-x-[50%]">Search Products</h1>
         </div>

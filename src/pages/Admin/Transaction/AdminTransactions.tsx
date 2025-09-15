@@ -3,7 +3,7 @@ import ModalTransactionDetail from "./ModalTransactionDetail";
 import { useState } from "react";
 import { useTransaction } from "../../CustomHooks/useTransaction";
 import { IsPaid, Transaction } from "../../../types/transaction.type";
-import { toRupiah } from "../../../utils/convertToRp";
+import { convertToRp } from "../../../utils/convertToRp";
 
 export default function AdminTransactions() {
   const { transactions, isLoading, pagination, goToPrevPage, goToNextPage } = useTransaction({ limit: 7 });
@@ -31,21 +31,15 @@ export default function AdminTransactions() {
       };
 
       return (
-        <tr
-          key={index}
-          className="bg-white text-center border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600"
-        >
+        <tr key={index} className="bg-white text-center border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
           {/* Number */}
           <td className="text-lg text-white font-bold py-4">{rowNumber}</td>
           {/* Email */}
           <td className="text-lg  py-4">{transaction.customer.email}</td>
 
           {/* Total Price */}
-          <td
-            scope="row"
-            className="text-lg tracking-widest py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
-          >
-            {toRupiah(transaction.billing.total_amount)}
+          <td scope="row" className="text-lg tracking-widest py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+            {convertToRp(transaction.billing.total_amount)}
           </td>
 
           {/* Checkout Date */}
@@ -159,9 +153,7 @@ export default function AdminTransactions() {
             >
               Prev
             </button>
-            <p className="px-3 py-1 ring-2 ring-slate-300 rounded-lg font-semibold text-slate-400">
-              {pagination?.page}
-            </p>
+            <p className="px-3 py-1 ring-2 ring-slate-300 rounded-lg font-semibold text-slate-400">{pagination?.page}</p>
             <button
               disabled={!pagination?.isNext}
               onClick={goToNextPage}

@@ -5,6 +5,7 @@ import { CustomAlert } from "../../utils/CustomAlert";
 import { getImageUrl } from "../../utils/getImageUrl";
 import { useCart } from "../CustomHooks/useCart";
 import { CartActionMethod } from "../../types/cart.type";
+import { convertToRp } from "../../utils/convertToRp";
 
 type Grading = {
   icon: string;
@@ -125,7 +126,7 @@ export default function DetailProduct() {
           {/* Footer */}
           <div className="flex items-center justify-between mb-5">
             <div className="flex flex-col items-start gap-y-1">
-              <h1 className="text-2xl font-bold">Rp. {productBySlug?.price?.toLocaleString("id-ID")}</h1>
+              <h1 className="text-2xl font-bold">{convertToRp(productBySlug?.price)}</h1>
               <p className="text-slate-400">/quantity</p>
             </div>
 

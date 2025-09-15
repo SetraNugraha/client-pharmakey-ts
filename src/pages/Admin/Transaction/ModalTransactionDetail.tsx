@@ -5,7 +5,7 @@ import { CustomAlertConfirm, CustomAlert } from "../../../utils/CustomAlert";
 import { Transaction, UpdateIsPaid } from "../../../types/transaction.type";
 import { getImageUrl } from "../../../utils/getImageUrl";
 import { IsPaid } from "../../../types/transaction.type";
-import { toRupiah } from "../../../utils/convertToRp";
+import { convertToRp } from "../../../utils/convertToRp";
 import { useTransaction } from "../../CustomHooks/useTransaction";
 import { AxiosError } from "axios";
 
@@ -29,9 +29,7 @@ export default function ModalTransactionDetail({ transaction, onClose }: ModalTr
 
     const handleUpdateIsPaid = async (status: UpdateIsPaid) => {
       const title =
-        status === UpdateIsPaid.SUCCESS
-          ? "Are you sure want to APPROVE this Transaction ?"
-          : "Are you sure want to CANCEL this Transaction";
+        status === UpdateIsPaid.SUCCESS ? "Are you sure want to APPROVE this Transaction ?" : "Are you sure want to CANCEL this Transaction";
 
       const isConfirm = await CustomAlertConfirm(title);
 
@@ -77,7 +75,7 @@ export default function ModalTransactionDetail({ transaction, onClose }: ModalTr
           {/* Total Transaction */}
           <div>
             <h1 className="text-slate-400 font-semibold">Total Transaction</h1>
-            <p className="font-bold text-md tracking-wider">{toRupiah(transaction.billing.total_amount)}</p>
+            <p className="font-bold text-md tracking-wider">{convertToRp(transaction.billing.total_amount)}</p>
           </div>
 
           {/* Date */}
@@ -89,9 +87,7 @@ export default function ModalTransactionDetail({ transaction, onClose }: ModalTr
           {/* Status */}
           <div>
             <p
-              className={`my-3 p-2 tracking-wider text-white font-semibold inline-block rounded-lg uppercase ${
-                paidStatusColor[transaction.is_paid]
-              }`}
+              className={`my-3 p-2 tracking-wider text-white font-semibold inline-block rounded-lg uppercase ${paidStatusColor[transaction.is_paid]}`}
             >
               {transaction.is_paid}
             </p>
@@ -118,7 +114,7 @@ export default function ModalTransactionDetail({ transaction, onClose }: ModalTr
                         <h1 className="font-bold">{item.product.name}</h1>
 
                         {/* Price */}
-                        <p className="font-semibold text-slate-400">{toRupiah(item.price)}</p>
+                        <p className="font-semibold text-slate-400">{convertToRp(item.price)}</p>
                       </div>
                     </div>
 
@@ -141,25 +137,25 @@ export default function ModalTransactionDetail({ transaction, onClose }: ModalTr
                 {/* Sub Total */}
                 <div className="flex items-center justify-between">
                   <h1 className="font-semibold text-slate-400">Sub Total Items</h1>
-                  <p className="font-bold">{toRupiah(transaction.billing.sub_total)}</p>
+                  <p className="font-bold">{convertToRp(transaction.billing.sub_total)}</p>
                 </div>
 
                 {/* Tax */}
                 <div className="flex items-center justify-between">
                   <h1 className="font-semibold text-slate-400">Tax 10%</h1>
-                  <p className="font-bold">{toRupiah(transaction.billing.tax)}</p>
+                  <p className="font-bold">{convertToRp(transaction.billing.tax)}</p>
                 </div>
 
                 {/* Delivery Fee */}
                 <div className="flex items-center justify-between">
                   <h1 className="font-semibold text-slate-400">Delivery Fee 5%</h1>
-                  <p className="font-bold">{toRupiah(transaction.billing.delivery_fee)}</p>
+                  <p className="font-bold">{convertToRp(transaction.billing.delivery_fee)}</p>
                 </div>
 
                 {/* Grand Total */}
                 <div className="flex items-center justify-between">
                   <h1 className="font-semibold text-slate-400">Grand Total</h1>
-                  <p className="font-bold">{toRupiah(transaction.billing.total_amount)}</p>
+                  <p className="font-bold">{convertToRp(transaction.billing.total_amount)}</p>
                 </div>
               </div>
             </div>

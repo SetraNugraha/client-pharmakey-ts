@@ -37,19 +37,6 @@ export default function Cart() {
     notes: null,
   });
 
-  // Shipping Customer
-  // useEffect(() => {
-  //   if (authCustomer && !formCheckout) {
-  //     setFormCheckout((prevState) => ({
-  //       ...prevState,
-  //       address: authCustomer.address ?? "",
-  //       city: authCustomer.city ?? "",
-  //       post_code: authCustomer.post_code ?? "",
-  //       phone_number: authCustomer.phone_number ?? "",
-  //     }));
-  //   }
-  // }, [authCustomer]);
-
   // Payment Detail
   useEffect(() => {
     if (!customerCarts) return;

@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom'
+import { Link } from "react-router-dom";
 
 export default function FinishCheckout() {
   return (
@@ -12,11 +12,12 @@ export default function FinishCheckout() {
           </p>
           <Link
             to="/transactions"
-            className="tracking-wider px-6 py-3 bg-[#FD915A] text-white font-bold rounded-[50px] hover:bg-white hover:text-[#FD915A] hover:ring-2 hover:ring-[#FD915A] shadow-xl">
+            className="tracking-wider px-6 py-3 bg-[#FD915A] text-white font-bold rounded-[50px] hover:bg-white hover:text-[#FD915A] hover:ring-2 hover:ring-[#FD915A] shadow-xl"
+          >
             My Orders
           </Link>
         </div>
       </section>
     </>
-  )
+  );
 }
