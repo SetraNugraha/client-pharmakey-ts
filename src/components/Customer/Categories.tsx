@@ -18,7 +18,7 @@ export const Categories = () => {
         <button
           onClick={handleSearchByCategory}
           key={category.id}
-          className="flex items-center gap-x-2 px-5 py-3 bg-white rounded-[16px] shrink-0 hover:text-white hover:bPg-[#FD915A] transition-all duration-300 ease-in-out group"
+          className="flex items-center gap-x-2 px-5 py-3 bg-white rounded-[16px] shrink-0 hover:text-white hover:bg-[#FD915A] transition-all duration-300 ease-in-out group"
         >
           <img
             src={categoryImage}

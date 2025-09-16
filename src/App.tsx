@@ -31,6 +31,7 @@ import { AuthContextProvider } from "./Auth/AuthContext";
 import { PrivateRoutesAdmin } from "./layouts/PrivateRoutesAdmin";
 import { PrivateRoutesCustomer } from "./layouts/PrivateRoutesCustomer";
 import { useEffect } from "react";
+import { PageNotFound } from "./components/PageNotFound";
 
 export default function App() {
   const DynamicTitle = () => {
@@ -96,6 +97,9 @@ export default function App() {
             </Route>
           </Route>
           {/* END Private Route Admin */}
+
+          {/* Page Not Found */}
+          <Route path="*" element={<PageNotFound />} />
         </Routes>
       </AuthContextProvider>
     </Router>
