@@ -1,6 +1,7 @@
 import React from "react";
 
 type InputFieldProps = {
+  required?: any;
   label?: string;
   name?: string;
   type?: string;
@@ -15,6 +16,7 @@ type InputFieldProps = {
 };
 
 export const InputField: React.FC<InputFieldProps> = ({
+  required,
   label,
   type,
   name,
@@ -33,6 +35,7 @@ export const InputField: React.FC<InputFieldProps> = ({
     </label>
     <div className="relative w-full h-[52px]">
       <input
+        required={required}
         type={type}
         name={name}
         id={name}

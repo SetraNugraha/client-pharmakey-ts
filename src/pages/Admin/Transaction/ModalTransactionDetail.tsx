@@ -237,8 +237,8 @@ export default function ModalTransactionDetail({ transaction, onClose }: ModalTr
             <>
               <div className="absolute top-0 h-[2px] w-full border border-slate-300 opacity-50"></div>
               <p className="flex flex-col mt-5 font-bold tracking-wider text-green-600">
-                This transaction has been successfully completed,
-                <span>on {moment(transaction.updated_at).format("DD-MM-YYYY")}</span>
+                This transaction was marked as Success,
+                <span>on {moment(transaction.updated_at).format("HH:mm - DD/MM/YYYY")}</span>
               </p>
             </>
           )}
@@ -248,8 +248,8 @@ export default function ModalTransactionDetail({ transaction, onClose }: ModalTr
             <div>
               <div className="absolute top-0 h-[2px] w-full border border-slate-300 opacity-50"></div>
               <p className="flex flex-col mt-5 font-semibold tracking-widest text-red-600">
-                This Transaction has been Cancelled,
-                <span>on {moment(transaction.updated_at).format("DD-MM-YYYY")}</span>
+                This transaction was Cancelled,
+                <span>on {moment(transaction.updated_at).format("HH:mm - DD/MM/YYYY")}</span>
               </p>
             </div>
           )}

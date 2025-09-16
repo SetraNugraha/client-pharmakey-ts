@@ -45,6 +45,11 @@ export default function AdminTransactions() {
           {/* Checkout Date */}
           <td className="text-lg  py-4">{moment(transaction.created_at).format("HH:mm - DD/MM/YYYY")}</td>
 
+          {/* Processed Date */}
+          <td className="text-lg  py-4">
+            {transaction.created_at === transaction.updated_at ? "Unprocessed" : moment(transaction.updated_at).format("HH:mm - DD/MM/YYYY")}
+          </td>
+
           {/* Payment Method */}
           <td className={`my-3 p-2 tracking-wider text-white font-semibold inline-block rounded-lg uppercase `}>
             {transaction.billing.payment_method}
@@ -105,6 +110,9 @@ export default function AdminTransactions() {
                   </th>
                   <th scope="col" className="py-3">
                     Checkout Date
+                  </th>
+                  <th scope="col" className="py-3">
+                    Processed Date
                   </th>
                   <th scope="col" className="py-3">
                     Payment

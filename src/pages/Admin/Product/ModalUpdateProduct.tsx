@@ -6,6 +6,7 @@ import { CustomAlert } from "../../../utils/CustomAlert";
 import { Product } from "../../../types/product.type";
 import { Errors } from "../../../types/common.type";
 import { AxiosError } from "axios";
+import { getErrorField } from "../../../utils/getErrorField";
 
 interface ModalUpdateProductProps {
   product: Product | null;
@@ -22,6 +23,9 @@ export default function ModalUpdateProduct({ product, onClose }: ModalUpdateProd
 
   // ERROR State
   const [hasError, setHasError] = useState<Errors[]>([]);
+  const nameError = getErrorField(hasError, "name");
+  const priceError = getErrorField(hasError, "price");
+  const productImageError = getErrorField(hasError, "product_image");
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value, type, files } = e.target as HTMLInputElement;
@@ -79,14 +83,12 @@ export default function ModalUpdateProduct({ product, onClose }: ModalUpdateProd
               id="name"
               placeholder="Input product name here"
               className={`h-[40px] rounded-lg px-5 focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                hasError && hasError[0]?.field === "name" ? "ring-2 ring-red-500" : "ring-1 ring-slate-300"
+                nameError ? "ring-2 ring-red-500" : "ring-1 ring-slate-300"
               }`}
               value={formUpdateProduct?.name ?? product?.name ?? ""}
               onChange={handleChange}
             />
-            {hasError && hasError[0]?.field === "name" && (
-              <p className="text-red-500 font-semibold tracking-wider ml-2">{hasError[0]?.message}</p>
-            )}
+            {nameError && <p className="text-red-500 font-semibold tracking-wider ml-2">{nameError?.message}</p>}
           </div>
 
           {/* Select Category */}
@@ -123,15 +125,13 @@ export default function ModalUpdateProduct({ product, onClose }: ModalUpdateProd
               id="price"
               placeholder="Input product price here"
               className={`h-[40px] rounded-lg px-5 focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                hasError && hasError[0]?.field === "price" ? "ring-2 ring-red-500" : "ring-1 ring-slate-300"
+                priceError ? "ring-2 ring-red-500" : "ring-1 ring-slate-300"
               }`}
               value={formUpdateProduct.price ?? product?.price ?? 0}
               onChange={handleChange}
             />
 
-            {hasError && hasError[0]?.field === "price" && (
-              <p className="text-red-500 font-semibold tracking-wider ml-2">{hasError[0]?.message}</p>
-            )}
+            {priceError && <p className="text-red-500 font-semibold tracking-wider ml-2">{priceError?.message}</p>}
           </div>
 
           {/* Product description */}
@@ -156,6 +156,8 @@ export default function ModalUpdateProduct({ product, onClose }: ModalUpdateProd
               Add New Product Image
             </label>
             <input type="file" name="product_image" id="product_image" accept="image/*" onChange={handleChange} />
+
+            {productImageError && <p className="text-red-500 font-semibold tracking-wider ml-2">{productImageError?.message}</p>}
           </div>
 
           {/* Button Submit */}

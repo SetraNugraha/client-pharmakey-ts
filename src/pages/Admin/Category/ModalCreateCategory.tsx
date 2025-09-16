@@ -5,6 +5,7 @@ import { CustomAlert } from "../../../utils/CustomAlert";
 import { Errors } from "../../../types/common.type";
 import { AxiosError } from "axios";
 import { Category } from "../../../types/category.type";
+import { getErrorField } from "../../../utils/getErrorField";
 
 type ModalCreateCategoryProps = {
   onClose: () => void;
@@ -18,6 +19,8 @@ export default function ModalCreateCategory({ onClose }: ModalCreateCategoryProp
 
   // ERROR State
   const [hasError, setHasError] = useState<Errors[]>([]);
+  const nameError = getErrorField(hasError, "name");
+  const categoryImageError = getErrorField(hasError, "category_image");
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type, files } = e.target;
@@ -33,13 +36,17 @@ export default function ModalCreateCategory({ onClose }: ModalCreateCategoryProp
     e.preventDefault();
     createCategory.mutate(formCreateCategory, {
       onSuccess: (data) => {
+        setHasError([]);
         CustomAlert("success", "success", data?.message);
         onClose();
       },
       onError: (error) => {
         if (error instanceof AxiosError) {
           const errors = error?.response?.data.errors;
-          setHasError(errors);
+
+          if (errors) {
+            setHasError(errors);
+          }
         } else {
           CustomAlert("success", "success", "Internal server error, please try again later ...");
           console.log("error create component: ", error);
@@ -67,14 +74,14 @@ export default function ModalCreateCategory({ onClose }: ModalCreateCategoryProp
               onChange={handleChange}
               placeholder="Input category name here"
               className={`h-[40px]  rounded-lg px-5 focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                hasError && hasError[0]?.field === "name" ? "ring-2 ring-red-500" : "ring-1 ring-slate-300"
+                nameError ? "ring-2 ring-red-500" : "ring-1 ring-slate-300"
               }`}
             />
           </div>
 
-          {hasError && hasError[0]?.field === "name" && (
+          {nameError && (
             <div className="ml-2 -mt-2 tracking-wider text-red-500 font-semibold">
-              <p>{hasError[0]?.message}</p>
+              <p>{nameError.message}</p>
             </div>
           )}
 
@@ -84,6 +91,12 @@ export default function ModalCreateCategory({ onClose }: ModalCreateCategoryProp
               Add Icon
             </label>
             <input type="file" name="category_image" id="category_image" accept="image/*" onChange={handleChange} />
+
+            {categoryImageError && (
+              <div className="ml-2 -mt-2 tracking-wider text-red-500 font-semibold">
+                <p>{categoryImageError.message}</p>
+              </div>
+            )}
           </div>
 
           {/* Button Submit */}

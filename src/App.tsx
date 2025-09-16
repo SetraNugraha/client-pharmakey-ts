@@ -19,7 +19,7 @@ import { CustomerLayout } from "./layouts/CustomerLayout";
 
 // Admin
 import AdminLogin from "./pages/Admin/AdminLogin";
-import AdminDashboard from "./pages/Admin/AdminDashboard";
+import AdminDashboard from "./pages/Admin/Dashboard/AdminDashboard";
 import AdminCategory from "./pages/Admin/Category/AdminCategory";
 import AdminProducts from "./pages/Admin/Product/AdminProducts";
 import AdminTransactions from "./pages/Admin//Transaction/AdminTransactions";

@@ -6,6 +6,7 @@ import { Errors } from "../../../types/common.type";
 import { IUpdateCategory } from "../../../types/category.type";
 import { Category } from "../../../types/category.type";
 import { AxiosError } from "axios";
+import { getErrorField } from "../../../utils/getErrorField";
 
 type ModalUpdateCategoryProps = {
   category: Category | null;
@@ -20,6 +21,8 @@ export default function ModalUpdateCategory({ category, onClose }: ModalUpdateCa
 
   // ERROR State
   const [hasError, setHasError] = useState<Errors[]>([]);
+  const nameError = getErrorField(hasError, "name");
+  const categoryImageError = getErrorField(hasError, "category_image");
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type, files } = e.target;
@@ -36,6 +39,7 @@ export default function ModalUpdateCategory({ category, onClose }: ModalUpdateCa
       { categoryId: category?.id, payload: formUpdateCategory },
       {
         onSuccess: (data) => {
+          setHasError([]);
           CustomAlert("success", "success", data?.message);
           onClose();
         },
@@ -77,16 +81,14 @@ export default function ModalUpdateCategory({ category, onClose }: ModalUpdateCa
                 id="name"
                 placeholder="Input category name here"
                 className={`h-[40px] rounded-lg px-5 focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                  hasError && hasError[0]?.field === "name" ? "ring-2 ring-red-500" : "ring-1 ring-slate-300"
+                  nameError ? "ring-2 ring-red-500" : "ring-1 ring-slate-300"
                 }`}
                 value={formUpdateCategory.name ?? category?.name ?? ""}
                 onChange={handleChange}
               />
             </div>
 
-            {hasError && hasError[0]?.field === "name" && (
-              <p className="text-red-500 font-semibold tracking-wider ml-2 -mt-2">{hasError[0]?.message}</p>
-            )}
+            {nameError && <p className="text-red-500 font-semibold tracking-wider ml-2 -mt-2">{nameError?.message}</p>}
 
             {/* Add icon*/}
             <div className="flex flex-col gap-y-2">
@@ -94,6 +96,8 @@ export default function ModalUpdateCategory({ category, onClose }: ModalUpdateCa
                 Add New Icon
               </label>
               <input type="file" name="category_image" id="category_image" onChange={handleChange} accept="image/*" />
+
+              {categoryImageError && <p className="text-red-500 font-semibold tracking-wider ml-2 -mt-2">{categoryImageError?.message}</p>}
             </div>
 
             {/* Button Submit */}

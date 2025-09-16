@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import Modal from "../../../components/Admin/Modal";
 import { useCategory } from "../../CustomHooks/useCategory";
 import { useProducts } from "../../CustomHooks/useProduct";
@@ -6,6 +6,7 @@ import { CustomAlert } from "../../../utils/CustomAlert";
 import { ICreateProduct } from "../../../types/product.type";
 import { Errors } from "../../../types/common.type";
 import { AxiosError } from "axios";
+import { getErrorField } from "../../../utils/getErrorField";
 
 interface ModalCreateProductProps {
   onClose: () => void;
@@ -14,31 +15,15 @@ interface ModalCreateProductProps {
 export default function ModalCreateProduct({ onClose }: ModalCreateProductProps) {
   const { createProduct } = useProducts({});
   const { categories } = useCategory();
-  const produtImageRef = useRef<HTMLInputElement>(null);
-  const nameInputRef = useRef<HTMLInputElement>(null);
-  const priceInputRef = useRef<HTMLInputElement>(null);
 
   // ERROR State
   const [hasError, setHasError] = useState<Errors[]>([]);
-  const nameError = hasError[0]?.field === "name";
-  const priceError = hasError[0]?.field === "price";
+  const nameError = getErrorField(hasError, "name");
+  const priceError = getErrorField(hasError, "price");
+  const productImageError = getErrorField(hasError, "product_image");
 
   // Form
   const [formCreateProduct, setFormCreateProduct] = useState<Partial<ICreateProduct>>({});
-
-  // Handle Input Error
-  useEffect(() => {
-    const isInputError = (ref: React.RefObject<HTMLInputElement>, hasError: boolean) => {
-      if (ref.current) {
-        ref.current.classList.toggle("ring-2", hasError);
-        ref.current.classList.toggle("ring-red-500", hasError);
-        ref.current.classList.toggle("ring-slate-300", !hasError);
-      }
-    };
-
-    isInputError(nameInputRef, hasError[0]?.field === "name");
-    isInputError(priceInputRef, hasError[0]?.field === "price");
-  }, [hasError]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value, type, files } = e.target as HTMLInputElement;
@@ -54,13 +39,19 @@ export default function ModalCreateProduct({ onClose }: ModalCreateProductProps)
 
     createProduct.mutate(formCreateProduct as ICreateProduct, {
       onSuccess: (data) => {
+        setHasError([]);
         CustomAlert("success", "success", data?.message);
         onClose();
       },
       onError: (error) => {
         if (error instanceof AxiosError) {
           const errors = error?.response?.data.errors;
-          setHasError(errors);
+          console.log("hasError", errors);
+
+          // Validation Errors
+          if (errors && error?.response?.data.message === "validation error") {
+            setHasError(errors);
+          }
         } else {
           console.log("HandleCreateProduct Error: ", error.message);
           CustomAlert("error", "error", "Internal server error, please try again later");
@@ -81,18 +72,20 @@ export default function ModalCreateProduct({ onClose }: ModalCreateProductProps)
             </label>
             <input
               required
-              ref={nameInputRef}
+              // ref={nameInputRef}
               type="text"
               name="name"
               id="name"
               placeholder="Input product name here"
-              className="h-[40px] ring-1 ring-slate-300 rounded-lg px-5 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className={`h-[40px] ring-1 rounded-lg px-5 focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                nameError ? "ring-red-500" : "ring-slate-300 "
+              }`}
               value={formCreateProduct.name || ""}
               onChange={handleChange}
             />
-            {nameError && (
-              <span className="text-red-500 tracking-wider font=semibold ml-2">{hasError[0]?.message}</span>
-            )}
+
+            {/* VALIDATION ERROR */}
+            {nameError && <span className="text-red-500 tracking-wider font=semibold ml-2">{nameError?.message}</span>}
           </div>
 
           {/* Select Category */}
@@ -124,20 +117,20 @@ export default function ModalCreateProduct({ onClose }: ModalCreateProductProps)
             </label>
             <input
               required
-              ref={priceInputRef}
+              // ref={priceInputRef}
               type="number"
               name="price"
               id="price"
               placeholder="Input product price here"
-              className={`h-[40px] ring-1 ring-slate-300  rounded-lg px-5 focus:outline-none focus:ring-2 focus:ring-blue-500`}
+              className={`h-[40px] ring-1 rounded-lg px-5 focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                priceError ? "ring-red-500" : "ring-slate-300 "
+              }`}
               value={formCreateProduct.price || ""}
               onChange={handleChange}
             />
 
-            {/* Validation Error */}
-            {priceError && (
-              <span className="text-red-500 tracking-wider font=semibold ml-2">{hasError[0]?.message}</span>
-            )}
+            {/* VALIDATION ERROR */}
+            {priceError && <span className="text-red-500 tracking-wider font=semibold ml-2">{priceError?.message}</span>}
           </div>
 
           {/* Product Description */}
@@ -161,14 +154,10 @@ export default function ModalCreateProduct({ onClose }: ModalCreateProductProps)
             <label htmlFor="product_image" className="font-semibold text-slate-500 ml-1">
               Add Product Image
             </label>
-            <input
-              type="file"
-              id="product_image"
-              name="product_image"
-              accept="image/*"
-              ref={produtImageRef}
-              onChange={handleChange}
-            />
+            <input type="file" id="product_image" name="product_image" accept="image/*" onChange={handleChange} />
+
+            {/* ERROR IMAGE */}
+            {productImageError && <span className="text-red-500 tracking-wider font=semibold ml-2">{productImageError?.message}</span>}
           </div>
 
           {/* Button Submit */}
