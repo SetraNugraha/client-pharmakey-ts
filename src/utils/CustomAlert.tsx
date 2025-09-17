@@ -6,7 +6,7 @@ export const CustomAlert = (title: string, icon: type, message?: string) => {
   Swal.fire({
     icon: icon,
     title: title,
-    text: message,
+    text: message || "Something wrong",
     confirmButtonText: "Yes",
     width: "100%",
     customClass: {

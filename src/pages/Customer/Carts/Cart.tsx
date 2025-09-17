@@ -126,11 +126,7 @@ export default function Cart() {
             onClick={() => navigate(-1)}
             className="p-2 bg-white flex justify-center items-center rounded-full ring-1 ring-black hover:ring-0 hover:bg-red-500 transition-all duration-200 ease-in-out group"
           >
-            <img
-              src="assets/img/arrow-left.png"
-              alt="back-button"
-              className="group-hover:filster group-hover:invert group-hover:brightness-0"
-            />
+            <img src="assets/img/arrow-left.png" alt="back-button" className="group-hover:filster group-hover:invert group-hover:brightness-0" />
           </button>
           <h1 className="font-semibold text-xl">Shopping Cart</h1>
           <div></div>
@@ -153,10 +149,7 @@ export default function Cart() {
           </div>
 
           {/* RENDER CART ITEMS */}
-          <ExpandTransition
-            isActive={showItems}
-            className="mt-[10px] flex flex-col gap-y-3 origin-top overflow-auto max-h-[360px] rounded-lg pb-3"
-          >
+          <ExpandTransition isActive={showItems} className="mt-[10px] flex flex-col gap-y-3 origin-top overflow-auto max-h-[360px] rounded-lg pb-3">
             <CartItems carts={customerCarts?.cart} />
           </ExpandTransition>
         </div>
@@ -236,10 +229,7 @@ export default function Cart() {
                 />
 
                 {getErrorField(checkoutError, "address") && (
-                  <p className="ml-3 -mt-3 font-semibold text-red-500 tracking-wider">
-                    {" "}
-                    {getErrorField(checkoutError, "address")?.message}
-                  </p>
+                  <p className="ml-3 -mt-3 font-semibold text-red-500 tracking-wider"> {getErrorField(checkoutError, "address")?.message}</p>
                 )}
 
                 {/* CITY */}
@@ -255,10 +245,7 @@ export default function Cart() {
                 />
 
                 {getErrorField(checkoutError, "city") && (
-                  <p className="ml-3 -mt-3 font-semibold text-red-500 tracking-wider">
-                    {" "}
-                    {getErrorField(checkoutError, "city")?.message}
-                  </p>
+                  <p className="ml-3 -mt-3 font-semibold text-red-500 tracking-wider"> {getErrorField(checkoutError, "city")?.message}</p>
                 )}
 
                 {/* POST CODE */}
@@ -277,9 +264,7 @@ export default function Cart() {
                 />
 
                 {getErrorField(checkoutError, "post_code") && (
-                  <p className="ml-3 -mt-3 font-semibold text-red-500 tracking-wider">
-                    {getErrorField(checkoutError, "post_code")?.message}
-                  </p>
+                  <p className="ml-3 -mt-3 font-semibold text-red-500 tracking-wider">{getErrorField(checkoutError, "post_code")?.message}</p>
                 )}
 
                 {/* PHONE NUMBER */}
@@ -298,9 +283,7 @@ export default function Cart() {
                 />
 
                 {getErrorField(checkoutError, "phone_number") && (
-                  <p className="ml-3 -mt-3 font-semibold text-red-500 tracking-wider">
-                    {getErrorField(checkoutError, "phone_number")?.message}
-                  </p>
+                  <p className="ml-3 -mt-3 font-semibold text-red-500 tracking-wider">{getErrorField(checkoutError, "phone_number")?.message}</p>
                 )}
 
                 <div className="relative">

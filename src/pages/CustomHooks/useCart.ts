@@ -27,7 +27,7 @@ export const useCart = () => {
 
   const cartAction = useMutation({
     mutationKey: ["cart"],
-    mutationFn: async ({ action, productId }: { action: CartActionMethod; productId: string }) => {
+    mutationFn: async ({ action, productId, quantity = 1 }: { action: CartActionMethod; productId: string; quantity: number }) => {
       // Check Authentication
       if (!token) {
         CustomAlert("Authentication", "warning", "Login required. Please sign in to continue.");
@@ -39,11 +39,15 @@ export const useCart = () => {
           ? `/cart/${CartActionMethod.ADD}/product/${productId}`
           : `/cart/${CartActionMethod.REMOVE}/product/${productId}`;
 
-      const res = await axiosInstance.post(endpoint, null, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const res = await axiosInstance.post(
+        endpoint,
+        { quantity },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
       const { success, message } = res.data;
       return { success, message };

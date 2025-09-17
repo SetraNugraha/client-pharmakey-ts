@@ -6,6 +6,8 @@ import { getImageUrl } from "../../utils/getImageUrl";
 import { useCart } from "../CustomHooks/useCart";
 import { CartActionMethod } from "../../types/cart.type";
 import { convertToRp } from "../../utils/convertToRp";
+import React, { useState } from "react";
+import { AxiosError } from "axios";
 
 type Grading = {
   icon: string;
@@ -39,29 +41,43 @@ export default function DetailProduct() {
   const { slug } = useParams();
   const { productBySlug, isLoadingProductBySlug } = useProducts({ slug: slug });
   const navigate = useNavigate();
-  const { cartAction } = useCart();
 
   // PRODUCT IMAGE
   const productImage = getImageUrl("products", productBySlug?.product_image);
   const categoryImage = getImageUrl("categories", productBySlug?.category?.category_image);
 
-  const handleAddProduct = async (productId?: string) => {
-    if (!productId) return;
-
-    cartAction.mutate(
-      { action: CartActionMethod.ADD, productId },
-      {
-        onSuccess: (data) => {
-          CustomAlert("Success", "success", data?.message);
-        },
-        onError: (error: any) => {
-          CustomAlert("Error", "error", error?.response?.data.message || "Error while removing item");
-        },
-      }
-    );
-  };
-
   const RenderDetailProduct = () => {
+    const { cartAction } = useCart();
+    const [quantity, setQuantity] = useState<number>(1);
+
+    const handleAddProduct = async (productId?: string) => {
+      if (!productId) return;
+
+      cartAction.mutate(
+        { action: CartActionMethod.ADD, productId, quantity },
+        {
+          onSuccess: (data) => {
+            CustomAlert("Success", "success", data?.message);
+          },
+          onError: (error: any) => {
+            if (error instanceof AxiosError) {
+              const err = error?.response?.data?.errors[0];
+              if (err.field === "quantity") {
+                CustomAlert("Error", "error", err.message);
+                return;
+              }
+            }
+            CustomAlert("Error", "error", error?.response?.data.message || "Error while removing item");
+          },
+        }
+      );
+    };
+
+    const handleInputQuantity = (e: React.ChangeEvent<HTMLInputElement>) => {
+      const value = e.target.value.replace(/\D/g, "");
+      setQuantity(Number(value));
+    };
+
     return (
       <div className="pt-[55px] px-[24px]">
         <div className="flex flex-col justify-between gap-y-10">
@@ -91,7 +107,7 @@ export default function DetailProduct() {
 
             {/* Description */}
             <div className="mt-[15px]">
-              <p className=" text-slate-600 leading-loose">{productBySlug?.description || "No description"}</p>
+              <p className=" text-slate-600">{productBySlug?.description || "No description"}</p>
             </div>
 
             {/* Grading */}
@@ -128,10 +144,40 @@ export default function DetailProduct() {
             <div className="flex flex-col items-start gap-y-1">
               <h1 className="text-2xl font-bold">{convertToRp(productBySlug?.price)}</h1>
               <p className="text-slate-400">/quantity</p>
+
+              {/* Quantity Dynamic */}
+              <div className="mt-2 h-full w-full flex items-center gap-x-3">
+                {/* BUTTON DECREMENT */}
+                <button
+                  className="px-2.5 rounded-lg bg-[#FD915A] text-white font-bold text-lg hover:bg-white hover:text-[#FD915A] transition-all duration-200 ease-in-out hover:ring-1 hover:ring-[#FD915A] shadow-xl disabled:bg-slate-400 disabled:text-white disabled:hover:ring-0 disabled:cursor-not-allowed"
+                  disabled={quantity === 0}
+                  onClick={() => setQuantity((prev) => (prev === 0 ? prev : prev - 1))}
+                >
+                  -
+                </button>
+                {/* DISPLAY QUANTITY */}
+                <input
+                  type="text"
+                  name="quantity"
+                  id="quantity"
+                  maxLength={4}
+                  min={1}
+                  className="ring-1 ring-slate-400 w-16 h-8 px-3 text-center rounded-lg focus:outline-none focus:ring-2 focus:ring-[#FD915A]"
+                  value={quantity}
+                  onChange={handleInputQuantity}
+                />
+                {/* BUTTON INCREAMENT */}
+                <button
+                  className="px-2 rounded-lg bg-[#FD915A] text-white font-bold text-lg hover:bg-white hover:text-[#FD915A] transition-all duration-200 ease-in-out hover:ring-1 hover:ring-[#FD915A] shadow-xl"
+                  onClick={() => setQuantity((prev) => prev + 1)}
+                >
+                  +
+                </button>
+              </div>
             </div>
 
             {/* Button Add To Cart */}
-            <div>
+            <div className="">
               <button
                 onClick={() => handleAddProduct(productBySlug?.id)}
                 className="px-6 py-3 bg-[#FD915A] text-white font-bold rounded-[50px] hover:bg-white hover:text-[#FD915A] transition-all duration-200 ease-in-out hover:border-[2px] hover:border-[#FD915A] shadow-xl"
