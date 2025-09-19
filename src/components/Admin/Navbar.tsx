@@ -11,7 +11,7 @@ export const Navbar = () => {
     const isConfirm = await CustomAlertConfirm("Are you sure want to Logout ? ");
 
     if (isConfirm) {
-      CustomAlert("Logout Success", "success");
+      CustomAlert("Authentication", "success", "Logout success");
       if (user?.role === "ADMIN") {
         navigate("/admin/login");
       } else {
