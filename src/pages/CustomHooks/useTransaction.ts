@@ -1,23 +1,37 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { axiosInstance } from "../../axios/axios";
 import { useAuth } from "../../Auth/useAuth";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { IGetTransaction, UpdateIsPaid } from "../../types/transaction.type";
+import { IGetTransaction, IsPaid, UpdateIsPaid } from "../../types/transaction.type";
 
-export const useTransaction = ({ customerId, limit }: { customerId?: string; limit?: number }) => {
+interface Props {
+  limit?: number;
+  customerId?: string;
+  status?: IsPaid;
+  proofUpload?: boolean;
+}
+
+export const useTransaction = ({ customerId, limit, status, proofUpload }: Props) => {
   const { token } = useAuth();
   const queryClient = useQueryClient();
   const [page, setPage] = useState<number>(1);
 
-  // ADMIN
-  const { data, isLoading } = useQuery({
-    queryKey: ["transaction", page, limit, customerId] as const,
-    queryFn: async ({ queryKey }) => {
-      const [, page, limit, customerId] = queryKey;
+  // Reset page if user filtered data transactions
+  useEffect(() => {
+    setPage(1);
+  }, [status, proofUpload]);
 
+  // ADMIN & CUSTOMER
+  const { data, isLoading } = useQuery({
+    queryKey: ["transaction", page, limit, customerId, status, proofUpload] as const,
+    queryFn: async ({ queryKey }) => {
+      const [, page, limit, customerId, status, proofUpload] = queryKey;
+
+      // Endpoint Transctions
       let url = "/transactions";
 
+      // Endpoint for transaction customer
       if (customerId) {
         url += "/customer";
       }
@@ -29,6 +43,8 @@ export const useTransaction = ({ customerId, limit }: { customerId?: string; lim
         params: {
           page: page,
           limit: limit,
+          status,
+          proofUpload,
         },
       });
 
@@ -71,82 +87,6 @@ export const useTransaction = ({ customerId, limit }: { customerId?: string; lim
     },
   });
 
-  // CUSTOMER
-  // const { data: customerTransactions, isLoading: customerTransactionsIsLoading } = useQuery({
-  //   queryKey: ["transaction"],
-  //   queryFn: async () => {
-  //     const res = await axiosInstance.get(`/transactions/customer`, {
-  //       headers: {
-  //         Authorization: `Bearer ${token}`,
-  //       },
-  //     });
-
-  //     const { transactions, meta } = res.data.data;
-  //     return { transactions, meta } as IGetTransaction;
-  //   },
-  // });
-
-  // // CUSTOMER
-  // const getCustomerTransactions = async () => {
-  //   try {
-  //     const response = await axiosInstance.get("/api/transactions/customer/mytransactions", {
-  //       headers: {
-  //         Authorization: `Bearer ${token}`,
-  //       },
-  //     });
-
-  //     return {
-  //       success: response.data.success,
-  //       message: response.data.message,
-  //       data: response.data.data,
-  //     };
-  //   } catch (error) {
-  //     if (error instanceof AxiosError) {
-  //       return {
-  //         success: error.response?.data.success,
-  //         message: error.response?.data.message || "An unexpected error occured",
-  //       };
-  //     } else if (error instanceof Error) {
-  //       return {
-  //         success: false,
-  //         message: error.message,
-  //       };
-  //     }
-  //   }
-
-  // // CUSTOMER
-  // const checkout = async (formCheckout: Partial<Transaction>) => {
-  //   try {
-  //     if (!token) return;
-
-  //     const response = await axiosInstance.post("/api/transactions/checkout", formCheckout, {
-  //       headers: {
-  //         Authorization: `Bearer ${token}`,
-  //       },
-  //     });
-
-  //     return {
-  //       success: response.data.success,
-  //       message: response.data.message,
-  //     };
-  //   } catch (error) {
-  //     if (error instanceof AxiosError) {
-  //       const errorMessage = error.response?.data.errors;
-  //       if (errorMessage && Array.isArray(errorMessage) && errorMessage.length > 0) {
-  //         setState((prevState) => ({
-  //           ...prevState,
-  //           hasError: errorMessage[0],
-  //         }));
-  //       } else {
-  //         return {
-  //           success: error.response?.data.success,
-  //           message: error.response?.data.message || "An unexpected error occured",
-  //         };
-  //       }
-  //     }
-  //   }
-  // };
-
   const sendProof = useMutation({
     mutationKey: ["transaction"],
     mutationFn: async ({ transactionId, imageProof }: { transactionId: string; imageProof: File | null }) => {
@@ -170,43 +110,6 @@ export const useTransaction = ({ customerId, limit }: { customerId?: string; lim
       queryClient.invalidateQueries({ queryKey: ["transaction"] });
     },
   });
-
-  // // CUSTOMER
-  // const sendProof = async (transactionId: number | null, proofImage: Partial<Transaction>) => {
-  //   try {
-  //     if (!token) return;
-
-  //     const formData = new FormData();
-  //     const { proof } = proofImage;
-
-  //     if (proof && proof instanceof File) {
-  //       formData.append("proof", proof);
-  //     }
-
-  //     const response = await axiosInstance.put(`/api/transactions/customer/proof/${transactionId}`, formData, {
-  //       headers: {
-  //         Authorization: `Bearer ${token}`,
-  //       },
-  //     });
-
-  //     return {
-  //       success: response.data.success,
-  //       message: response.data.message,
-  //     };
-  //   } catch (error) {
-  //     if (error instanceof AxiosError) {
-  //       return {
-  //         success: error.response?.data.success,
-  //         message: error.response?.data.message || "An unexpected error occured",
-  //       };
-  //     } else if (error instanceof Error) {
-  //       return {
-  //         success: false,
-  //         message: error.message,
-  //       };
-  //     }
-  //   }
-  // };
 
   return {
     transactions: data?.transactions,
