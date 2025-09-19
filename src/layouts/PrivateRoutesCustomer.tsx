@@ -22,7 +22,7 @@ export const PrivateRoutesCustomer = () => {
   }
 
   if (!token || !user || user.role !== "CUSTOMER") {
-    CustomAlert("Authentication", "warning", "Login required. Please sign in to continue.");
+    CustomAlert("Authentication Failed", "warning", "Login required.");
     return <Navigate to={"/login"} replace />;
   }
 

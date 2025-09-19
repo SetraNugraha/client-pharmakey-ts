@@ -4,7 +4,7 @@ import { useProducts } from "../../pages/CustomHooks/useProduct";
 import { getImageUrl } from "../../utils/getImageUrl";
 
 export const LatestProducts = () => {
-  const { products, isLoading } = useProducts({});
+  const { products, isLoading } = useProducts({ limit: 4 });
 
   const RenderLatestProducts = () => {
     return products?.map((product) => {
@@ -20,9 +20,7 @@ export const LatestProducts = () => {
 
           {/* Product Name & Price */}
           <div className="h-full w-full flex flex-col text-center items-center justify-between">
-            <h1 className="font-bold group-hover:text-white whitespace-normal transition-all duration-300 ease-in-out group">
-              {product.name}
-            </h1>
+            <h1 className="font-bold group-hover:text-white whitespace-normal transition-all duration-300 ease-in-out group">{product.name}</h1>
             <p className="text-slate-400 font-semibold  group-hover:text-white transition-all duration-300 ease-in-out group">
               Rp. {product.price.toLocaleString("id-ID")}
             </p>
@@ -44,11 +42,7 @@ export const LatestProducts = () => {
 
         <div className="mt-[10px] flex items-center gap-x-5 overflow-x-auto whitespace-nowrap scrollbar-hide">
           {/* Card Categories */}
-          {isLoading ? (
-            <p className="font-semibold ml-1 tracking-wider text-slate-500">Loading Products ...</p>
-          ) : (
-            <RenderLatestProducts />
-          )}
+          {isLoading ? <p className="font-semibold ml-1 tracking-wider text-slate-500">Loading Products ...</p> : <RenderLatestProducts />}
         </div>
       </div>
     </>
