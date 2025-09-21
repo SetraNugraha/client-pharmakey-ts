@@ -66,7 +66,7 @@ export default function ModalUpdateCategory({ category, onClose }: ModalUpdateCa
 
   return (
     <Modal>
-      <Modal.Header title="Edit Category" onClose={onClose} />
+      <Modal.Header title="Edit Category" onClose={onClose} disabled={updateCategory.isPending} />
       <Modal.Body>
         {formUpdateCategory && (
           <form onSubmit={handleUpdateCategory} className="w-[500px] flex flex-col gap-y-3">
@@ -76,11 +76,12 @@ export default function ModalUpdateCategory({ category, onClose }: ModalUpdateCa
                 Category Name
               </label>
               <input
+                disabled={updateCategory.isPending}
                 type="text"
                 name="name"
                 id="name"
                 placeholder="Input category name here"
-                className={`h-[40px] rounded-lg px-5 focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                className={`h-[40px] rounded-lg px-5 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:cursor-not-allowed ${
                   nameError ? "ring-2 ring-red-500" : "ring-1 ring-slate-300"
                 }`}
                 value={formUpdateCategory.name ?? category?.name ?? ""}
@@ -95,14 +96,29 @@ export default function ModalUpdateCategory({ category, onClose }: ModalUpdateCa
               <label htmlFor="name" className="font-semibold text-slate-500 ml-1">
                 Add New Icon
               </label>
-              <input type="file" name="category_image" id="category_image" onChange={handleChange} accept="image/*" />
+              <input
+                disabled={updateCategory.isPending}
+                type="file"
+                name="category_image"
+                id="category_image"
+                onChange={handleChange}
+                accept="image/*"
+                className="disabled:cursor-not-allowed"
+              />
 
               {categoryImageError && <p className="text-red-500 font-semibold tracking-wider ml-2 -mt-2">{categoryImageError?.message}</p>}
             </div>
 
             {/* Button Submit */}
-            <button className="py-2 rounded-lg bg-green-500 text-white font-semibold text-lg tracking-wider mt-5 shadow-xl duration-300 hover:oulinte-none hover:ring-2 hover:ring-green-500 hover:text-green-500 hover:bg-white">
-              Edit Category
+            <button
+              className={`py-2 rounded-lg  text-white font-semibold text-lg tracking-wider mt-5 shadow-xl  ${
+                updateCategory.isPending
+                  ? "bg-slate-500 cursor-not-allowed"
+                  : "bg-green-500 duration-300 hover:oulinte-none hover:ring-2 hover:ring-green-500 hover:text-green-500 hover:bg-white"
+              }`}
+              disabled={updateCategory.isPending}
+            >
+              {updateCategory.isPending ? "Process Updating .... " : "Submit"}
             </button>
           </form>
         )}

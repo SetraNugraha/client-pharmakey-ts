@@ -7,6 +7,11 @@ export const LatestProducts = () => {
   const { products, isLoading } = useProducts({ limit: 4 });
 
   const RenderLatestProducts = () => {
+    // NOT FOUND
+    if (!products || products?.length == 0) {
+      return <p className="font-semibold ml-1 tracking-wider text-slate-500">Products not found</p>;
+    }
+
     return products?.map((product) => {
       const productImage = getImageUrl("products", product.product_image);
       return (

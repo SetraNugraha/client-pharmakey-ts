@@ -7,6 +7,11 @@ export const Categories = () => {
   const navigate = useNavigate();
 
   const RenderCategories = () => {
+    // NOT FOUND
+    if (!categories || categories?.length == 0) {
+      return <p className="font-semibold ml-1 tracking-wider text-slate-500">Categories not found</p>;
+    }
+
     return categories?.map((category) => {
       const categoryImage = getImageUrl("categories", category.category_image);
 
@@ -44,11 +49,7 @@ export const Categories = () => {
 
         <div className="mt-[10px] flex items-center gap-x-5 overflow-x-auto scrollbar-hide">
           {/* Card Categories */}
-          {isLoading ? (
-            <p className="font-semibold ml-1 tracking-wider text-slate-500">Loading Categories ...</p>
-          ) : (
-            <RenderCategories />
-          )}
+          {isLoading ? <p className="font-semibold ml-1 tracking-wider text-slate-500">Loading Categories ...</p> : <RenderCategories />}
         </div>
       </div>
     </>

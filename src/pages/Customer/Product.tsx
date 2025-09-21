@@ -10,6 +10,11 @@ export default function Product() {
   const { products, isLoading } = useProducts({});
 
   const RenderProducts = () => {
+    // NOT FOUND
+    if (!products || products?.length == 0) {
+      return <p className="font-semibold ml-1 tracking-wider text-slate-500">Products not found</p>;
+    }
+
     return products?.map((product) => {
       const productImage = getImageUrl("products", product.product_image);
       return (

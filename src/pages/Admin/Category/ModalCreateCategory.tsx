@@ -57,7 +57,7 @@ export default function ModalCreateCategory({ onClose }: ModalCreateCategoryProp
 
   return (
     <Modal>
-      <Modal.Header title="Create Category" onClose={onClose} />
+      <Modal.Header title="Create Category" onClose={onClose} disabled={createCategory.isPending} />
       <Modal.Body>
         <form onSubmit={handleCreateCategory} className="w-[500px] flex flex-col gap-y-3">
           {/* Category Name */}
@@ -70,10 +70,11 @@ export default function ModalCreateCategory({ onClose }: ModalCreateCategoryProp
               name="name"
               id="name"
               required
+              disabled={createCategory.isPending}
               value={formCreateCategory.name || ""}
               onChange={handleChange}
               placeholder="Input category name here"
-              className={`h-[40px]  rounded-lg px-5 focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+              className={`h-[40px]  rounded-lg px-5 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:cursor-not-allowed ${
                 nameError ? "ring-2 ring-red-500" : "ring-1 ring-slate-300"
               }`}
             />
@@ -90,7 +91,15 @@ export default function ModalCreateCategory({ onClose }: ModalCreateCategoryProp
             <label htmlFor="category_image" className="font-semibold text-slate-500 ml-1">
               Add Icon
             </label>
-            <input type="file" name="category_image" id="category_image" accept="image/*" onChange={handleChange} />
+            <input
+              type="file"
+              name="category_image"
+              id="category_image"
+              accept="image/*"
+              disabled={createCategory.isPending}
+              onChange={handleChange}
+              className="disabled:cursor-not-allowed"
+            />
 
             {categoryImageError && (
               <div className="ml-2 -mt-2 tracking-wider text-red-500 font-semibold">
@@ -100,8 +109,15 @@ export default function ModalCreateCategory({ onClose }: ModalCreateCategoryProp
           </div>
 
           {/* Button Submit */}
-          <button className="py-2 rounded-lg bg-blue-500 text-white font-semibold text-lg tracking-wider mt-5 shadow-xl hover:oulinte-none hover:ring-2 hover:ring-blue-500 hover:text-blue-500 hover:bg-white duration-300">
-            Submit
+          <button
+            disabled={createCategory.isPending}
+            className={`py-2 rounded-lg text-white font-semibold text-lg tracking-wider mt-5 shadow-xl disabled:cursor-not-allowed ${
+              createCategory.isPending
+                ? "bg-slate-500"
+                : "bg-blue-500 hover:oulinte-none hover:ring-2 hover:ring-blue-500 hover:text-blue-500 hover:bg-white duration-300"
+            }`}
+          >
+            {createCategory.isPending ? "Processing Create ...." : "Submit"}
           </button>
         </form>
       </Modal.Body>

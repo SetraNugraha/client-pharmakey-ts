@@ -1,46 +1,53 @@
-import React from 'react'
+import React from "react";
 
 interface ModalProps {
-  children: React.ReactNode
+  children: React.ReactNode;
 }
 
 interface HeaderProps {
-  title: string
-  onClose: () => void
+  title: string;
+  disabled?: boolean;
+  onClose: () => void;
 }
 
 interface BodyProps {
-  children: React.ReactNode
+  children: React.ReactNode;
 }
 
 interface ModalComponent extends React.FC<ModalProps> {
-  Header: React.FC<HeaderProps>
-  Body: React.FC<BodyProps>
+  Header: React.FC<HeaderProps>;
+  Body: React.FC<BodyProps>;
 }
 
-const Header: React.FC<HeaderProps> = ({ title, onClose }) => {
+const Header: React.FC<HeaderProps> = ({ title, disabled, onClose }) => {
   return (
     <>
       <div className="relative">
         <div className="w-full pb-5 flex items-center justify-between">
           <h1 className="font-bold text-xl">{title}</h1>
-          <button onClick={onClose} className="px-3 py-1 text-white bg-slate-400 font-bold rounded-lg shadow-xl hover:bg-red-500 duration-300">
+          <button
+            disabled={disabled}
+            onClick={onClose}
+            className={`px-3 py-1 text-white bg-slate-400 font-bold rounded-lg shadow-xl  duration-300 ${
+              disabled ? "cursor-not-allowed" : "cursor-pointer hover:bg-red-500"
+            }`}
+          >
             X
           </button>
         </div>
         <span className="absolute bottom-0 w-full h-[2px] bg-slate-400"></span>
       </div>
     </>
-  )
-}
+  );
+};
 
 const Body: React.FC<BodyProps> = ({ children }) => {
   return (
     <>
       <div className="mt-5">{children}</div>
     </>
-  )
-}
+  );
+};
 
 const Modal: ModalComponent = ({ children }) => {
   return (
@@ -49,10 +56,10 @@ const Modal: ModalComponent = ({ children }) => {
         <div className="bg-white max-w-[1000px] rounded-lg p-5 max-h-[90vh] overflow-y-auto">{children}</div>
       </div>
     </>
-  )
-}
+  );
+};
 
-Modal.Header = Header
-Modal.Body = Body
+Modal.Header = Header;
+Modal.Body = Body;
 
-export default Modal
+export default Modal;
