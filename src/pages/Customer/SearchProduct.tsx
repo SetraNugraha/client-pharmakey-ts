@@ -2,7 +2,6 @@
 import { Link, useSearchParams } from "react-router-dom";
 import { SearchInput } from "../../components/Customer/SearchInput";
 import { useProducts } from "../CustomHooks/useProduct";
-import { getImageUrl } from "../../utils/getImageUrl";
 import { convertToRp } from "../../utils/convertToRp";
 
 export default function SearchProduct() {
@@ -23,16 +22,15 @@ export default function SearchProduct() {
 
     // RESULT FOUND
     return products?.map((product, index) => {
-      const productImage = getImageUrl("products", product.product_image);
       return (
         <Link
           key={index}
-          to={`/detail-product/${product.slug}/${product.id}`}
-          className="flex items-center justify-between gap-x-2 px-5 py-3 bg-white rounded-[16px] shrink-0 hover:bg-[#FD915A] transition-all duration-300 ease-in-out group"
+          to={`/detail-product/${product.slug}`}
+          className="flex items-center justify-between gap-x-2 px-5 py-3 bg-white rounded-[16px] shrink-0 hover:bg-primary transition-all duration-300 ease-in-out group"
         >
           {/* Products */}
           <div className="flex items-center  gap-x-3">
-            <img src={productImage} alt="product-image" className="w-[70px] h-[70px] object-contain" />
+            <img src={product.image_url || "/assets/img/no-image.png"} alt="product-image" className="w-[70px] h-[70px] object-contain" />
             <div className="flex flex-col gap-y-1 items-start">
               <h1 className="font-bold group-hover:text-white text-start">{product.name}</h1>
               <p className="font-semibold text-slate-400 group-hover:text-white">{convertToRp(product?.price)}</p>

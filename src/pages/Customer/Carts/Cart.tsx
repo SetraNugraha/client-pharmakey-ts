@@ -138,7 +138,7 @@ export default function Cart() {
             <h1 className="font-bold text-xl">Cart Items</h1>
             <button
               onClick={() => setShowItems(!showItems)}
-              className="p-2 bg-white rounded-full hover:bg-[#FD915A] transition-all duration-300 ease-in-out group"
+              className="p-2 bg-white rounded-full hover:bg-primary transition-all duration-300 ease-in-out group"
             >
               <img
                 src={`assets/img/arrow-${showItems ? "up" : "down"}.png`}
@@ -160,7 +160,7 @@ export default function Cart() {
             <h1 className="font-bold text-xl">Detail Payment</h1>
             <button
               onClick={() => setShowPayment(!showPayment)}
-              className="p-2 bg-white rounded-full hover:bg-[#FD915A] transition-all duration-300 ease-in-out group"
+              className="p-2 bg-white rounded-full hover:bg-primary transition-all duration-300 ease-in-out group"
             >
               <img
                 src={`assets/img/arrow-${showPayment ? "up" : "down"}.png`}
@@ -294,7 +294,7 @@ export default function Cart() {
                     name="notes"
                     id="notes"
                     placeholder="Add Note"
-                    className="w-full h-full px-12 py-3 mt-2 border border-slate-300 rounded-2xl placeholder:text-[16px] focus:outline-none focus:ring-2 focus:ring-[#FD915A]"
+                    className="w-full h-full px-12 py-3 mt-2 border border-slate-300 rounded-2xl placeholder:text-[16px] focus:outline-none focus:ring-2 focus:ring-primary"
                     value={formCheckout.notes || ""}
                     onChange={handleChange}
                   ></textarea>
@@ -316,7 +316,7 @@ export default function Cart() {
             <button
               onClick={handleCheckout}
               disabled={checkout.isPending}
-              className="tracking-wider px-6 py-3 bg-[#FD915A] text-white font-bold rounded-[50px] hover:bg-white hover:text-[#FD915A] hover:ring-2 hover:ring-[#FD915A] disabled:bg-gray-500 disabled:ring-0 disabled:cursor-not-allowed"
+              className="tracking-wider px-6 py-3 bg-primary text-white font-bold rounded-[50px] hover:bg-white hover:text-primary hover:ring-2 hover:ring-primary disabled:bg-gray-500 disabled:ring-0 disabled:cursor-not-allowed"
             >
               {checkout.isPaused ? "Processing checkout ..." : "Checkout"}
             </button>

@@ -29,11 +29,7 @@ export default function AdminCustomer() {
           CustomAlert("Success", "success", data.message);
         },
         onError: (error: any) => {
-          CustomAlert(
-            "Error",
-            "error",
-            error.response?.data.message || "Internal server error, please try again later."
-          );
+          CustomAlert("Error", "error", error.response?.data.message || "Internal server error, please try again later.");
         },
       });
     } else {
@@ -45,10 +41,7 @@ export default function AdminCustomer() {
     return customers?.map((customer) => {
       const customerImage = getImageUrl("customers", customer.profile_image);
       return (
-        <tr
-          key={customer.id}
-          className="w-full bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600"
-        >
+        <tr key={customer.id} className="w-full bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
           {/* Profile Image */}
           <td className="py-3 flex justify-center items-cente">
             <img src={customerImage} alt="image-product" className="size-16 rounded-full" />
@@ -60,9 +53,7 @@ export default function AdminCustomer() {
           </td>
 
           {/* Email */}
-          <td className="py-3 text-center font-medium text-gray-900 whitespace-nowrap dark:text-white">
-            {customer.email}
-          </td>
+          <td className="py-3 text-center font-medium text-gray-900 whitespace-nowrap dark:text-white">{customer.email}</td>
 
           {/* Phone Number */}
           <td className="py-3 text-center font-medium tracking-widest text-gray-900 whitespace-nowrap dark:text-white">
@@ -130,8 +121,8 @@ export default function AdminCustomer() {
               <tbody>
                 {isLoading ? (
                   <tr className="font-semibold text-slate-400 tracking-wider">
-                    <td colSpan={4} className="py-5 text-center text-xl">
-                      Loading ...
+                    <td colSpan={5} className="py-5 text-center text-xl">
+                      Loading data customer...
                     </td>
                   </tr>
                 ) : (
@@ -150,9 +141,7 @@ export default function AdminCustomer() {
             >
               Prev
             </button>
-            <p className="px-3 py-1 ring-2 ring-slate-300 rounded-lg font-semibold text-slate-400">
-              {pagination?.page}
-            </p>
+            <p className="px-3 py-1 ring-2 ring-slate-300 rounded-lg font-semibold text-slate-400">{pagination?.page}</p>
             <button
               disabled={!pagination?.isNext}
               onClick={goToNextPage}

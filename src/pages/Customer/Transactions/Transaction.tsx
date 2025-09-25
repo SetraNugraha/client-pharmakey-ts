@@ -7,6 +7,7 @@ import { useState } from "react";
 import moment from "moment";
 import { CustomAlert } from "../../../utils/CustomAlert";
 import { convertToRp } from "../../../utils/convertToRp";
+import { LoadingOverlay } from "../../../components/LoadingOverlay";
 
 interface Proof {
   transactionId: string;
@@ -53,18 +54,21 @@ export default function Transactions() {
 
       return (
         <div key={index} className="relative flex flex-col items-start bg-white p-5 rounded-xl shadow-lg shadow-gray-300 border border-slate-200">
+          {/* Loading Overlay send proof */}
+          <LoadingOverlay isLoading={sendProof.isPending} />
+
           {/* Detail Text */}
-          <div className="flex items-center justify-between w-full">
-            {/* Total Price */}
-            <div>
-              <h1 className="font-semibold tracking-wide text-sm text-slate-500">Total Price</h1>
-              <p className="font-bold text-slate-600">{convertToRp(transaction?.billing?.total_amount)}</p>
+          <div className="flex items-start justify-between w-full">
+            {/* Date */}
+            <div className="w-1/3">
+              <h1 className="font-semibold tracking-wide text-sm text-slate-500">Date</h1>
+              <p className="font-bold text-slate-600">{moment(transaction.created_at).format("DD/MM/YYYY HH:mm ")}</p>
             </div>
 
-            {/* Date */}
-            <div>
-              <h1 className="font-semibold tracking-wide text-sm text-slate-500">Date</h1>
-              <p className="font-bold text-slate-600">{moment(transaction.created_at).format("HH:mm - DD/MM/YYYY")}</p>
+            {/* Total Price */}
+            <div className="w-1/3">
+              <h1 className="font-semibold tracking-wide text-sm text-slate-500">Total Price</h1>
+              <p className="font-bold text-slate-600">{convertToRp(transaction?.billing?.total_amount)}</p>
             </div>
 
             {/* Status */}
@@ -91,7 +95,7 @@ export default function Transactions() {
             </Link>
 
             {/* SEND Proof Button */}
-            {transaction.proof === null && transaction.is_paid === "PENDING" && (
+            {transaction.proof_url === null && transaction.is_paid === "PENDING" && (
               <div>
                 {proofImage.transactionId === transaction.id && proofImage.proof !== null ? (
                   <div className="flex items-center gap-x-2">
@@ -107,7 +111,7 @@ export default function Transactions() {
                   <div>
                     <label
                       htmlFor={transaction.id}
-                      className="cursor-pointer px-3 py-1 bg-[#FD915A] text-white rounded-lg font-semibold shadow-lg shadow-gray-300 hover:text-[#FD915A] hover:bg-white hover:outline-none hover:ring-2 hover:ring-[#FD915A] duration-300"
+                      className="cursor-pointer px-3 py-1 bg-primary text-white rounded-lg font-semibold shadow-lg shadow-gray-300 hover:text-primary hover:bg-white hover:outline-none hover:ring-2 hover:ring-primary duration-300 "
                     >
                       Upload Proof
                     </label>
@@ -118,10 +122,12 @@ export default function Transactions() {
             )}
 
             {/* Awaiting Approval */}
-            {transaction.proof !== null && transaction.is_paid === "PENDING" && <p className="text-gray-600 font-semibold">Awaiting Approval ...</p>}
+            {transaction.proof_url !== null && transaction.is_paid === "PENDING" && (
+              <p className="text-gray-600 font-semibold">Awaiting Approval ...</p>
+            )}
 
             {/* SUCCESS */}
-            {transaction.proof !== null && transaction.is_paid === "SUCCESS" && <p className="text-green-600 font-semibold">Proof Accepted</p>}
+            {transaction.proof_url !== null && transaction.is_paid === "SUCCESS" && <p className="text-green-600 font-semibold">Proof Accepted</p>}
 
             {/* CANCELLED */}
             {transaction.is_paid === "CANCELLED" && <p className="text-red-500 font-semibold">Cancelled</p>}

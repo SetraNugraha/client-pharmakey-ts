@@ -3,7 +3,6 @@ import { Link } from "react-router-dom";
 import { SearchInput } from "../../components/Customer/SearchInput";
 import { Navbar } from "../../components/Customer/Navbar";
 import { useProducts } from "../CustomHooks/useProduct";
-import { getImageUrl } from "../../utils/getImageUrl";
 import { convertToRp } from "../../utils/convertToRp";
 
 export default function Product() {
@@ -16,17 +15,16 @@ export default function Product() {
     }
 
     return products?.map((product) => {
-      const productImage = getImageUrl("products", product.product_image);
       return (
         <Link
-          to={`/detail-product/${product.slug}/${product.id}`}
+          to={`/detail-product/${product.slug}`}
           key={product.id}
-          className="py-5 px-4 bg-white border border-slate-200 rounded-[16px] shrink-0 shadow-lg shadow-gray-300 hover:bg-[#FD915A] transition-all duration-300 ease-in-out group"
+          className="py-5 px-4 bg-white border border-slate-200 rounded-[16px] shrink-0 shadow-lg shadow-gray-300 hover:bg-primary transition-all duration-300 ease-in-out group"
         >
           {/* Card Products */}
           <div className="grid grid-cols-1 place-items-center place-content-center h-full gap-y-2">
             {/* Image */}
-            <img src={productImage} alt="product-image" className="size-24 object-contain" />
+            <img src={product.image_url || "/assets/img/no-image.png"} alt="product-image" className="size-24 object-contain" />
 
             {/* Wrapper name & price */}
             <div className="h-full w-full flex flex-col items-center justify-between gap-y-1">
@@ -70,14 +68,14 @@ export default function Product() {
           <div className="text-white font-semibold flex items-center justify-between gap-x-3 mt-3 ">
             <Link
               to={"/doctors"}
-              className="py-2 px-3 rounded-xl flex-grow bg-green-500 flex items-center justify-center gap-x-2 shadow-lg shadow-gray-300 hover:bg-[#FD915A] duration-300"
+              className="py-2 px-3 rounded-xl flex-grow bg-green-500 flex items-center justify-center gap-x-2 shadow-lg shadow-gray-300 hover:bg-primary duration-300"
             >
               <img src="assets/img/doctor-white.svg" alt="doctor" className="text-white h-[30px]" />
               Consult with doctor
             </Link>
             <Link
               to={"/store"}
-              className="py-2 px-3 rounded-xl flex-grow bg-yellow-500 flex items-center justify-center gap-x-2 shadow-lg shadow-gray-300 hover:bg-[#FD915A] duration-300"
+              className="py-2 px-3 rounded-xl flex-grow bg-yellow-500 flex items-center justify-center gap-x-2 shadow-lg shadow-gray-300 hover:bg-primary duration-300"
             >
               <img src="assets/img/maps-white.svg" alt="maps" className="text-white h-[30px]" />
               Store location

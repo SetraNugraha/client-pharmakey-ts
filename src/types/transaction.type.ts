@@ -19,7 +19,7 @@ export enum PaymentMethod {
 export interface CheckoutCustomer {
   username: string;
   email: string;
-  profile_image: string | File | null;
+  image_url: string | File | null;
 }
 
 export interface Billing {
@@ -44,14 +44,14 @@ export interface Transaction_Detail {
     id: string;
     name: string;
     slug: string;
-    product_image: string | File | null;
+    image_url: string | null;
   };
 }
 
 export interface Transaction {
   id: string;
   is_paid: IsPaid;
-  proof: string | File | null;
+  proof_url: string | null;
   notes: string | null;
   created_at: string | Date;
   updated_at: string | Date;

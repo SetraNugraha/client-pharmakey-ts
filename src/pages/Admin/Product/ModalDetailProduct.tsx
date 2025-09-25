@@ -1,7 +1,6 @@
 import Modal from "../../../components/Admin/Modal";
 import { useCategory } from "../../CustomHooks/useCategory";
 import { Product } from "../../../types/product.type";
-import { getImageUrl } from "../../../utils/getImageUrl";
 
 type ModalDetailProductProps = {
   product: Product | null;
@@ -11,7 +10,6 @@ type ModalDetailProductProps = {
 export default function ModalDetailProduct({ product, onClose }: ModalDetailProductProps) {
   const { categories } = useCategory();
   const findCategory = categories?.find((item) => item.id === product?.category_id);
-  const productImage = getImageUrl("products", product?.product_image);
 
   return (
     <Modal>
@@ -20,7 +18,7 @@ export default function ModalDetailProduct({ product, onClose }: ModalDetailProd
         <section className="w-[750px] items-start flex gap-x-5">
           {/* Image */}
           <div className="flex flex-shrink-0">
-            <img src={productImage} alt="product-image" className="size-60 object-contain" />
+            <img src={product?.image_url || "/assets/img/no-image.png"} alt="product-image" className="size-60 object-contain" />
           </div>
 
           {/* Container Text */}
@@ -62,9 +60,7 @@ export default function ModalDetailProduct({ product, onClose }: ModalDetailProd
               <label htmlFor="name" className="font-bold text-slate-600 text-lg">
                 Description
               </label>
-              <p className="font-semibold text-slate-500 text-justify">
-                {product?.description || "No description added"}
-              </p>
+              <p className="font-semibold text-slate-500 text-justify">{product?.description || "No description added"}</p>
             </div>
           </div>
         </section>

@@ -1,11 +1,8 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { Link } from "react-router-dom";
-import { useProducts } from "../../pages/CustomHooks/useProduct";
-import { getImageUrl } from "../../utils/getImageUrl";
+import { Product } from "../../types/product.type";
 
-export const MostPurchased = () => {
-  const { products, isLoading } = useProducts({ limit: 4 });
-
+export const MostPurchased = ({ products, isLoading }: { products?: Product[]; isLoading: boolean }) => {
   const RenderMostPurchasedProduct = () => {
     // NOT FOUND
     if (!products || products?.length == 0) {
@@ -13,16 +10,15 @@ export const MostPurchased = () => {
     }
 
     return products?.map((product) => {
-      const productImage = getImageUrl("products", product.product_image);
       return (
         <Link
-          to={`/detail-product/${product.slug}/${product.id}`}
+          to={`/detail-product/${product.slug}`}
           key={product.id}
-          className="flex items-center justify-between gap-x-2 px-5 py-3 bg-white rounded-[16px] shrink-0 hover:bg-[#FD915A] transition-all duration-300 ease-in-out group"
+          className="flex items-center justify-between gap-x-2 px-5 py-3 bg-white rounded-[16px] shrink-0 hover:bg-primary transition-all duration-300 ease-in-out group"
         >
           {/* Products */}
           <div className="flex items-center  gap-x-3">
-            <img src={productImage} alt="product-image" className="w-[70px] h-[70px] object-contain" />
+            <img src={product.image_url || "/assets/img/no-image.png"} alt="product-image" className="w-[70px] h-[70px] object-contain" />
             <div className="flex flex-col gap-y-1 items-start">
               <h1 className="font-bold group-hover:text-white text-start whitespace-normal">{product.name}</h1>
               <p className="font-semibold text-slate-400 group-hover:text-white">Rp. {product.price.toLocaleString("id-ID")}</p>

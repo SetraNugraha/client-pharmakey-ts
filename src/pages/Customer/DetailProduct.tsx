@@ -2,49 +2,17 @@
 import { useNavigate, useParams } from "react-router-dom";
 import { useProducts } from "../CustomHooks/useProduct";
 import { CustomAlert } from "../../utils/CustomAlert";
-import { getImageUrl } from "../../utils/getImageUrl";
 import { useCart } from "../CustomHooks/useCart";
 import { CartActionMethod } from "../../types/cart.type";
 import { convertToRp } from "../../utils/convertToRp";
 import React, { useState } from "react";
 import { AxiosError } from "axios";
-
-type Grading = {
-  icon: string;
-  name: string;
-};
-
-const gradingList: Grading[] = [
-  {
-    icon: "popular",
-    name: "Popular",
-  },
-  {
-    icon: "grade",
-    name: "Grade A",
-  },
-  {
-    icon: "healty",
-    name: "Healty",
-  },
-  {
-    icon: "popular",
-    name: "Popular",
-  },
-  {
-    icon: "grade",
-    name: "Grade A",
-  },
-];
+import { listGradingProduct } from "../../dummy-data/listGradingProduct";
 
 export default function DetailProduct() {
   const { slug } = useParams();
   const { productBySlug, isLoadingProductBySlug } = useProducts({ slug: slug });
   const navigate = useNavigate();
-
-  // PRODUCT IMAGE
-  const productImage = getImageUrl("products", productBySlug?.product_image);
-  const categoryImage = getImageUrl("categories", productBySlug?.category?.category_image);
 
   const RenderDetailProduct = () => {
     const { cartAction } = useCart();
@@ -93,7 +61,11 @@ export default function DetailProduct() {
               <div className="flex items-center justify-between">
                 {/* Category */}
                 <div className="flex items-center gap-x-2">
-                  <img src={categoryImage} alt="category" className="size-8 rounded-full object-contain" />
+                  <img
+                    src={productBySlug?.category?.image_url || "/assets/img/no-image.png"}
+                    alt="category"
+                    className="size-8 rounded-full object-contain"
+                  />
                   <h1 className="font-semibold">{productBySlug?.category?.name}</h1>
                 </div>
 
@@ -112,7 +84,7 @@ export default function DetailProduct() {
 
             {/* Grading */}
             <div className="mt-[20px] flex items-center gap-x-5 overflow-x-auto scrollbar-hide">
-              {gradingList.map((item, index) => (
+              {listGradingProduct.map((item, index) => (
                 <div
                   key={index}
                   className="w-[100px] h-[100px] flex flex-col items-center justify-center gap-y-2 border border-slate-300 rounded-[16px] shrink-0"
@@ -140,16 +112,20 @@ export default function DetailProduct() {
           </div>
 
           {/* Footer */}
-          <div className="flex items-center justify-between mb-5">
-            <div className="flex flex-col items-start gap-y-1">
+          <div className="flex flex-col gap-y-3 w-full">
+            {/* Display Price */}
+            <div className="flex items-end gap-x-2">
               <h1 className="text-2xl font-bold">{convertToRp(productBySlug?.price)}</h1>
               <p className="text-slate-400">/quantity</p>
+            </div>
 
+            {/* Quantity & Buttion Cart */}
+            <div className="flex items-end justify-between w-full mb-7">
               {/* Quantity Dynamic */}
-              <div className="mt-2 h-full w-full flex items-center gap-x-3">
+              <div className="mt-2 h-full flex items-center gap-x-3">
                 {/* BUTTON DECREMENT */}
                 <button
-                  className="px-2.5 rounded-lg bg-[#FD915A] text-white font-bold text-lg hover:bg-white hover:text-[#FD915A] transition-all duration-200 ease-in-out hover:ring-1 hover:ring-[#FD915A] shadow-xl disabled:bg-slate-400 disabled:text-white disabled:hover:ring-0 disabled:cursor-not-allowed"
+                  className="px-2.5 rounded-lg bg-primary text-white font-bold text-lg hover:bg-white hover:text-primary transition-all duration-200 ease-in-out hover:ring-1 hover:ring-primary disabled:bg-slate-400 disabled:text-white disabled:hover:ring-0 disabled:cursor-not-allowed"
                   disabled={quantity === 0}
                   onClick={() => setQuantity((prev) => (prev === 0 ? prev : prev - 1))}
                 >
@@ -162,25 +138,23 @@ export default function DetailProduct() {
                   id="quantity"
                   maxLength={4}
                   min={1}
-                  className="ring-1 ring-slate-400 w-16 h-8 px-3 text-center rounded-lg focus:outline-none focus:ring-2 focus:ring-[#FD915A]"
+                  className="ring-2 ring-slate-400 w-16 h-7 px-3 text-center rounded-lg font-semibold text-slate-500 focus:outline-none focus:ring-2 focus:ring-primary"
                   value={quantity}
                   onChange={handleInputQuantity}
                 />
                 {/* BUTTON INCREAMENT */}
                 <button
-                  className="px-2 rounded-lg bg-[#FD915A] text-white font-bold text-lg hover:bg-white hover:text-[#FD915A] transition-all duration-200 ease-in-out hover:ring-1 hover:ring-[#FD915A] shadow-xl"
+                  className="px-2 rounded-lg bg-primary text-white font-bold text-lg  transition-all duration-200 ease-in-out hover:outline-none hover:ring-1 hover:ring-primary hover:bg-white hover:text-primary"
                   onClick={() => setQuantity((prev) => prev + 1)}
                 >
                   +
                 </button>
               </div>
-            </div>
 
-            {/* Button Add To Cart */}
-            <div className="">
+              {/* Button Add To Cart */}
               <button
                 onClick={() => handleAddProduct(productBySlug?.id)}
-                className="px-6 py-3 bg-[#FD915A] text-white font-bold rounded-[50px] hover:bg-white hover:text-[#FD915A] transition-all duration-200 ease-in-out hover:border-[2px] hover:border-[#FD915A] shadow-xl"
+                className="px-6 py-2 -mb-1 bg-primary text-white text-sm font-bold rounded-xl hover:bg-white hover:text-primary transition-all duration-200 ease-in-out hover:outline-none hover:ring-2 hover:ring-primary"
               >
                 Add to Cart
               </button>
@@ -195,7 +169,7 @@ export default function DetailProduct() {
     <>
       <section className="h-dvh">
         {/* Header */}
-        <div className="pt-[30px] px-[16px] flex items-center justify-between">
+        <div className="relative py-[30px] px-[16px] flex items-center justify-between">
           {/* Button Back */}
           <button
             onClick={() => navigate(-1)}
@@ -205,20 +179,24 @@ export default function DetailProduct() {
           </button>
 
           {/* Title */}
-          <h1 className="font-semibold text-xl  absolute left-1/2 -translate-x-[50%]">Details</h1>
+          <h1 className="font-semibold text-xl absolute left-1/2 -translate-x-1/2">Details</h1>
         </div>
 
         {/* Product Image */}
-        <div>
+        <div className="relative">
           {isLoadingProductBySlug ? (
             <p className="font-semibold text-center mt-5 tracking-wider text-slate-500">Loading Image ...</p>
           ) : (
-            <img src={productImage} alt="product-image" className="absolute top-[15%] left-1/2 -translate-x-1/2 size-64 xl:size-64 object-contain" />
+            <img
+              src={productBySlug?.image_url || "/assets/img/no-image.png"}
+              alt="product-image"
+              className="absolute left-1/2 -translate-x-1/2 size-64 xl:size-64 object-contain"
+            />
           )}
         </div>
 
         {/* Render Detail */}
-        <div className="bg-white border-t-2 border-slate-300 rounded-t-[60px] mt-[65%] xl:max-h-screen xl:pb-12">
+        <div className="bg-white border-t-2 border-slate-300 rounded-t-[60px] mt-[60%] lg:mt-[50%] xl:max-h-screen xl:pb-12">
           {isLoadingProductBySlug ? (
             <p className="font-semibold text-center ml-1 tracking-wider text-slate-500 bg-[#F7F1F0] -mt-5">Loading Products Detail...</p>
           ) : (

@@ -27,7 +27,7 @@ export const useCart = () => {
 
   const cartAction = useMutation({
     mutationKey: ["cart"],
-    mutationFn: async ({ action, productId, quantity = 1 }: { action: CartActionMethod; productId: string; quantity: number }) => {
+    mutationFn: async ({ action, productId, quantity = 1 }: { action: CartActionMethod; productId: string; quantity?: number }) => {
       // Check Authentication
       if (!token) {
         CustomAlert("Authentication", "warning", "Login required. Please sign in to continue.");

@@ -1,11 +1,8 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { Link } from "react-router-dom";
-import { useProducts } from "../../pages/CustomHooks/useProduct";
-import { getImageUrl } from "../../utils/getImageUrl";
+import { Product } from "../../types/product.type";
 
-export const LatestProducts = () => {
-  const { products, isLoading } = useProducts({ limit: 4 });
-
+export const LatestProducts = ({ products, isLoading }: { products?: Product[]; isLoading: boolean }) => {
   const RenderLatestProducts = () => {
     // NOT FOUND
     if (!products || products?.length == 0) {
@@ -13,15 +10,14 @@ export const LatestProducts = () => {
     }
 
     return products?.map((product) => {
-      const productImage = getImageUrl("products", product.product_image);
       return (
         <Link
           key={product.id}
-          to={`/detail-product/${product.slug}/${product.id}`}
+          to={`/detail-product/${product.slug}`}
           className="flex flex-col items-center flex-shrink-0 gap-y-3 p-5 w-[170px] h-[220px] bg-white rounded-[16px]  hover:bg-[#ef966a]  transition-all duration-300 ease-in-out group"
         >
           {/* Product Image */}
-          <img src={productImage} alt="product-image" className="size-24 object-contain" />
+          <img src={product.image_url || "/assets/img/no-image.png"} alt="product-image" className="size-24 object-contain" />
 
           {/* Product Name & Price */}
           <div className="h-full w-full flex flex-col text-center items-center justify-between">
@@ -34,6 +30,7 @@ export const LatestProducts = () => {
       );
     });
   };
+
   return (
     <>
       <div className="pt-[30px] px-[16px]">

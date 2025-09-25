@@ -1,6 +1,5 @@
 import { useNavigate } from "react-router-dom";
 import { useCategory } from "../../pages/CustomHooks/useCategory";
-import { getImageUrl } from "../../utils/getImageUrl";
 
 export const Categories = () => {
   const { categories, isLoading } = useCategory();
@@ -13,8 +12,6 @@ export const Categories = () => {
     }
 
     return categories?.map((category) => {
-      const categoryImage = getImageUrl("categories", category.category_image);
-
       const handleSearchByCategory = () => {
         navigate(`/search-product?search=${encodeURIComponent(category.name)}`);
       };
@@ -23,10 +20,10 @@ export const Categories = () => {
         <button
           onClick={handleSearchByCategory}
           key={category.id}
-          className="flex items-center gap-x-2 px-5 py-3 bg-white rounded-[16px] shrink-0 hover:text-white hover:bg-[#FD915A] transition-all duration-300 ease-in-out group"
+          className="flex items-center gap-x-2 px-5 py-3 bg-white rounded-[16px] shrink-0 hover:text-white hover:bg-primary transition-all duration-300 ease-in-out group"
         >
           <img
-            src={categoryImage}
+            src={category.image_url || "/assets/img/no-image.png"}
             alt="categories-icon"
             className="size-10 rounded-full transition-all duration-300 ease-in-out group-hover:p-1 group-hover:bg-white group-hover:rounded-full"
           />

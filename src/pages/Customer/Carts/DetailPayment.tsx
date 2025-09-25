@@ -25,7 +25,7 @@ export const DetailPayment = ({ billing }: { billing?: Billing }) => {
       {/* Grand Total */}
       <div className="flex items-center justify-between">
         <h1>Grand Total</h1>
-        <p className="font-bold text-[#FD915A]">{convertToRp(billing?.total_amount)}</p>
+        <p className="font-bold text-primary">{convertToRp(billing?.total_amount)}</p>
       </div>
     </>
   );

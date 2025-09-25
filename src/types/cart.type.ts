@@ -7,20 +7,20 @@ interface Product {
   name: string;
   slug: string;
   category_id: string;
-  product_image: string;
+  image_url: string;
   price: number;
 }
 
 interface Customer {
   username: string;
   email: string;
-  profile_image: string | null;
+  image_url: string | null;
 }
 
 export interface ICart {
   product_id: string;
   quantity: number;
-  product: Product
+  product: Product;
 }
 
 export interface IGetCartDto extends Customer {

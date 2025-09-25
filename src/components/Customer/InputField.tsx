@@ -45,7 +45,7 @@ export const InputField: React.FC<InputFieldProps> = ({
         inputMode={inputMode}
         maxLength={maxLength}
         pattern={pattern}
-        className={`w-full h-full px-12 rounded-3xl placeholder:text-[16px] focus:outline-none focus:ring-2 focus:ring-[#FD915A] ${
+        className={`w-full h-full px-12 rounded-3xl placeholder:text-[16px] focus:outline-none focus:ring-2 focus:ring-primary ${
           isError ? "ring-2 ring-red-500" : "ring-1 ring-slate-300"
         }`}
       />

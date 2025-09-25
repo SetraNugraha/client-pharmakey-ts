@@ -138,7 +138,7 @@ export default function Register() {
 
               <button
                 disabled={registerCustomer.isPending}
-                className="bg-[#FD915A] text-white font-bold text-xl text-center h-[48px] w-full rounded-3xl mt-[20px] hover:bg-white hover:text-[#FD915A] transition-all duration-300 ease-in-out hover:border-[2px] hover:border-[#FD915A] shadow-xl disabled:bg-gray-600 disabled:border-none"
+                className="bg-primary text-white font-bold text-xl text-center h-[48px] w-full rounded-3xl mt-[20px] hover:bg-white hover:text-primary transition-all duration-300 ease-in-out hover:border-[2px] hover:border-primary shadow-xl disabled:bg-gray-600 disabled:border-none"
               >
                 {registerCustomer.isPending ? "Register Process ..." : "Create my account"}
               </button>

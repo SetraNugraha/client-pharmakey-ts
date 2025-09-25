@@ -145,7 +145,7 @@ export default function UpdateProfile() {
                       name="address"
                       id="address"
                       placeholder="Your address"
-                      className="w-full h-full px-12 py-3 mt-2 border border-slate-300 rounded-2xl placeholder:text-[16px] focus:outline-none focus:ring-2 focus:ring-[#FD915A]"
+                      className="w-full h-full px-12 py-3 mt-2 border border-slate-300 rounded-2xl placeholder:text-[16px] focus:outline-none focus:ring-2 focus:ring-primary"
                       value={formUpdateCustomer.address ?? authCustomer?.address ?? ""}
                       onChange={handleChange}
                     ></textarea>
@@ -213,7 +213,7 @@ export default function UpdateProfile() {
                     <div className="mt-[10px]">
                       <label
                         htmlFor="profile_image"
-                        className="flex items-center gap-x-3 cursor-pointer py-3 text-slate-400 px-3 border border-slate-300 rounded-3xl placeholder:text-[16px] hover:outline-none hover:ring-2 hover:ring-[#FD915A]"
+                        className="flex items-center gap-x-3 cursor-pointer py-3 text-slate-400 px-3 border border-slate-300 rounded-3xl placeholder:text-[16px] hover:outline-none hover:ring-2 hover:ring-primary"
                       >
                         <img src="assets/img/folder.png" alt="photo_profile" className="cursor-pointer" />
                         {uploadedImageName ? uploadedImageName : "Select Picture Here"}
@@ -229,7 +229,7 @@ export default function UpdateProfile() {
                     </div>
                   </div>
 
-                  <button className="text-center mt-[10px] tracking-wider px-6 py-3 bg-[#FD915A] text-white font-bold rounded-[50px] hover:bg-white hover:text-[#FD915A] hover:ring-2 hover:ring-[#FD915A] duration-300">
+                  <button className="text-center mt-[10px] tracking-wider px-6 py-3 bg-primary text-white font-bold rounded-[50px] hover:bg-white hover:text-primary hover:ring-2 hover:ring-primary duration-300">
                     Submit
                   </button>
                 </form>

@@ -94,7 +94,7 @@ export default function Login() {
 
               <button
                 disabled={loginCustomerLoading}
-                className="bg-[#FD915A] text-white font-bold text-xl text-center h-[48px] w-full rounded-3xl mt-[20px] hover:bg-white hover:text-[#FD915A] transition-all duration-300 ease-in-out hover:border-[2px] hover:border-[#FD915A] shadow-xl disabled:cursor-not-allowed disabled:bg-slate-500 disabled:hover:text-white disabled:outline-none disabled:hover:border-opacity-0"
+                className="bg-primary text-white font-bold text-xl text-center h-[48px] w-full rounded-3xl mt-[20px] hover:bg-white hover:text-primary transition-all duration-300 ease-in-out hover:border-[2px] hover:border-primary shadow-xl disabled:cursor-not-allowed disabled:bg-slate-500 disabled:hover:text-white disabled:outline-none disabled:hover:border-opacity-0"
               >
                 {loginCustomerLoading ? "Process Login ..." : "Login"}
               </button>

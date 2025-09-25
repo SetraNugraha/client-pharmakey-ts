@@ -59,66 +59,59 @@ export default function ModalCreateCategory({ onClose }: ModalCreateCategoryProp
     <Modal>
       <Modal.Header title="Create Category" onClose={onClose} disabled={createCategory.isPending} />
       <Modal.Body>
-        <form onSubmit={handleCreateCategory} className="w-[500px] flex flex-col gap-y-3">
-          {/* Category Name */}
-          <div className="flex flex-col gap-y-2">
-            <label htmlFor="name" className="font-semibold text-slate-500 ml-1">
-              Category Name
-            </label>
-            <input
-              type="text"
-              name="name"
-              id="name"
-              required
-              disabled={createCategory.isPending}
-              value={formCreateCategory.name || ""}
-              onChange={handleChange}
-              placeholder="Input category name here"
-              className={`h-[40px]  rounded-lg px-5 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:cursor-not-allowed ${
-                nameError ? "ring-2 ring-red-500" : "ring-1 ring-slate-300"
-              }`}
-            />
-          </div>
-
-          {nameError && (
-            <div className="ml-2 -mt-2 tracking-wider text-red-500 font-semibold">
-              <p>{nameError.message}</p>
+        <form onSubmit={handleCreateCategory} className="w-[500px]">
+          <fieldset disabled={createCategory.isPending} className="w-full flex flex-col gap-y-3">
+            {/* Category Name */}
+            <div className="flex flex-col gap-y-2">
+              <label htmlFor="name" className="font-semibold text-slate-500 ml-1">
+                Category Name
+              </label>
+              <input
+                type="text"
+                name="name"
+                id="name"
+                required
+                value={formCreateCategory.name || ""}
+                onChange={handleChange}
+                placeholder="Input category name here"
+                className={`h-[40px]  rounded-lg px-5 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:cursor-not-allowed ${
+                  nameError ? "ring-2 ring-red-500" : "ring-1 ring-slate-300"
+                }`}
+              />
             </div>
-          )}
 
-          {/* Add icon*/}
-          <div className="flex flex-col gap-y-2">
-            <label htmlFor="category_image" className="font-semibold text-slate-500 ml-1">
-              Add Icon
-            </label>
-            <input
-              type="file"
-              name="category_image"
-              id="category_image"
-              accept="image/*"
-              disabled={createCategory.isPending}
-              onChange={handleChange}
-              className="disabled:cursor-not-allowed"
-            />
-
-            {categoryImageError && (
+            {nameError && (
               <div className="ml-2 -mt-2 tracking-wider text-red-500 font-semibold">
-                <p>{categoryImageError.message}</p>
+                <p>{nameError.message}</p>
               </div>
             )}
-          </div>
 
-          {/* Button Submit */}
-          <button
-            disabled={createCategory.isPending}
-            className={`py-2 rounded-lg text-white font-semibold text-lg tracking-wider mt-5 shadow-xl disabled:cursor-not-allowed ${
-              createCategory.isPending
-                ? "bg-slate-500"
-                : "bg-blue-500 hover:oulinte-none hover:ring-2 hover:ring-blue-500 hover:text-blue-500 hover:bg-white duration-300"
-            }`}
-          >
-            {createCategory.isPending ? "Processing Create ...." : "Submit"}
-          </button>
+            {/* Add icon*/}
+            <div className="flex flex-col gap-y-2">
+              <label htmlFor="category_image" className="font-semibold text-slate-500 ml-1">
+                Add Icon
+              </label>
+              <input
+                type="file"
+                name="category_image"
+                id="category_image"
+                accept="image/*"
+                onChange={handleChange}
+                className="disabled:cursor-not-allowed"
+              />
+
+              {categoryImageError && (
+                <div className="ml-2 -mt-2 tracking-wider text-red-500 font-semibold">
+                  <p>{categoryImageError.message}</p>
+                </div>
+              )}
+            </div>
+
+            {/* Button Submit */}
+            <button className="py-2 rounded-lg text-white font-semibold text-lg tracking-wider mt-5 shadow-xl disabled:cursor-not-allowed bg-blue-500 hover:oulinte-none hover:ring-2 hover:ring-blue-500 hover:text-blue-500 hover:bg-white duration-300 disabled:ring-0 disabled:bg-slate-500 disabled:hover:text-white">
+              {createCategory.isPending ? "Please wait ...." : "Submit"}
+            </button>
+          </fieldset>
         </form>
       </Modal.Body>
     </Modal>

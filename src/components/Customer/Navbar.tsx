@@ -47,8 +47,8 @@ export const Navbar = () => {
                   className="relative  cursor-pointer transition-all duration-300 ease-in-out  group pb-3">
                   <Link
                     to={item.url}
-                    className={`group-hover:text-[#FD915A] flex flex-col items-center gap-y-1 ${
-                      active ? "text-[#FD915A]" : ""
+                    className={`group-hover:text-primary flex flex-col items-center gap-y-1 ${
+                      active ? "text-primary" : ""
                     }`}>
                     <img
                       src={`/assets/img/${item.icon}.png`}
@@ -67,7 +67,7 @@ export const Navbar = () => {
 
                   {/* Horizontal line */}
                   <span
-                    className={`absolute bottom-0 w-full h-[5px] bg-[#FD915A] transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 ease-in-out ${
+                    className={`absolute bottom-0 w-full h-[5px] bg-primary transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 ease-in-out ${
                       active ? "scale-x-100" : "scale-x-0"
                     }`}></span>
                 </li>

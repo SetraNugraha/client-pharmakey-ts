@@ -1,6 +1,5 @@
 import { Pagination } from "../../../types/common.type";
 import { Product } from "../../../types/product.type";
-import { getImageUrl } from "../../../utils/getImageUrl";
 import { MdEditSquare, MdDelete } from "react-icons/md";
 import { IoListCircleSharp } from "react-icons/io5";
 import { convertToRp } from "../../../utils/convertToRp";
@@ -48,7 +47,7 @@ export const TableProducts = ({ isLoading, products, pagination, buttonDetail, b
     // index = 0 , 1 , 2 , ....
     // page 1 = 1 + 0 ... page 2 = 6 + 0 ... page 3 = 11 + 0 ...
     const rowNumber = baseNumber + index;
-    const productImage = getImageUrl("products", product.product_image);
+
     return (
       <tr key={product.id} className="w-full bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
         {/* Number */}
@@ -56,7 +55,7 @@ export const TableProducts = ({ isLoading, products, pagination, buttonDetail, b
 
         {/* Product Image */}
         <td className="py-3 flex justify-center items-center">
-          <img src={productImage} alt="image-product" className="size-20 object-contain" />
+          <img src={product.image_url || "/assets/img/no-image.png"} alt="image-product" className="size-20 object-contain" />
         </td>
 
         {/* name */}

@@ -6,7 +6,7 @@ export function PageNotFound() {
         <h1 className="font-bold text-2xl text-slate-500">Page Not Found</h1>
         <a
           href="/"
-          className="mt-5 font-semibold text-white px-3 py-2 bg-[#FD915A] rounded-2xl shadow-lg shadow-gray-400 hover:outline-none hover:ring-2 hover:ring-[#FD915A] hover:bg-white hover:text-[#FD915A] transition-all duration-300"
+          className="mt-5 font-semibold text-white px-3 py-2 bg-primary rounded-2xl shadow-lg shadow-gray-400 hover:outline-none hover:ring-2 hover:ring-primary hover:bg-white hover:text-primary transition-all duration-300"
         >
           Go to pharmakey hompage
         </a>

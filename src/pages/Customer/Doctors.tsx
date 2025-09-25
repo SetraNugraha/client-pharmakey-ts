@@ -55,7 +55,7 @@ export default function Doctors() {
             {doctors.map((dcotor, index) => (
               <button
                 key={index}
-                className="flex items-center justify-between gap-x-2 px-5 py-3 bg-white rounded-[16px] shrink-0 hover:bg-[#FD915A] transition-all duration-300 ease-in-out group">
+                className="flex items-center justify-between gap-x-2 px-5 py-3 bg-white rounded-[16px] shrink-0 hover:bg-primary transition-all duration-300 ease-in-out group">
                 <div className="flex items-center  gap-x-3">
                   <img
                     src={`assets/img/${dcotor.doctor_image}`}

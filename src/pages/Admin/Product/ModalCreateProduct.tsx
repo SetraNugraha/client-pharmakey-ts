@@ -46,7 +46,6 @@ export default function ModalCreateProduct({ onClose }: ModalCreateProductProps)
       onError: (error) => {
         if (error instanceof AxiosError) {
           const errors = error?.response?.data.errors;
-          console.log("hasError", errors);
 
           // Validation Errors
           if (errors && error?.response?.data.message === "validation error") {
@@ -62,108 +61,108 @@ export default function ModalCreateProduct({ onClose }: ModalCreateProductProps)
 
   return (
     <Modal>
-      <Modal.Header title="Create New Product" onClose={onClose} />
+      <Modal.Header title="Create New Product" onClose={onClose} disabled={createProduct.isPending} />
       <Modal.Body>
-        <form onSubmit={handleCreateProduct} className="w-[500px] flex flex-col gap-y-3">
-          {/* Product Name */}
-          <div className="flex flex-col gap-y-2">
-            <label htmlFor="name" className="font-semibold text-slate-500 ml-1">
-              Product Name
-            </label>
-            <input
-              required
-              // ref={nameInputRef}
-              type="text"
-              name="name"
-              id="name"
-              placeholder="Input product name here"
-              className={`h-[40px] ring-1 rounded-lg px-5 focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                nameError ? "ring-red-500" : "ring-slate-300 "
-              }`}
-              value={formCreateProduct.name || ""}
-              onChange={handleChange}
-            />
+        <form onSubmit={handleCreateProduct} className="w-[500px]">
+          <fieldset disabled={createProduct.isPending} className="w-full flex flex-col gap-y-3">
+            {/* Product Name */}
+            <div className="flex flex-col gap-y-2">
+              <label htmlFor="name" className="font-semibold text-slate-500 ml-1">
+                Product Name
+              </label>
+              <input
+                required
+                type="text"
+                name="name"
+                id="name"
+                placeholder="Input product name here"
+                className={`h-[40px] ring-1 rounded-lg px-5 focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                  nameError ? "ring-red-500" : "ring-slate-300 "
+                }`}
+                value={formCreateProduct.name || ""}
+                onChange={handleChange}
+              />
 
-            {/* VALIDATION ERROR */}
-            {nameError && <span className="text-red-500 tracking-wider font=semibold ml-2">{nameError?.message}</span>}
-          </div>
+              {/* VALIDATION ERROR */}
+              {nameError && <span className="text-red-500 tracking-wider font=semibold ml-2">{nameError?.message}</span>}
+            </div>
 
-          {/* Select Category */}
-          <div className="flex flex-col gap-y-2">
-            <label htmlFor="category" className="font-semibold text-slate-500 ml-1">
-              Select Category
-            </label>
-            <select
-              required
-              name="category_id"
-              id="category"
-              className="h-[40px] pl-3 border border-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500 rounded-lg"
-              value={formCreateProduct.category_id || ""}
-              onChange={handleChange}
-            >
-              <option value={""}>--- Select Category ----</option>
-              {categories?.map((category) => (
-                <option key={category.id} value={category.id}>
-                  {category.name}
-                </option>
-              ))}
-            </select>
-          </div>
+            {/* Select Category */}
+            <div className="flex flex-col gap-y-2">
+              <label htmlFor="category" className="font-semibold text-slate-500 ml-1">
+                Select Category
+              </label>
+              <select
+                required
+                name="category_id"
+                id="category"
+                className="h-[40px] pl-3 border border-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500 rounded-lg"
+                value={formCreateProduct.category_id || ""}
+                onChange={handleChange}
+              >
+                <option value={""}>--- Select Category ----</option>
+                {categories?.map((category) => (
+                  <option key={category.id} value={category.id}>
+                    {category.name}
+                  </option>
+                ))}
+              </select>
+            </div>
 
-          {/* Product Price */}
-          <div className="flex flex-col gap-y-2">
-            <label htmlFor="price" className="font-semibold text-slate-500 ml-1">
-              Price
-            </label>
-            <input
-              required
-              // ref={priceInputRef}
-              type="number"
-              name="price"
-              id="price"
-              placeholder="Input product price here"
-              className={`h-[40px] ring-1 rounded-lg px-5 focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                priceError ? "ring-red-500" : "ring-slate-300 "
-              }`}
-              value={formCreateProduct.price || ""}
-              onChange={handleChange}
-            />
+            {/* Product Price */}
+            <div className="flex flex-col gap-y-2">
+              <label htmlFor="price" className="font-semibold text-slate-500 ml-1">
+                Price
+              </label>
+              <input
+                required
+                type="number"
+                name="price"
+                id="price"
+                placeholder="Input product price here"
+                className={`h-[40px] ring-1 rounded-lg px-5 focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                  priceError ? "ring-red-500" : "ring-slate-300 "
+                }`}
+                value={formCreateProduct.price || ""}
+                onChange={handleChange}
+              />
 
-            {/* VALIDATION ERROR */}
-            {priceError && <span className="text-red-500 tracking-wider font=semibold ml-2">{priceError?.message}</span>}
-          </div>
+              {/* VALIDATION ERROR */}
+              {priceError && <span className="text-red-500 tracking-wider font=semibold ml-2">{priceError?.message}</span>}
+            </div>
 
-          {/* Product Description */}
-          <div className="flex flex-col gap-y-2">
-            <label htmlFor="description" className="font-semibold text-slate-500 ml-1">
-              Description
-            </label>
-            <textarea
-              name="description"
-              id="description"
-              placeholder="Add description product"
-              rows={4}
-              className="border border-slate-300 rounded-lg px-5 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-              value={formCreateProduct.description || ""}
-              onChange={handleChange}
-            ></textarea>
-          </div>
+            {/* Product Description */}
+            <div className="flex flex-col gap-y-2">
+              <label htmlFor="description" className="font-semibold text-slate-500 ml-1">
+                Description
+              </label>
+              <textarea
+                name="description"
+                id="description"
+                placeholder="Add description product"
+                rows={4}
+                className="border border-slate-300 rounded-lg px-5 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                value={formCreateProduct.description || ""}
+                onChange={handleChange}
+              ></textarea>
+            </div>
 
-          {/* Add Product Image*/}
-          <div className="flex flex-col gap-y-2">
-            <label htmlFor="product_image" className="font-semibold text-slate-500 ml-1">
-              Add Product Image
-            </label>
-            <input type="file" id="product_image" name="product_image" accept="image/*" onChange={handleChange} />
+            {/* Add Product Image*/}
+            <div className="flex flex-col gap-y-2">
+              <label htmlFor="product_image" className="font-semibold text-slate-500 ml-1">
+                Add Product Image
+              </label>
+              <input type="file" id="product_image" name="product_image" accept="image/*" onChange={handleChange} />
 
-            {/* ERROR IMAGE */}
-            {productImageError && <span className="text-red-500 tracking-wider font=semibold ml-2">{productImageError?.message}</span>}
-          </div>
+              {/* ERROR IMAGE */}
+              {productImageError && <span className="text-red-500 tracking-wider font=semibold ml-2">{productImageError?.message}</span>}
+            </div>
 
-          {/* Button Submit */}
-          <button className="py-2 rounded-lg bg-blue-500 text-white font-semibold text-lg tracking-wider mt-5 shadow-xl hover:oulinte-none hover:ring-2 hover:ring-blue-500 hover:text-blue-500 hover:bg-white duration-300">
-            Submit
-          </button>
+            {/* Button Submit */}
+            <button className="py-2 rounded-lg  text-white font-semibold text-lg tracking-wider mt-5 shadow-xl bg-blue-500 hover:oulinte-none hover:ring-2 hover:ring-blue-500 hover:text-blue-500 hover:bg-white duration-300 disabled:cursor-not-allowed disabled:bg-slate-500 disabled:ring-0 disabled:hover:text-white">
+              {createProduct.isPending ? "Please wait .... " : "Submit"}
+            </button>
+          </fieldset>
         </form>
       </Modal.Body>
     </Modal>

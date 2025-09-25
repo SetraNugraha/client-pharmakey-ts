@@ -3,7 +3,6 @@ import Modal from "../../../components/Admin/Modal";
 import moment from "moment";
 import { CustomAlertConfirm, CustomAlert } from "../../../utils/CustomAlert";
 import { Transaction, UpdateIsPaid } from "../../../types/transaction.type";
-import { getImageUrl } from "../../../utils/getImageUrl";
 import { IsPaid } from "../../../types/transaction.type";
 import { convertToRp } from "../../../utils/convertToRp";
 import { useTransaction } from "../../CustomHooks/useTransaction";
@@ -19,7 +18,6 @@ export default function ModalTransactionDetail({ transaction, onClose }: ModalTr
 
   const RenderDataTransaction = () => {
     if (!transaction) return;
-    const proofImage = getImageUrl("proofTransactions", transaction.proof);
 
     const paidStatusColor: Record<IsPaid, string> = {
       [IsPaid.PENDING]: "bg-yellow-600",
@@ -104,11 +102,10 @@ export default function ModalTransactionDetail({ transaction, onClose }: ModalTr
             <h1 className="font-bold text-xl my-5 tracking-wide">List of Items</h1>
             <div className="py-3 rounded-lg flex flex-col gap-y-3 px-2 max-h-[300px] overflow-y-auto scrollbar-hide shadow-[inset_0_-8px_8px_-4px_rgba(0,0,0,0.1)]">
               {transaction.transaction_detail.map((item, index) => {
-                const productImage = getImageUrl("products", item.product.product_image);
                 return (
                   <div key={index} className="flex items-center justify-between">
                     <div className="flex items-center gap-x-5">
-                      <img src={productImage} alt="product-image" className="w-[35px]" />
+                      <img src={item.product.image_url || "/assets/img/no-image.png"} alt="product-image" className="w-[35px]" />
                       <div>
                         {/* Name */}
                         <h1 className="font-bold">{item.product.name}</h1>
@@ -198,8 +195,8 @@ export default function ModalTransactionDetail({ transaction, onClose }: ModalTr
           <div className="w-1/2 pr-5">
             {/* Proof of Payment */}
             <h1 className="font-bold text-xl my-5 tracking-wide">Proof of Payment</h1>
-            {transaction.proof !== null ? (
-              <img src={proofImage} alt="proof-payment" className="max-h-[500px] object-contain" />
+            {transaction.proof_url !== null ? (
+              <img src={transaction.proof_url} alt="proof-payment" className="max-h-[500px] object-contain" />
             ) : (
               <p className="font-semibold text-slate-600 tracking-wider py-2 mr-5 px-3 rounded-lg bg-slate-200">
                 No payment proof has been sent yet.

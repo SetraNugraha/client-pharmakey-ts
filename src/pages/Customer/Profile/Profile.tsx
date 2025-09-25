@@ -20,15 +20,15 @@ export default function Profile() {
       try {
         await logout();
         navigate("/");
-        CustomAlert("Logout Success", "success");
+        CustomAlert("Authentication", "success", "Logout Success");
       } catch (error) {
         console.error(error);
         navigate("/");
-        CustomAlert("Error while process logout", "error");
+        CustomAlert("Authentication", "error", "Error while process logout");
         return;
       }
     } else {
-      CustomAlert("Logout Cancelled", "warning");
+      CustomAlert("Authentication", "warning", "Logout Cancelled");
     }
   };
 
@@ -41,11 +41,7 @@ export default function Profile() {
             to="/"
             className="p-2 bg-white flex justify-center items-center rounded-full ring-1 ring-black hover:ring-0 hover:bg-red-500 transition-all duration-200 ease-in-out group"
           >
-            <img
-              src="assets/img/arrow-left.png"
-              alt="back-button"
-              className="group-hover:filter group-hover:invert group-hover:brightness-0"
-            />
+            <img src="assets/img/arrow-left.png" alt="back-button" className="group-hover:filter group-hover:invert group-hover:brightness-0" />
           </Link>
           <h1 className="font-bold text-xl absolute left-1/2 -translate-x-1/2">Profile</h1>
           <button
@@ -94,9 +90,7 @@ export default function Profile() {
                   <h1 className="font-semibold">Post Code : </h1>
                   <div className="flex items-center gap-x-2 ml-3">
                     <img src="assets/img/house.png" alt="post_code" />
-                    <p className="text-slate-400 font-semibold tracking-wider">
-                      {authCustomer?.post_code || "Not set"}
-                    </p>
+                    <p className="text-slate-400 font-semibold tracking-wider">{authCustomer?.post_code || "Not set"}</p>
                   </div>
                 </div>
 
@@ -105,15 +99,13 @@ export default function Profile() {
                   <h1 className="font-semibold">Phone Number : </h1>
                   <div className="flex items-center gap-x-2 ml-3">
                     <img src="assets/img/call.png" alt="post_code" />
-                    <p className="text-slate-400 font-semibold tracking-wider">
-                      {authCustomer?.phone_number || "Not set"}
-                    </p>
+                    <p className="text-slate-400 font-semibold tracking-wider">{authCustomer?.phone_number || "Not set"}</p>
                   </div>
                 </div>
 
                 <Link
                   to="/update-profile"
-                  className="text-center mt-[10px] tracking-wider px-6 py-3 bg-[#FD915A] text-white font-bold rounded-[50px] hover:bg-white hover:text-[#FD915A] hover:ring-2 hover:ring-[#FD915A] duration-300 shadow-md shadow-slate-400"
+                  className="text-center mt-[10px] tracking-wider px-6 py-3 bg-primary text-white font-bold rounded-[50px] hover:bg-white hover:text-primary hover:ring-2 hover:ring-primary duration-300 shadow-md shadow-slate-400"
                 >
                   Update Profile
                 </Link>

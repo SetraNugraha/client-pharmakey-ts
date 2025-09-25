@@ -57,7 +57,7 @@ export const TableTransactions = ({ transactions, pagination, isLoading }: Props
           {/* Proof status */}
           <td>
             <div className="flex justify-center items-center ">
-              {transaction.proof === null ? (
+              {transaction.proof_url === null ? (
                 <p className="font-semibold text-lg tracking-wider text-slate-400">Awaiting</p>
               ) : (
                 <p className="font-semibold text-lg tracking-wider text-slate-100">Uploaded</p>
@@ -132,7 +132,7 @@ export const TableTransactions = ({ transactions, pagination, isLoading }: Props
           {/* Render Transactions */}
           {isLoading ? (
             <tr>
-              <td colSpan={8} className="text-center py-4">
+              <td colSpan={8} className="text-center py-4 font-semibold tracking-wider text-lg">
                 loading data transactions ...
               </td>
             </tr>

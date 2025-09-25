@@ -4,11 +4,11 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import { useTransaction } from "../../CustomHooks/useTransaction";
 import { CustomAlert } from "../../../utils/CustomAlert";
 import { useAuth } from "../../../Auth/useAuth";
-import { Transaction } from "../../../types/transaction.type";
-import { getImageUrl } from "../../../utils/getImageUrl";
+import { Transaction, Transaction_Detail } from "../../../types/transaction.type";
 import { convertToRp } from "../../../utils/convertToRp";
 import { DetailPayment } from "../Carts/DetailPayment";
 import moment from "moment";
+import { LoadingOverlay } from "../../../components/LoadingOverlay";
 
 interface Proof {
   transactionId: string;
@@ -22,13 +22,15 @@ export default function DetailTransaction() {
   const { transactions, isLoading, sendProof } = useTransaction({ customerId: user?.userId });
   const [showItems, setShowItems] = useState<boolean>(true);
   const [showPayment, setShowPayment] = useState<boolean>(true);
-  const [transaction, setTransaction] = useState<Partial<Transaction | undefined>>({});
 
+  // For handle Upload Proof Image on Detail Transaction
+  const [transaction, setTransaction] = useState<Partial<Transaction | undefined>>({});
   const [proofImage, setProofImage] = useState<Proof>({
     transactionId: "",
     proof: null,
   });
 
+  // For handle Upload Proof Image on Detail Transaction
   useEffect(() => {
     if (!transactions || !transactionId) return;
 
@@ -64,18 +66,17 @@ export default function DetailTransaction() {
     );
   };
 
-  const RenderItems = () => {
-    return transaction?.transaction_detail?.map((trx, index) => {
-      const productImage = getImageUrl("products", trx?.product.product_image);
+  const RenderItems = ({ transactionDetails }: { transactionDetails?: Transaction_Detail[] }) => {
+    return transactionDetails?.map((trx, index) => {
       return (
         <div key={index} className="relative">
           {/* Products */}
           <Link
-            to={`/detail-product/${trx?.product?.slug}/${trx?.product.id}`}
-            className="flex items-center justify-between gap-x-2 px-5 py-3 bg-white rounded-[16px] shrink-0 hover:bg-[#FD915A] transition-all duration-300 ease-in-out group"
+            to={`/detail-product/${trx?.product?.slug}`}
+            className="flex items-center justify-between gap-x-2 px-5 py-3 bg-white rounded-[16px] shrink-0 hover:bg-primary transition-all duration-300 ease-in-out group"
           >
             <div className="flex items-center  gap-x-3">
-              <img src={productImage} alt="product-image" className="size-16 object-contain" />
+              <img src={trx?.product?.image_url || "/assets/img/no-image.png"} alt="product-image" className="size-16 object-contain" />
               <div className="flex flex-col gap-y-1 items-start">
                 <h1 className="font-bold group-hover:text-white text-start">{trx?.product?.name}</h1>
                 <p className="font-semibold text-slate-400 group-hover:text-white">{convertToRp(trx?.price)}</p>
@@ -91,6 +92,9 @@ export default function DetailTransaction() {
   return (
     <>
       <section>
+        {/* Loading Overlay send proof */}
+        <LoadingOverlay isLoading={sendProof.isPending} />
+
         {/* Header */}
         <div className="pt-[30px] px-[16px] flex items-center justify-between">
           <button
@@ -110,7 +114,7 @@ export default function DetailTransaction() {
             <h1 className="font-bold text-xl">Items</h1>
             <button
               onClick={() => setShowItems(!showItems)}
-              className="p-2 bg-white rounded-full hover:bg-[#FD915A] transition-all duration-300 ease-in-out group"
+              className="p-2 bg-white rounded-full hover:bg-primary transition-all duration-300 ease-in-out group"
             >
               <img
                 src={`/assets/img/arrow-${showItems ? "up" : "down"}.png`}
@@ -126,7 +130,7 @@ export default function DetailTransaction() {
               <h1 className="text-center font-semibold italic">Loading Data ....</h1>
             </>
           ) : (
-            showItems && <div className="mt-[10px] flex flex-col gap-y-3">{<RenderItems />}</div>
+            showItems && <div className="mt-[10px] flex flex-col gap-y-3">{<RenderItems transactionDetails={transaction?.transaction_detail} />}</div>
           )}
         </div>
 
@@ -136,7 +140,7 @@ export default function DetailTransaction() {
             <h1 className="font-bold text-xl">Detail Payment</h1>
             <button
               onClick={() => setShowPayment(!showPayment)}
-              className="p-2 bg-white rounded-full hover:bg-[#FD915A] transition-all duration-300 ease-in-out group"
+              className="p-2 bg-white rounded-full hover:bg-primary transition-all duration-300 ease-in-out group"
             >
               <img
                 src={`/assets/img/arrow-${showPayment ? "up" : "down"}.png`}
@@ -273,7 +277,7 @@ export default function DetailTransaction() {
             </div>
 
             {/* Upload PROOF */}
-            {transaction?.proof === null && transaction?.is_paid === "PENDING" && (
+            {transaction?.proof_url === null && transaction?.is_paid === "PENDING" && (
               <div>
                 {transaction.id === proofImage.transactionId && proofImage.proof !== null ? (
                   <div className="flex flex-col items-center gap-y-1">
@@ -289,7 +293,7 @@ export default function DetailTransaction() {
                   <div>
                     <label
                       htmlFor={transaction.id}
-                      className="cursor-pointer tracking-wider px-6 py-3 bg-[#FD915A] text-white font-bold rounded-[50px] hover:bg-white hover:text-[#FD915A] hover:ring-2 hover:ring-[#FD915A] duration-300"
+                      className="cursor-pointer tracking-wider p-3 bg-primary text-white font-bold rounded-xl hover:bg-white hover:text-primary hover:ring-2 hover:ring-primary duration-300"
                     >
                       Upload Proof
                     </label>
@@ -300,12 +304,12 @@ export default function DetailTransaction() {
             )}
 
             {/* Awaiting Approval */}
-            {transaction?.proof !== null && transaction?.is_paid === "PENDING" && (
-              <p className=" tracking-wider px-6 py-3 bg-gray-500 text-white font-bold rounded-[50px]">Awaiting Approval ...</p>
+            {transaction?.proof_url !== null && transaction?.is_paid === "PENDING" && (
+              <p className=" tracking-wider text-sm w-1/2 px-4 py-3 bg-gray-500 text-white font-bold rounded-xl">Awaiting Approval ...</p>
             )}
 
             {/* SUCCESS */}
-            {transaction?.proof !== null && transaction?.is_paid === "SUCCESS" && (
+            {transaction?.proof_url !== null && transaction?.is_paid === "SUCCESS" && (
               <p className="tracking-wider px-6 py-3 bg-green-600 text-white font-bold rounded-[50px]">SUCCESS</p>
             )}
 

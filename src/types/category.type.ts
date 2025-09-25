@@ -4,8 +4,8 @@ export interface Category {
   id: string;
   name: string;
   slug: string;
-  image_url: string;
-  image_public_id: string;
+  image_url: string | null;
+  image_public_id: string | null;
 }
 
 export interface IGetCateogry {
