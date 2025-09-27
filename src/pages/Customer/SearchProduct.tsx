@@ -3,9 +3,11 @@ import { Link, useSearchParams } from "react-router-dom";
 import { SearchInput } from "../../components/Customer/SearchInput";
 import { useProducts } from "../CustomHooks/useProduct";
 import { convertToRp } from "../../utils/convertToRp";
+import { useNavigate } from "react-router-dom";
 
 export default function SearchProduct() {
   const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
   const search = searchParams.get("search") || undefined;
 
   const { productsByFilter: products, productsByFilterLoading } = useProducts({ limit: 20, search });
@@ -51,12 +53,12 @@ export default function SearchProduct() {
       <section className="min-h-dvh px-[16px] pb-10">
         {/* Header */}
         <div className="pt-[30px] flex items-center justify-between">
-          <Link
-            to="/"
+          <button
+            onClick={() => navigate(-1)}
             className="p-2 bg-white flex justify-center items-center rounded-full ring-1 ring-black hover:ring-0 hover:bg-red-500 transition-all duration-200 ease-in-out group"
           >
             <img src="assets/img/arrow-left.png" alt="back-button" className="group-hover:filter group-hover:invert group-hover:brightness-0" />
-          </Link>
+          </button>
           <h1 className="font-semibold text-xl  absolute left-1/2 -translate-x-[50%]">Search Products</h1>
         </div>
 

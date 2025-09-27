@@ -4,12 +4,10 @@ import { Navbar } from "../../../components/Customer/Navbar";
 import { useAuth } from "../../../Auth/useAuth";
 import { useCustomer } from "../../CustomHooks/useCustomer";
 import { CustomAlert, CustomAlertConfirm } from "../../../utils/CustomAlert";
-import { getImageUrl } from "../../../utils/getImageUrl";
 
 export default function Profile() {
   const { user, logout } = useAuth();
   const { authCustomer } = useCustomer(user?.userId);
-  const profileImage = getImageUrl("customers", authCustomer?.profile_image);
 
   const navigate = useNavigate();
 
@@ -54,7 +52,11 @@ export default function Profile() {
 
         {/* Image & Username */}
         <div className="flex flex-col items-center justify-center gap-5 mt-[20px]">
-          <img src={profileImage} alt="profile_image" className="size-36 object-contain p-2 bg-white rounded-full" />
+          <img
+            src={authCustomer?.image_url || "/assets/img/no-image.png"}
+            alt="profile_image"
+            className="size-36 object-contain p-2 bg-white rounded-full"
+          />
           <div className="text-center leading-[1]">
             <h1 className="font-bold text-xl tracking-wider">{authCustomer?.username || "Guest"}</h1>
             <p className="font-semibold text-slate-500 tracking-wider">{authCustomer?.email || "unknown"}</p>

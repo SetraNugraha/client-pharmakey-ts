@@ -9,6 +9,7 @@ import { Errors } from "../../../types/common.type";
 import { getErrorField } from "../../../utils/getErrorField";
 import { IUpdateCustomer } from "../../../types/customer.type";
 import { AxiosError } from "axios";
+import { LoadingOverlay } from "../../../components/LoadingOverlay";
 
 export default function UpdateProfile() {
   const { user } = useAuth();
@@ -23,11 +24,13 @@ export default function UpdateProfile() {
     const { type, name, value, files } = e.target as HTMLInputElement;
     let newValue: string | File | undefined = value;
 
+    // Input Image File
     if (type === "file" && files?.length) {
-      setUploadedImageName(files[0].name);
-      newValue = files[0];
+      setUploadedImageName(files?.[0].name);
+      newValue = files?.[0];
     }
 
+    // Post Code & Phone Number
     if (name === "post_code" || name === "phone_number") {
       newValue = value.replace(/\D/g, ""); // Only Number
     }
@@ -47,7 +50,7 @@ export default function UpdateProfile() {
         onSuccess: (data) => {
           setFormUpdateCustomer({});
           setHasErrors([]);
-          CustomAlert(data.message, "success");
+          CustomAlert("Update Profile", "success", data.message);
           navigate("/profile");
         },
         onError: (error: any) => {
@@ -65,6 +68,13 @@ export default function UpdateProfile() {
             if (errors && errors !== null && error.response?.data.message === "validation error") {
               setHasErrors(errors);
             }
+
+            if (error.response?.data.message === "Internal server error") {
+              navigate("/profile");
+              setFormUpdateCustomer({});
+              setHasErrors([]);
+              CustomAlert("error", "error", "Error while update profile, please try again later.");
+            }
           } else {
             navigate("/profile");
             setFormUpdateCustomer({});
@@ -79,17 +89,16 @@ export default function UpdateProfile() {
   return (
     <>
       <section className="pb-[50px]">
+        {/* Loading Overlay */}
+        <LoadingOverlay isLoading={updateCustomer.isPending} />
+
         <div className="pt-[30px] px-[16px] flex items-center">
           {/* Header */}
           <Link
             to="/profile"
             className="p-2 bg-white flex justify-center items-center rounded-full ring-1 ring-black hover:ring-0 hover:bg-red-500 transition-all duration-200 ease-in-out group"
           >
-            <img
-              src="assets/img/arrow-left.png"
-              alt="back-button"
-              className="group-hover:filter group-hover:invert group-hover:brightness-0"
-            />
+            <img src="assets/img/arrow-left.png" alt="back-button" className="group-hover:filter group-hover:invert group-hover:brightness-0" />
           </Link>
           <h1 className="font-bold text-xl absolute left-1/2 -translate-x-1/2">Profile</h1>
         </div>
@@ -113,9 +122,7 @@ export default function UpdateProfile() {
                   />
 
                   {getErrorField(hasErrors, "username") && (
-                    <p className="ml-5 -mt-1 text-red-500 font-semibold tracking-wider">
-                      {getErrorField(hasErrors, "username")?.message}
-                    </p>
+                    <p className="ml-5 -mt-1 text-red-500 font-semibold tracking-wider">{getErrorField(hasErrors, "username")?.message}</p>
                   )}
 
                   {/* Email */}
@@ -131,9 +138,7 @@ export default function UpdateProfile() {
                   />
 
                   {getErrorField(hasErrors, "email") && (
-                    <p className="ml-5 -mt-1 text-red-500 font-semibold tracking-wider">
-                      {getErrorField(hasErrors, "email")?.message}
-                    </p>
+                    <p className="ml-5 -mt-1 text-red-500 font-semibold tracking-wider">{getErrorField(hasErrors, "email")?.message}</p>
                   )}
 
                   {/* Address */}
@@ -179,9 +184,7 @@ export default function UpdateProfile() {
                   />
 
                   {getErrorField(hasErrors, "post_code") && (
-                    <p className="ml-5 -mt-1 text-red-500 font-semibold tracking-wider">
-                      {getErrorField(hasErrors, "post_code")?.message}
-                    </p>
+                    <p className="ml-5 -mt-1 text-red-500 font-semibold tracking-wider">{getErrorField(hasErrors, "post_code")?.message}</p>
                   )}
 
                   {/* Phone Number */}
@@ -200,9 +203,7 @@ export default function UpdateProfile() {
                   />
 
                   {getErrorField(hasErrors, "phone_number") && (
-                    <p className="ml-5 -mt-1 text-red-500 font-semibold tracking-wider">
-                      {getErrorField(hasErrors, "phone_number")?.message}
-                    </p>
+                    <p className="ml-5 -mt-1 text-red-500 font-semibold tracking-wider">{getErrorField(hasErrors, "phone_number")?.message}</p>
                   )}
 
                   {/* Photo Profile */}
@@ -213,19 +214,14 @@ export default function UpdateProfile() {
                     <div className="mt-[10px]">
                       <label
                         htmlFor="profile_image"
-                        className="flex items-center gap-x-3 cursor-pointer py-3 text-slate-400 px-3 border border-slate-300 rounded-3xl placeholder:text-[16px] hover:outline-none hover:ring-2 hover:ring-primary"
+                        className="flex truncate items-center gap-x-3 cursor-pointer py-3 text-slate-400 px-3 border border-slate-300 rounded-3xl placeholder:text-[16px] hover:outline-none hover:ring-2 hover:ring-primary"
                       >
+                        {/* Icon Folder */}
                         <img src="assets/img/folder.png" alt="photo_profile" className="cursor-pointer" />
+                        {/* Image Name */}
                         {uploadedImageName ? uploadedImageName : "Select Picture Here"}
                       </label>
-                      <input
-                        id="profile_image"
-                        name="profile_image"
-                        type="file"
-                        accept="image/*"
-                        className="hidden"
-                        onChange={handleChange}
-                      />
+                      <input id="profile_image" name="profile_image" type="file" accept="image/*" className="hidden" onChange={handleChange} />
                     </div>
                   </div>
 

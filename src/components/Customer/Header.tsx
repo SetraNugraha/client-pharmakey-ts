@@ -2,12 +2,10 @@
 import { Link } from "react-router-dom";
 import { useAuth } from "../../Auth/useAuth";
 import { useCustomer } from "../../pages/CustomHooks/useCustomer";
-import { getImageUrl } from "../../utils/getImageUrl";
 
 export const Header = () => {
   const { user } = useAuth();
   const { authCustomer } = useCustomer(user?.userId);
-  const profileImage = getImageUrl("customers", authCustomer?.profile_image);
 
   return (
     <>
@@ -17,7 +15,11 @@ export const Header = () => {
           <Link to="/profile" className="flex gap-x-2 items-center">
             {/* Profile Image */}
 
-            <img src={profileImage} alt="profile_image" className="size-16 object-contain p-2 bg-white rounded-full" />
+            <img
+              src={authCustomer?.image_url || "/assets/img/no-image.png"}
+              alt="profile_image"
+              className="size-16 object-contain p-2 bg-white rounded-full"
+            />
 
             {/* Name & Role */}
             <div className="flex flex-col leading-tight">

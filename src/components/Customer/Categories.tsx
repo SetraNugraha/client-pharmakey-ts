@@ -1,41 +1,12 @@
-import { useNavigate } from "react-router-dom";
 import { useCategory } from "../../pages/CustomHooks/useCategory";
+import { CardCategory } from "./CardCategory";
 
 export const Categories = () => {
   const { categories, isLoading } = useCategory();
-  const navigate = useNavigate();
-
-  const RenderCategories = () => {
-    // NOT FOUND
-    if (!categories || categories?.length == 0) {
-      return <p className="font-semibold ml-1 tracking-wider text-slate-500">Categories not found</p>;
-    }
-
-    return categories?.map((category) => {
-      const handleSearchByCategory = () => {
-        navigate(`/search-product?search=${encodeURIComponent(category.name)}`);
-      };
-
-      return (
-        <button
-          onClick={handleSearchByCategory}
-          key={category.id}
-          className="flex items-center gap-x-2 px-5 py-3 bg-white rounded-[16px] shrink-0 hover:text-white hover:bg-primary transition-all duration-300 ease-in-out group"
-        >
-          <img
-            src={category.image_url || "/assets/img/no-image.png"}
-            alt="categories-icon"
-            className="size-10 rounded-full transition-all duration-300 ease-in-out group-hover:p-1 group-hover:bg-white group-hover:rounded-full"
-          />
-          <h1 className="font-bold">{category.name}</h1>
-        </button>
-      );
-    });
-  };
 
   return (
     <>
-      <div className="pt-[30px] px-[16px]">
+      <div className="mt-[20px] px-[16px]">
         <div className="flex items-center justify-between">
           <h1 className="text-[22px] font-bold">Categories</h1>
           <div className="flex items-center gap-x-1 mr-3">
@@ -44,9 +15,13 @@ export const Categories = () => {
           </div>
         </div>
 
-        <div className="mt-[10px] flex items-center gap-x-5 overflow-x-auto scrollbar-hide">
+        <div className="px-2 py-5 flex items-center gap-x-3 overflow-x-auto scrollbar-hide">
           {/* Card Categories */}
-          {isLoading ? <p className="font-semibold ml-1 tracking-wider text-slate-500">Loading Categories ...</p> : <RenderCategories />}
+          {isLoading ? (
+            <p className="font-semibold ml-1 tracking-wider text-slate-500">Loading Categories ...</p>
+          ) : (
+            <CardCategory categories={categories} />
+          )}
         </div>
       </div>
     </>

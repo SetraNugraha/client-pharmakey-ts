@@ -52,15 +52,16 @@ const menus: Menus[] = [
 export const Sidebar: React.FC<SidebarProps> = ({ children }) => {
   const [expand, setExpand] = useState<boolean>(true);
   const location = useLocation();
+
   return (
     <>
-      <section className="flex">
-        <nav className={`sticky top-0 left-0 h-screen px-5 pt-2 bg-slate-700 duration-300 ${expand ? "w-72" : "w-[90px]"}`}>
-          <div className=" flex">
+      <section className="flex z-50">
+        <nav className={`sticky top-0 left-0 h-screen px-5 pt-2 bg-slate-700 duration-300 ${expand ? "w-72" : "w-20"}`}>
+          <div className="flex">
             {/* Logo */}
-            <div className="ml-2 flex items-center gap-4">
+            <div className="m-2 flex items-center gap-4">
               <FaMedrt className="text-[30px] text-white" />
-              <h1 className="text-xl text-white font-bold ">{expand && "PharmaKey"}</h1>
+              {expand && <h1 className="text-xl text-white font-bold">PharmaKey</h1>}
             </div>
             {/* Expand Button */}
             <button

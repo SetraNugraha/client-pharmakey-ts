@@ -11,7 +11,7 @@ export interface Customer {
   email: string;
   password: string;
   role: Role | "CUSTOMER";
-  profile_image: string | null;
+  image_url: string | null;
   address: string | null;
   city: string | null;
   post_code: string | null;

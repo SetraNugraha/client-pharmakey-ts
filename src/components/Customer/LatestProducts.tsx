@@ -1,39 +1,11 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { Link } from "react-router-dom";
 import { Product } from "../../types/product.type";
+import { CardProduct } from "./CardProduct";
 
 export const LatestProducts = ({ products, isLoading }: { products?: Product[]; isLoading: boolean }) => {
-  const RenderLatestProducts = () => {
-    // NOT FOUND
-    if (!products || products?.length == 0) {
-      return <p className="font-semibold ml-1 tracking-wider text-slate-500">Products not found</p>;
-    }
-
-    return products?.map((product) => {
-      return (
-        <Link
-          key={product.id}
-          to={`/detail-product/${product.slug}`}
-          className="flex flex-col items-center flex-shrink-0 gap-y-3 p-5 w-[170px] h-[220px] bg-white rounded-[16px]  hover:bg-[#ef966a]  transition-all duration-300 ease-in-out group"
-        >
-          {/* Product Image */}
-          <img src={product.image_url || "/assets/img/no-image.png"} alt="product-image" className="size-24 object-contain" />
-
-          {/* Product Name & Price */}
-          <div className="h-full w-full flex flex-col text-center items-center justify-between">
-            <h1 className="font-bold group-hover:text-white whitespace-normal transition-all duration-300 ease-in-out group">{product.name}</h1>
-            <p className="text-slate-400 font-semibold  group-hover:text-white transition-all duration-300 ease-in-out group">
-              Rp. {product.price.toLocaleString("id-ID")}
-            </p>
-          </div>
-        </Link>
-      );
-    });
-  };
-
   return (
     <>
-      <div className="pt-[30px] px-[16px]">
+      <div className="mt-[10px] px-[16px]">
         <div className="flex items-center justify-between">
           <h1 className="text-[22px] font-bold">Latest Products</h1>
           <div className="flex items-center gap-x-1 mr-3">
@@ -42,9 +14,9 @@ export const LatestProducts = ({ products, isLoading }: { products?: Product[]; 
           </div>
         </div>
 
-        <div className="mt-[10px] flex items-center gap-x-5 overflow-x-auto whitespace-nowrap scrollbar-hide">
+        <div className="px-2 py-5 flex items-center gap-x-5 overflow-x-auto whitespace-nowrap scrollbar-hide">
           {/* Card Categories */}
-          {isLoading ? <p className="font-semibold ml-1 tracking-wider text-slate-500">Loading Products ...</p> : <RenderLatestProducts />}
+          {isLoading ? <p className="font-semibold ml-1 tracking-wider text-slate-500">Loading Products ...</p> : <CardProduct products={products} />}
         </div>
       </div>
     </>

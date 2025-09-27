@@ -3,41 +3,13 @@ import { Link } from "react-router-dom";
 import { SearchInput } from "../../components/Customer/SearchInput";
 import { Navbar } from "../../components/Customer/Navbar";
 import { useProducts } from "../CustomHooks/useProduct";
-import { convertToRp } from "../../utils/convertToRp";
+import { CardProduct } from "../../components/Customer/CardProduct";
+import { CardCategory } from "../../components/Customer/CardCategory";
+import { useCategory } from "../CustomHooks/useCategory";
 
 export default function Product() {
   const { products, isLoading } = useProducts({});
-
-  const RenderProducts = () => {
-    // NOT FOUND
-    if (!products || products?.length == 0) {
-      return <p className="font-semibold ml-1 tracking-wider text-slate-500">Products not found</p>;
-    }
-
-    return products?.map((product) => {
-      return (
-        <Link
-          to={`/detail-product/${product.slug}`}
-          key={product.id}
-          className="py-5 px-4 bg-white border border-slate-200 rounded-[16px] shrink-0 shadow-lg shadow-gray-300 hover:bg-primary transition-all duration-300 ease-in-out group"
-        >
-          {/* Card Products */}
-          <div className="grid grid-cols-1 place-items-center place-content-center h-full gap-y-2">
-            {/* Image */}
-            <img src={product.image_url || "/assets/img/no-image.png"} alt="product-image" className="size-24 object-contain" />
-
-            {/* Wrapper name & price */}
-            <div className="h-full w-full flex flex-col items-center justify-between gap-y-1">
-              {/* Name */}
-              <h1 className="font-bold group-hover:text-white text-center whitespace-normal">{product.name}</h1>
-              {/* Price */}
-              <p className="font-semibold text-slate-400 group-hover:text-white">{convertToRp(product?.price)}</p>
-            </div>
-          </div>
-        </Link>
-      );
-    });
-  };
+  const { categories } = useCategory();
 
   return (
     <>
@@ -83,13 +55,26 @@ export default function Product() {
           </div>
         </div>
 
+        {/* Categories */}
+        <div className="mt-[30px] px-[16px]">
+          <h1 className="font-bold">Categories</h1>
+
+          <div className="mt-5 grid grid-cols-2 gap-3">
+            <CardCategory categories={categories} />
+          </div>
+        </div>
+
         {/*  All Product */}
         <div className="mt-[30px] px-[16px]">
           <h1 className="font-bold">All Products</h1>
 
           {/* Products */}
-          <div className="mt-[10px] grid grid-cols-2 gap-5">
-            {isLoading ? <p className="font-semibold ml-1 tracking-wider text-slate-500">Loading Products ...</p> : <RenderProducts />}
+          <div className="mt-[10px] grid grid-cols-2 gap-3">
+            {isLoading ? (
+              <p className="font-semibold ml-1 tracking-wider text-slate-500">Loading Products ...</p>
+            ) : (
+              <CardProduct products={products} />
+            )}
           </div>
         </div>
 

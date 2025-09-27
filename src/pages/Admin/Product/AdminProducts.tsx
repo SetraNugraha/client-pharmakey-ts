@@ -68,7 +68,7 @@ export default function AdminProducts() {
     <section className="px-10 py-5">
       {/* Loading Overlay While Delete Product */}
       <LoadingOverlay isLoading={deleteProduct.isPending} />
-      
+
       <div>
         {/* Title */}
         <h1 className="font-bold text-2xl mb-5">Products</h1>
