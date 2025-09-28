@@ -101,8 +101,10 @@ export default function ModalTransactionDetail({ transaction, onClose }: ModalTr
             {/* List Product */}
             <h1 className="font-bold text-xl my-5 tracking-wide">List of Items</h1>
             <div className="py-3 rounded-lg flex flex-col gap-y-3 px-2 max-h-[300px] overflow-y-auto scrollbar-hide shadow-[inset_0_-8px_8px_-4px_rgba(0,0,0,0.1)]">
-              {transaction.transaction_detail.map((item, index) => {
-                return (
+              {transaction.transaction_detail.length === 0 ? (
+                <h1 className="font-semibold text-slate-500">Product not found or maybe has been deleted.</h1>
+              ) : (
+                transaction.transaction_detail.map((item, index) => (
                   <div key={index} className="flex items-center justify-between">
                     <div className="flex items-center gap-x-5">
                       <img src={item.product.image_url || "/assets/img/no-image.png"} alt="product-image" className="w-[35px]" />
@@ -118,8 +120,8 @@ export default function ModalTransactionDetail({ transaction, onClose }: ModalTr
                     {/* Quantity */}
                     <p className="font-semibold text-slate-500">quantity : {item.quantity}</p>
                   </div>
-                );
-              })}
+                ))
+              )}
             </div>
 
             <div className="font-semibold mt-2 flex items-start justify-between">

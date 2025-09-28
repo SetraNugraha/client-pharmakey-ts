@@ -24,6 +24,7 @@ export default function ModalUpdateProduct({ product, onClose }: ModalUpdateProd
   // ERROR State
   const [hasError, setHasError] = useState<Errors[]>([]);
   const nameError = getErrorField(hasError, "name");
+  const categoryError = getErrorField(hasError, "category");
   const priceError = getErrorField(hasError, "price");
   const productImageError = getErrorField(hasError, "product_image");
 
@@ -100,19 +101,24 @@ export default function ModalUpdateProduct({ product, onClose }: ModalUpdateProd
               <select
                 name="category_id"
                 id="category_id"
-                className="h-[40px] pl-3 border border-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500 rounded-lg"
+                className={`h-[40px] pl-3 border border-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500 rounded-lg ${
+                  categoryError && "ring-2 ring-red-500"
+                }`}
                 onChange={handleChange}
               >
+                {/* Default Category */}
+                <option value={product?.category_id}>{findCategory?.name || "unknown"}</option>
                 {/* Render Option */}
-                <option value={product?.category_id}>{findCategory?.name}</option>
-                {categories?.map((category) => {
-                  return (
-                    <option key={category.id} value={category.id}>
-                      {category.name}
+                {categories
+                  ?.filter((category) => category.id !== product?.category_id)
+                  .map((c) => (
+                    <option key={c.id} value={c.id}>
+                      {c.name}
                     </option>
-                  );
-                })}
+                  ))}
               </select>
+
+              {categoryError && <p className="text-red-500 font-semibold tracking-wider ml-2">{categoryError?.message}</p>}
             </div>
 
             {/* Product Price */}

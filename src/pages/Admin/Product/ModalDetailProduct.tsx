@@ -37,7 +37,7 @@ export default function ModalDetailProduct({ product, onClose }: ModalDetailProd
                 <label htmlFor="name" className="font-bold text-slate-600 text-lg">
                   Category
                 </label>
-                <p className="font-semibold text-slate-500 w-[90%]">{findCategory?.name}</p>
+                <p className="font-semibold text-slate-500 w-[90%]">{findCategory?.name || "unknown"}</p>
               </div>
 
               {/* Product Price */}

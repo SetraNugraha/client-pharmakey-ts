@@ -16,7 +16,7 @@ export const CustomerLayout = () => {
   }, [])
 
   return (
-    <section className="max-w-md mx-auto bg-[#F7F1F0] ">
+    <section className="max-w-md mx-auto bg-[#f5ecea]">
       <Outlet />
     </section>
   )

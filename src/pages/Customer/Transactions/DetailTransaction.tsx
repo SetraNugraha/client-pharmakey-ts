@@ -67,6 +67,11 @@ export default function DetailTransaction() {
   };
 
   const RenderItems = ({ transactionDetails }: { transactionDetails?: Transaction_Detail[] }) => {
+    // If product deleted
+    if (transactionDetails?.length === 0 || !transactionDetails) {
+      return <h1 className="font-semibold text-slate-500">Product not found or maybe has been deleted.</h1>;
+    }
+
     return transactionDetails?.map((trx, index) => {
       return (
         <div key={index} className="relative">

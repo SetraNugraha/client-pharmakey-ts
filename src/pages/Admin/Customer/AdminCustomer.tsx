@@ -6,7 +6,6 @@ import ModalDetailCustomer from "./ModalDetailCustomer";
 import { CustomAlert, CustomAlertConfirm } from "../../../utils/CustomAlert";
 import { useState } from "react";
 import { Customer } from "../../../types/customer.type";
-import { getImageUrl } from "../../../utils/getImageUrl";
 
 export default function AdminCustomer() {
   const { customers, isLoading, pagination, goToNextPage, goToPrevPage, deleteCustomer } = useCustomer();
@@ -39,12 +38,11 @@ export default function AdminCustomer() {
 
   const RenderCustomer = () => {
     return customers?.map((customer) => {
-      const customerImage = getImageUrl("customers", customer.profile_image);
       return (
         <tr key={customer.id} className="w-full bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
           {/* Profile Image */}
           <td className="py-3 flex justify-center items-cente">
-            <img src={customerImage} alt="image-product" className="size-16 rounded-full" />
+            <img src={customer.image_url || "/assets/img/no-image.png"} alt="image-product" className="size-16 rounded-full" />
           </td>
 
           {/* name */}

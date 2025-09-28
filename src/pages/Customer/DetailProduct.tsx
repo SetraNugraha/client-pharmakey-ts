@@ -66,7 +66,7 @@ export default function DetailProduct() {
                     alt="category"
                     className="size-8 rounded-full object-contain"
                   />
-                  <h1 className="font-semibold">{productBySlug?.category?.name}</h1>
+                  <h1 className="font-semibold">{productBySlug?.category?.name || "unknown"}</h1>
                 </div>
 
                 {/* Rating */}

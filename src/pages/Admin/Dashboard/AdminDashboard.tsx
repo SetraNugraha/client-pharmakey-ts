@@ -83,18 +83,18 @@ export default function AdminDashboard() {
       </div>
 
       {/* CART */}
-      <div className="mt-7 w-full">
-        <div className="flex items-center justify-between gap-x-3 w-full">
+      <div className="mt-7">
+        <div className="grid grid-cols-5 place-content-between gap-5 w-full">
           {/* TOP SELLING PRODUCTS */}
-          <div className="w-[60%] h-[350px] bg-white rounded-lg shadow-lg ring-1 ring-slate-300 shadow-gray-400 p-5">
-            <h1 className="font-bold text-slate-600 tracking-wider">Top Selling Products</h1>
+          <div className="col-span-3 h-[350px] bg-white rounded-lg shadow-lg ring-1 ring-slate-300 shadow-gray-400 p-5">
+            <h1 className="font-bold text-slate-600 tracking-wider">Top Selling Products {monthYearNow}</h1>
             <div className="w-full h-[300px]">
               <Bar
                 data={{
                   labels: dashboard?.topSellingProduct?.map((data) => data.productName),
                   datasets: [
                     {
-                      label: "Top Selling Product All The Time",
+                      label: "Medicine",
                       data: dashboard?.topSellingProduct?.map((data) => data.totalSold),
                       backgroundColor: ["rgba(59, 130, 246, 0.7)"],
                     },
@@ -118,11 +118,13 @@ export default function AdminDashboard() {
           </div>
 
           {/* STATUS ORDERS PER MONTH */}
-          <div className="w-[20%] flex items-center justify-center">
-            <div className="text-center h-[350px] bg-white rounded-lg shadow-lg ring-1 ring-slate-300 shadow-gray-400 p-5">
-              <h1 className="font-bold text-slate-600 tracking-wider">Status Orders {monthYearNow}</h1>
+          <div className="col-span-1 flex items-center justify-center">
+            <div className="text-center h-[350px] w-[200px] xl:w-full bg-white rounded-lg shadow-lg ring-1 ring-slate-300 shadow-gray-400 p-5">
+              <h1 className="font-bold text-slate-600 tracking-wider flex flex-col">
+                Status Orders <span>{monthYearNow}</span>
+              </h1>
 
-              <div className="w-full max-h-[300px] py-10">
+              <div className="w-full max-h-[300px] py-5">
                 <Doughnut
                   data={{
                     labels: dashboard?.statusOrders?.map((data) => data.status),
@@ -134,7 +136,7 @@ export default function AdminDashboard() {
                           if (data.status === "SUCCESS") return "rgba(34,197,94,0.7)"; // green-500
                           if (data.status === "CANCELLED") return "rgba(239,68,68,0.7)"; // red-500
                           if (data.status === "PENDING") return "rgba(249,115,22,0.7)"; // orange-500
-                          return "rgba(107,114,128,0.7)"; // gray-500 (default kalau ada status lain)
+                          return "rgba(107,114,128,0.7)"; // gray-500 (default)
                         }),
                         borderColor: dashboard?.statusOrders?.map((data) => {
                           if (data.status === "SUCCESS") return "rgba(34,197,94,1)";
@@ -146,7 +148,7 @@ export default function AdminDashboard() {
                       },
                     ],
                   }}
-                  width={150}
+                  width={200}
                   height={200}
                   options={{
                     responsive: true,
@@ -158,7 +160,7 @@ export default function AdminDashboard() {
                           size: 14,
                           weight: "bold",
                         },
-                        formatter: (value) => value, // tampilkan angka asli
+                        formatter: (value) => value, // display value on bar doughnut
                       },
                       legend: {
                         position: "top",
@@ -178,11 +180,13 @@ export default function AdminDashboard() {
           </div>
 
           {/* PAYMENT METHOD PER MONTH */}
-          <div className="w-[20%] flex items-center justify-center">
-            <div className="text-center h-[350px] bg-white rounded-lg shadow-lg ring-1 ring-slate-300 shadow-gray-400 p-5">
-              <h1 className="font-bold text-slate-600 tracking-wider">Payment Method {monthYearNow}</h1>
+          <div className="col-span-1 flex items-center justify-center">
+            <div className="text-center h-[350px] w-[200px] xl:w-full bg-white rounded-lg shadow-lg ring-1 ring-slate-300 shadow-gray-400 p-5">
+              <h1 className="font-bold text-slate-600 tracking-wider flex flex-col">
+                Payment Method <span>{monthYearNow}</span>
+              </h1>
 
-              <div className="w-full max-h-[300px] py-7">
+              <div className="w-full max-h-[300px] py-5">
                 <Doughnut
                   data={{
                     labels: dashboard?.paymentMethodPerMonth?.map((data) => data.payment_method),
@@ -204,8 +208,8 @@ export default function AdminDashboard() {
                       },
                     ],
                   }}
-                  width={150}
-                  height={200}
+                  width={180}
+                  height={180}
                   options={{
                     responsive: true,
                     maintainAspectRatio: false,
@@ -245,7 +249,7 @@ export default function AdminDashboard() {
                 labels: dashboard?.revenuePerMonth?.map((data) => moment(data.month).format("MMMM")),
                 datasets: [
                   {
-                    label: "Revenue Per Month",
+                    label: "Revenue (Rp)",
                     data: dashboard?.revenuePerMonth?.map((data) => data.revenue),
                     backgroundColor: ["rgba(59, 130, 246, 0.7)"],
                     borderColor: ["rgba(59, 130, 246, 0.7)"],

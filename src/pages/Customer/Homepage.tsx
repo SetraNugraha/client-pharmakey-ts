@@ -10,7 +10,7 @@ import { useProducts } from "../CustomHooks/useProduct";
 export default function Homepage() {
   const { products, isLoading } = useProducts({ limit: 4 });
   return (
-    <section className="overflow-y-auto scrollbar-hide">
+    <section>
       <div>
         <Header />
       </div>

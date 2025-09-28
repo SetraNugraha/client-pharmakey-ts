@@ -1,13 +1,12 @@
 import Modal from "../../../components/Admin/Modal";
 import { Customer } from "../../../types/customer.type";
-import { getImageUrl } from "../../../utils/getImageUrl";
+
 type ModalDetailCustomerProps = {
   customer: Customer | null;
   onClose: () => void;
 };
 
 export default function ModalDetailCustomer({ customer, onClose }: ModalDetailCustomerProps) {
-  const customerImage = getImageUrl("customers", customer?.profile_image);
   return (
     <Modal>
       <Modal.Header title="Detail Customer" onClose={onClose} />
@@ -15,7 +14,7 @@ export default function ModalDetailCustomer({ customer, onClose }: ModalDetailCu
         <section className="w-[750px] items-start flex gap-x-10">
           {/* Customer Profile Image */}
           <div className="flex flex-shrink-0">
-            <img src={customerImage} alt="customer-image" className="size-60" />
+            <img src={customer?.image_url || "/assets/img/no-image.png"} alt="customer-image" className="size-60" />
           </div>
 
           {/* Container Text */}
